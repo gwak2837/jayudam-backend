@@ -4,9 +4,11 @@
 
 ## 개발 환경
 
+- macOS 11.5
 - Node.js 18.2
 - Yarn 3.2
 - Git 2.36
+- Docker 20.10
 
 ## 설치 과정
 
