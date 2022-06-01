@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "visualstudioexptteam.vscodeintellicode",
+    "christian-kohler.npm-intellisense",
+    "christian-kohler.path-intellisense",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-azuretools.vscode-docker",
+    "mtxr.sqltools",
+    "arcanis.vscode-zipfs",
+    "amatiasq.sort-imports",
+    "foxundermoon.shell-format"
+  ]
+}

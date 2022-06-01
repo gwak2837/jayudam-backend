@@ -1,0 +1,15 @@
+{
+  "GraphQL Object": {
+    "prefix": "type",
+    "body": [
+      "type $1 {",
+      "  id: ID!",
+      "  creationTime: DateTime!",
+      "  modificationTime: DateTime!",
+      "  $2",
+      "}",
+      ""
+    ],
+    "description": "GraphQL Object Type"
+  }
+}
