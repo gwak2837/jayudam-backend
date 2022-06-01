@@ -104,6 +104,9 @@ export type UserModificationInput = {
   phoneNumber?: InputMaybe<Scalars['NonEmptyString']>
 }
 
+export type WithIndex<TObject> = TObject & Record<string, any>
+export type ResolversObject<TObject> = WithIndex<TObject>
+
 export type ResolverTypeWrapper<T> = Promise<T> | T
 
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
@@ -187,7 +190,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 ) => TResult | Promise<TResult>
 
 /** Mapping between all available schema types and the resolvers types */
-export type ResolversTypes = {
+export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>
   Date: ResolverTypeWrapper<Scalars['Date']>
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>
@@ -211,10 +214,10 @@ export type ResolversTypes = {
   UUID: ResolverTypeWrapper<Scalars['UUID']>
   User: ResolverTypeWrapper<User>
   UserModificationInput: UserModificationInput
-}
+}>
 
 /** Mapping between all available schema types and the resolvers parents */
-export type ResolversParentTypes = {
+export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']
   Date: Scalars['Date']
   DateTime: Scalars['DateTime']
@@ -236,7 +239,7 @@ export type ResolversParentTypes = {
   UUID: Scalars['UUID']
   User: User
   UserModificationInput: UserModificationInput
-}
+}>
 
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
   name: 'Date'
@@ -274,7 +277,7 @@ export interface LongitudeScalarConfig
 export type MutationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
-> = {
+> = ResolversObject<{
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   unregister?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   updateUser?: Resolver<
@@ -283,7 +286,7 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationUpdateUserArgs, 'input'>
   >
-}
+}>
 
 export interface NonEmptyStringScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes['NonEmptyString'], any> {
@@ -303,7 +306,7 @@ export interface PositiveIntScalarConfig
 export type QueryResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
-> = {
+> = ResolversObject<{
   isNicknameUnique?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
@@ -317,7 +320,7 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryUserByNicknameArgs, 'nickname'>
   >
-}
+}>
 
 export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['URL'], any> {
   name: 'URL'
@@ -330,7 +333,7 @@ export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export type UserResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']
-> = {
+> = ResolversObject<{
   bio?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
   birthday?: Resolver<ResolversTypes['NonEmptyString'], ParentType, ContextType>
   birthyear?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
@@ -345,9 +348,9 @@ export type UserResolvers<
   nickname?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
   phoneNumber?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
-}
+}>
 
-export type Resolvers<ContextType = any> = {
+export type Resolvers<ContextType = any> = ResolversObject<{
   Date?: GraphQLScalarType
   DateTime?: GraphQLScalarType
   EmailAddress?: GraphQLScalarType
@@ -363,4 +366,4 @@ export type Resolvers<ContextType = any> = {
   URL?: GraphQLScalarType
   UUID?: GraphQLScalarType
   User?: UserResolvers<ContextType>
-}
+}>

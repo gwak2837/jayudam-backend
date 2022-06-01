@@ -49,14 +49,26 @@ https://yarnpkg.com/getting-started/editor-sdks
 Husky
 https://typicode.github.io/husky/#/?id=usage
 
-Apollo Server + Express
-https://www.apollographql.com/docs/apollo-server/integrations/middleware
-
 PostgreSQL Client
 https://node-postgres.com/
 
+Apollo Server + Express
+https://www.apollographql.com/docs/apollo-server/integrations/middleware
+
+GraphQL Scalars
+https://www.graphql-scalars.dev/docs/quick-start
+
+GraphQL Codegen
+https://www.graphql-code-generator.com/docs/getting-started/installation
+
 esbuild
 https://esbuild.github.io/getting-started/
+
+Nodemon + esbuild watch + GraphQL Codegen watch
+(Input `rs` on terminal after `yarn dev` on the first try)
+https://github.com/remy/nodemon#nodemon
+https://stackoverflow.com/a/35455532/16868717
+https://www.graphql-code-generator.com/docs/config-reference/codegen-config#configuration-options
 
 Dockerfile
 https://docs.docker.com/engine/reference/builder/
@@ -64,17 +76,6 @@ https://hub.docker.com/_/node
 
 docker-compose.yml
 https://docs.docker.com/compose/compose-file/
-
-Nodemon + esbuild watch
-(Input `rs` on terminal after `yarn dev` on the first try)
-https://github.com/remy/nodemon#nodemon
-https://stackoverflow.com/a/35455532/16868717
-
-GraphQL Codegen
-https://www.graphql-code-generator.com/docs/getting-started/installation
-
-GraphQL Scalars
-https://www.graphql-scalars.dev/docs/quick-start
 
 Jest
 https://jestjs.io/docs/getting-started

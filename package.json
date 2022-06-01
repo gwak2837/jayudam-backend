@@ -28,6 +28,7 @@
     "postinstall": "husky install"
   },
   "dependencies": {
+    "@graphql-tools/merge": "^8.2.13",
     "apollo-server-core": "^3.8.1",
     "apollo-server-errors": "^3.3.1",
     "apollo-server-express": "^3.8.1",

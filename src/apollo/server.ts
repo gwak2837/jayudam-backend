@@ -1,9 +1,10 @@
 import http from 'http'
 
-import { ApolloServerPluginDrainHttpServer, gql } from 'apollo-server-core'
+import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core'
 import { ApolloServer } from 'apollo-server-express'
 import express from 'express'
 
+import { resolvers } from '../graphql'
 import typeDefs from '../graphql/generated/schema.graphql'
 import { verifyJWT } from '../utils/jwt'
 
@@ -47,9 +48,7 @@ export async function startApolloServer() {
     csrfPrevention: true,
     introspection: process.env.ENV?.startsWith('local'),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-    resolvers: {
-      Query: {},
-    },
+    resolvers,
     typeDefs,
   })
 

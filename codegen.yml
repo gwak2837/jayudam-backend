@@ -1,6 +1,8 @@
 schema: 'src/graphql/**/*.graphql'
 generates:
   src/graphql/generated/graphql.ts:
+    config:
+      useIndexSignature: true
     plugins:
       - 'typescript'
       - 'typescript-resolvers'
@@ -10,4 +12,3 @@ generates:
 hooks:
   afterAllFileWrite:
     - prettier --write
-# errorsOnly: true
