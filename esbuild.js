@@ -8,7 +8,6 @@ esbuild
   .build({
     bundle: true,
     entryPoints: ['src/index.ts'],
-    // format: 'esm',
     loader: {
       '.graphql': 'text',
       '.sql': 'text',
@@ -20,6 +19,8 @@ esbuild
     platform: 'node',
     plugins: [pnpPlugin()],
     target: ['node18'],
+    treeShaking: true,
+    watch: process.env.NODE_ENV === 'development',
   })
   .then((result) => {
     const outputs = result.metafile.outputs

@@ -1,0 +1,21 @@
+type Mutation {
+  "로그아웃 성공 여부 반환"
+  logout: Boolean!
+
+  "회원탈퇴 시 사용자 정보가 모두 초기화됩니다"
+  unregister: User
+
+  "사용자 정보를 수정합니다"
+  updateUser(input: UserModificationInput!): User
+}
+
+input UserModificationInput {
+  nickname: NonEmptyString
+  imageUrl: URL
+  email: EmailAddress
+  phoneNumber: NonEmptyString
+  gender: Gender
+  ageRange: NonEmptyString
+  birthday: NonEmptyString
+  bio: String
+}

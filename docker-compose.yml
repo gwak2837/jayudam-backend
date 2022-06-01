@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  jayudam-backend:
+    build: .
+    container_name: jayudam-backend
+    env_file: ./.env.local
+    image: jayudam-backend:latest
+    restart: on-failure
+    ports:
+      - $PORT:$PORT
+#     volumes:
+#       - 'jayudam:/app'
+# volumes:
+#   jayudam:

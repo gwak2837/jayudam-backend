@@ -1,0 +1,26 @@
+type User {
+  id: UUID!
+  creationTime: DateTime!
+  modificationTime: DateTime!
+  email: EmailAddress!
+  birthyear: Int!
+  birthday: NonEmptyString!
+  gender: Gender!
+  hasNewNotifications: Boolean!
+
+  # nullable
+  bio: NonEmptyString
+  imageUrl: URL
+  nickname: NonEmptyString
+  phoneNumber: NonEmptyString
+
+  # from other table
+  likedCount: NonNegativeInt!
+}
+
+enum Gender {
+  UNKNOWN
+  MALE
+  FEMALE
+  OTHER
+}

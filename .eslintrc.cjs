@@ -10,6 +10,7 @@ module.exports = {
     'plugin:import/typescript',
     'plugin:n/recommended',
     'plugin:promise/recommended',
+    'plugin:@typescript-eslint/recommended',
     'standard',
 
     // Make sure to put "prettier" last, so it gets the chance to override other configs
@@ -22,17 +23,15 @@ module.exports = {
   },
   plugins: ['@typescript-eslint'],
   rules: {
-    'no-console': [
-      'warn',
-      {
-        allow: ['warn', 'error'],
-      },
-    ],
+    'no-console': ['warn', { allow: ['warn', 'error'] }],
+    'no-unused-vars': ['warn', { varsIgnorePattern: '^_' }],
     'prefer-const': 'off',
 
     'import/no-unresolved': 'off',
 
     'n/no-missing-import': 'off',
     'n/no-unpublished-import': 'off',
+
+    '@typescript-eslint/no-unused-vars': 'off',
   },
 }

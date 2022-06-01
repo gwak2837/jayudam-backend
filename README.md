@@ -44,6 +44,9 @@ https://github.com/prettier/eslint-config-prettier
 Yarn 3 + VSCode + ESLint + Prettier
 https://yarnpkg.com/getting-started/editor-sdks
 
+Husky
+https://typicode.github.io/husky/#/?id=usage
+
 Apollo Server + Express
 https://www.apollographql.com/docs/apollo-server/integrations/middleware
 
@@ -53,9 +56,9 @@ https://node-postgres.com/
 esbuild
 https://esbuild.github.io/getting-started/
 
-Husky
-https://typicode.github.io/husky/#/?id=usage
-
 Dockerfile
+https://docs.docker.com/engine/reference/builder/
+https://hub.docker.com/_/node
 
 docker-compose.yml
+https://docs.docker.com/compose/compose-file/
