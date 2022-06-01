@@ -64,3 +64,14 @@ https://hub.docker.com/_/node
 
 docker-compose.yml
 https://docs.docker.com/compose/compose-file/
+
+Nodemon + esbuild watch
+(Input `rs` on terminal after `yarn dev` on the first try)
+https://github.com/remy/nodemon#nodemon
+https://stackoverflow.com/a/35455532/16868717
+
+GraphQL Codegen
+
+Jest
+
+Database import/export

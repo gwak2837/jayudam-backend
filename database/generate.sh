@@ -1,0 +1,12 @@
+#!/bin/sh
+ENV_FILE_PATH=.env.development.local
+
+if [ ! -f $ENV_FILE_PATH ]; then
+  echo "$ENV_FILE_PATH 파일이 존재하지 않습니다. $ENV_FILE_PATH 파일을 생성한 후 다시 시도해주세요."
+  exit 1
+fi
+
+export $(grep -v '^#' $ENV_FILE_PATH | xargs)
+
+schemats postgres $CONNECTION_STRING -o src/database/${POSTGRES_DB}.ts
+prettier src/database/${POSTGRES_DB}.ts --write
