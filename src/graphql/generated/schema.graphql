@@ -1,0 +1,104 @@
+scalar Date
+
+scalar DateTime
+
+scalar EmailAddress
+
+enum Gender {
+  FEMALE
+  MALE
+  OTHER
+  UNKNOWN
+}
+
+scalar JWT
+
+scalar LastValue
+
+scalar Latitude
+
+scalar Longitude
+
+type Mutation {
+  """
+  로그아웃 성공 여부 반환
+  """
+  logout: Boolean!
+
+  """
+  회원탈퇴 시 사용자 정보가 모두 초기화됩니다
+  """
+  unregister: User
+
+  """
+  사용자 정보를 수정합니다
+  """
+  updateUser(input: UserModificationInput!): User
+}
+
+scalar NonEmptyString
+
+scalar NonNegativeInt
+
+"""
+기본값: 내림차순
+"""
+enum OrderDirection {
+  ASC
+}
+
+input Pagination {
+  lastId: ID
+  lastValue: LastValue
+  limit: PositiveInt!
+}
+
+scalar PositiveInt
+
+type Query {
+  """
+  사용자 닉네임 중복 여부 검사
+  """
+  isNicknameUnique(nickname: NonEmptyString!): Boolean!
+
+  """
+  현재 로그인된(JWT) 사용자 정보를 반환
+  """
+  me: User
+
+  """
+  닉네임으로 사용자 검색
+  """
+  userByNickname(nickname: NonEmptyString!): User
+}
+
+scalar URL
+
+scalar UUID
+
+type User {
+  bio: NonEmptyString
+  birthday: NonEmptyString!
+  birthyear: Int!
+  creationTime: DateTime!
+  email: EmailAddress!
+  gender: Gender!
+  hasNewNotifications: Boolean!
+  id: UUID!
+  imageUrl: URL
+  likedCount: NonNegativeInt!
+  modificationTime: DateTime!
+  nickname: NonEmptyString
+  phoneNumber: NonEmptyString
+}
+
+input UserModificationInput {
+  ageRange: NonEmptyString
+  bio: String
+  birthday: NonEmptyString
+  email: EmailAddress
+  gender: Gender
+  imageUrl: URL
+  nickname: NonEmptyString
+  phoneNumber: NonEmptyString
+}

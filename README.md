@@ -71,7 +71,12 @@ https://github.com/remy/nodemon#nodemon
 https://stackoverflow.com/a/35455532/16868717
 
 GraphQL Codegen
+https://www.graphql-code-generator.com/docs/getting-started/installation
+
+GraphQL Scalars
+https://www.graphql-scalars.dev/docs/quick-start
 
 Jest
+https://jestjs.io/docs/getting-started
 
 Database import/export

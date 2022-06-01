@@ -4,6 +4,7 @@ import { ApolloServerPluginDrainHttpServer, gql } from 'apollo-server-core'
 import { ApolloServer } from 'apollo-server-express'
 import express from 'express'
 
+import typeDefs from '../graphql/generated/schema.graphql'
 import { verifyJWT } from '../utils/jwt'
 
 // import { poolQuery } from '../database/postgres'
@@ -47,29 +48,9 @@ export async function startApolloServer() {
     introspection: process.env.ENV?.startsWith('local'),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     resolvers: {
-      Query: {
-        books: () => [
-          {
-            title: 'The Awakening',
-            author: 'Kate Chopin',
-          },
-          {
-            title: 'City of Glass',
-            author: 'Paul Auster',
-          },
-        ],
-      },
+      Query: {},
     },
-    typeDefs: gql`
-      type Book {
-        title: String
-        author: String
-      }
-
-      type Query {
-        books: [Book]
-      }
-    `,
+    typeDefs,
   })
 
   // More required logic for integrating with Express
