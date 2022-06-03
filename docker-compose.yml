@@ -9,6 +9,8 @@ services:
     restart: on-failure
     ports:
       - $PORT:$PORT
+  redis:
+    image: redis
 #     volumes:
 #       - 'jayudam:/app'
 # volumes:

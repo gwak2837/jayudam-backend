@@ -12,7 +12,7 @@
     "**/.yarn": true,
     "**/.pnp.*": true,
     "**/.git": true,
-    "**/dist": true,
+    "**/out": true,
     "yarn.lock": true
   },
 

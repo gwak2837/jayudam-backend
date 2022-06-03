@@ -1,24 +1,23 @@
 -- public 스키마 삭제 후 생성
 DROP SCHEMA IF EXISTS public CASCADE;
 
-CREATE SCHEMA public AUTHORIZATION alpacasalon;
+CREATE SCHEMA public AUTHORIZATION jayudam;
 
 COMMENT ON SCHEMA public IS 'standard public schema';
 
-GRANT ALL ON SCHEMA public TO alpacasalon;
+GRANT ALL ON SCHEMA public TO jayudam;
 
 -- deleted 스키마 삭제 후 생성
 DROP SCHEMA IF EXISTS deleted CASCADE;
 
-CREATE SCHEMA deleted AUTHORIZATION alpacasalon;
+CREATE SCHEMA deleted AUTHORIZATION jayudam;
 
 COMMENT ON SCHEMA deleted IS 'deleted records history';
 
-GRANT ALL ON SCHEMA deleted TO alpacasalon;
+GRANT ALL ON SCHEMA deleted TO jayudam;
 
 -- validation_time 이전 JWT 토큰은 유효하지 않음
 -- gender: 0=미확인, 1=남성, 2=여성
--- 
 CREATE TABLE "user" (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,

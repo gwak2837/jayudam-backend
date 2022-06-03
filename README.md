@@ -9,7 +9,9 @@
 - Yarn 3.2
 - Git 2.36
 - Docker 20.10
+- Docker compose 2.6
 - PostgreSQL 14.3
+- Redis 7
 
 ## 설치 과정
 

@@ -8,5 +8,5 @@
   ],
   "srcDir": "src/",
   "camelCaseColumnNames": true,
-  "dbUrl": "postgresql://alpacasalon:Alpaca159!@localhost:5432/alpacasalon"
+  "dbUrl": "postgresql://jayudam:Alpaca159!@localhost:5432/jayudam"
 }
