@@ -103,3 +103,5 @@ Google OAuth
 Naver OAuth
 
 BBaton OAuth
+
+Cloud (GCP, Azure)
