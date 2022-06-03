@@ -20,14 +20,24 @@ esbuild
     plugins: [pnpPlugin()],
     target: ['node18'],
     treeShaking: true,
-    watch: process.env.NODE_ENV === 'development',
+    watch: process.env.NODE_ENV === 'development' && {
+      onRebuild(error, result) {
+        if (error) {
+          console.error('watch build failed:', error)
+        } else {
+          showOutfilesSize(result)
+        }
+      },
+    },
   })
-  .then((result) => {
-    const outputs = result.metafile.outputs
-    for (const output in outputs) {
-      console.log(`  ${output}: ${(outputs[output].bytes / 1_000_000).toFixed(2)} MB`)
-    }
-  })
+  .then((result) => showOutfilesSize(result))
   .catch((error) => {
     throw new Error(error)
   })
+
+function showOutfilesSize(result) {
+  const outputs = result.metafile.outputs
+  for (const output in outputs) {
+    console.log(`${output}: ${(outputs[output].bytes / 1_000_000).toFixed(2)} MB`)
+  }
+}

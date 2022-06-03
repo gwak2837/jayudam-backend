@@ -17,10 +17,12 @@ fi
 
 export $(grep -v '^#' $ENV_FILE_PATH | xargs)
 
-if [[ $CONNECTION_STRING =~ "@localhost" ]]; then
-  CONNECTION_STRING_WITH_SSL=$CONNECTION_STRING
-else
+if [[ $1 == "prod" ]]; then
   CONNECTION_STRING_WITH_SSL=$CONNECTION_STRING?sslmode=require
+elif [[ $1 == "dev" ]]; then
+  CONNECTION_STRING_WITH_SSL=$CONNECTION_STRING?sslmode=require
+else
+  CONNECTION_STRING_WITH_SSL=$CONNECTION_STRING
 fi
 
 echo $CONNECTION_STRING_WITH_SSL

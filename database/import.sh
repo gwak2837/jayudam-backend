@@ -17,15 +17,15 @@ fi
 
 export $(grep -v '^#' $ENV_FILE_PATH | xargs)
 
-if [[ $CONNECTION_STRING =~ "@localhost" ]]; then
-  CONNECTION_STRING_WITH_SSL=$CONNECTION_STRING
-else
+if [[ $1 == "prod" ]]; then
   CONNECTION_STRING_WITH_SSL=$CONNECTION_STRING?sslmode=require
+elif [[ $1 == "dev" ]]; then
+  CONNECTION_STRING_WITH_SSL=$CONNECTION_STRING?sslmode=require
+else
+  CONNECTION_STRING_WITH_SSL=$CONNECTION_STRING
 fi
 
 echo $CONNECTION_STRING_WITH_SSL
-
-# ./database/export $ENV_FILE_PATH
 
 do_not_print=$(PGOPTIONS='--client-min-messages=warning' psql $CONNECTION_STRING_WITH_SSL -f database/initialization.sql)
 
@@ -49,6 +49,7 @@ public_tables=(
   public.user_x_liked_poll_comment
 )
 
+# GENERATED ALWAYS AS IDENTITY 컬럼이 있는 테이블
 sequence_tables=(
   comment
   \"group\"

@@ -1,12 +1,12 @@
 module.exports = {
   env: {
     es2021: true,
+    'jest/globals': true,
     node: true,
   },
   extends: [
     'eslint:recommended',
-    'plugin:import/errors',
-    'plugin:import/warnings',
+    'plugin:import/recommended',
     'plugin:import/typescript',
     'plugin:n/recommended',
     'plugin:promise/recommended',
@@ -15,6 +15,15 @@ module.exports = {
 
     // Make sure to put "prettier" last, so it gets the chance to override other configs
     'prettier',
+  ],
+  overrides: [
+    {
+      files: ['test/**'],
+      extends: ['plugin:jest/recommended', 'plugin:jest/style'],
+      rules: {
+        'jest/prefer-expect-assertions': 'off',
+      },
+    },
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {

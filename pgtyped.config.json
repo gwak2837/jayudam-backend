@@ -1,0 +1,12 @@
+{
+  "transforms": [
+    {
+      "mode": "sql",
+      "include": "**/*.sql",
+      "emitTemplate": "{{dir}}/{{name}}.ts"
+    }
+  ],
+  "srcDir": "src/",
+  "camelCaseColumnNames": true,
+  "dbUrl": "postgresql://alpacasalon:Alpaca159!@localhost:5432/alpacasalon"
+}

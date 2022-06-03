@@ -37,6 +37,7 @@ export type Mutation = {
   __typename?: 'Mutation'
   /** 로그아웃 성공 여부 반환 */
   logout: Scalars['Boolean']
+  logout2: Scalars['Boolean']
   /** 회원탈퇴 시 사용자 정보가 모두 초기화됩니다 */
   unregister?: Maybe<User>
   /** 사용자 정보를 수정합니다 */
@@ -279,6 +280,7 @@ export type MutationResolvers<
   ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
 > = ResolversObject<{
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  logout2?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   unregister?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   updateUser?: Resolver<
     Maybe<ResolversTypes['User']>,
