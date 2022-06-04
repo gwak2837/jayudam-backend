@@ -2,11 +2,12 @@ import pg from 'pg'
 
 import { DatabaseQueryError } from '../apollo/errors'
 import { formatDate } from '../utils'
+import { connectionString } from '../utils/constants'
 
 const { Pool } = pg
 
 export const pool = new Pool({
-  connectionString: process.env.CONNECTION_STRING,
+  connectionString,
 
   ...(process.env.ENV === 'cloud-dev' && {
     ssl: {

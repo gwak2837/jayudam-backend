@@ -14,7 +14,7 @@ esbuild
       '.ts': 'ts',
     },
     metafile: true,
-    minify: true,
+    minify: process.env.NODE_ENV === 'production',
     outfile: 'out/index.cjs',
     platform: 'node',
     plugins: [pnpPlugin()],
