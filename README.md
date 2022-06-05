@@ -32,8 +32,8 @@ PostgreSQL 서버에 접속해서 사용자와 데이터베이스를 생성합�
 CREATE USER DB사용자이름 WITH PASSWORD 'DB사용자비밀번호';
 CREATE DATABASE DB이름 OWNER DB사용자이름 TEMPLATE template0 LC_COLLATE "C" LC_CTYPE "ko_KR.UTF-8";
 
-\c jayudam postgres
-ALTER SCHEMA public OWNER TO jayudam_admin;
+\c DB이름 관리자이름
+ALTER SCHEMA public OWNER TO DB사용자이름;
 ```
 
 #### Create environment variables
