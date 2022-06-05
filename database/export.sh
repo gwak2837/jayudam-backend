@@ -35,6 +35,7 @@ psql -Atc "SELECT schema_name FROM information_schema.schemata" $CONNECTION_STRI
     if [[ "$SCHEMA" != "pg_catalog" && "$SCHEMA" != "information_schema" ]]; then
       psql -Atc "SELECT tablename FROM pg_tables WHERE schemaname='$SCHEMA'" $CONNECTION_STRING_WITH_SSL |
         while read TABLE; do
+          echo $SCHEMA.$TABLE.csv
           psql -c "COPY $SCHEMA.$TABLE TO STDOUT WITH CSV DELIMITER ',' HEADER ENCODING 'UTF-8'" $CONNECTION_STRING_WITH_SSL >database/data/$FOLDER/$SCHEMA.$TABLE.csv
         done
     fi
