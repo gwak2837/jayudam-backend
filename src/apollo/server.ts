@@ -1,6 +1,6 @@
 import http from 'http'
 
-import { BaseRedisCache, type RedisClient } from 'apollo-server-cache-redis'
+import { BaseRedisCache, RedisClient } from 'apollo-server-cache-redis'
 import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core'
 import { ApolloServer } from 'apollo-server-express'
 import express from 'express'
@@ -8,8 +8,8 @@ import Redis from 'ioredis'
 
 import { resolvers } from '../graphql'
 import typeDefs from '../graphql/generated/schema.graphql'
-import { verifyJWT } from '../utils/jwt'
 import { redisConnectionString } from '../utils/constants'
+import { verifyJWT } from '../utils/jwt'
 
 // import { poolQuery } from '../database/postgres'
 
