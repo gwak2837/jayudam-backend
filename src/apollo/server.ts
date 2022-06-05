@@ -1,12 +1,15 @@
 import http from 'http'
 
+import { BaseRedisCache, type RedisClient } from 'apollo-server-cache-redis'
 import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core'
 import { ApolloServer } from 'apollo-server-express'
 import express from 'express'
+import Redis from 'ioredis'
 
 import { resolvers } from '../graphql'
 import typeDefs from '../graphql/generated/schema.graphql'
 import { verifyJWT } from '../utils/jwt'
+import { redisConnectionString } from '../utils/constants'
 
 // import { poolQuery } from '../database/postgres'
 
@@ -25,6 +28,9 @@ export async function startApolloServer() {
 
   // Same ApolloServer initialization as before, plus the drain plugin.
   const apolloServer = new ApolloServer({
+    cache: new BaseRedisCache({
+      client: new Redis(redisConnectionString) as RedisClient,
+    }),
     context: async ({ req }) => {
       const jwt = req.headers.authorization
       if (!jwt) return {}

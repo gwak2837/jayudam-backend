@@ -27,15 +27,15 @@ fi
 
 echo $CONNECTION_STRING_WITH_SSL
 
-rm -r database/data/$FOLDER
-mkdir database/data/$FOLDER
+rm -rf database/data/$FOLDER
+mkdir -p database/data/$FOLDER
 
-psql $CONNECTION_STRING_WITH_SSL -Atc "SELECT schema_name FROM information_schema.schemata" |
+psql -Atc "SELECT schema_name FROM information_schema.schemata" $CONNECTION_STRING_WITH_SSL |
   while read SCHEMA; do
     if [[ "$SCHEMA" != "pg_catalog" && "$SCHEMA" != "information_schema" ]]; then
-      psql $CONNECTION_STRING_WITH_SSL -Atc "SELECT tablename FROM pg_tables WHERE schemaname='$SCHEMA'" |
-        while read TBL; do
-          psql $CONNECTION_STRING_WITH_SSL -c "COPY $SCHEMA.$TBL TO STDOUT WITH CSV DELIMITER ',' HEADER ENCODING 'UTF-8'" >database/data/$FOLDER/$SCHEMA.$TBL.csv
+      psql -Atc "SELECT tablename FROM pg_tables WHERE schemaname='$SCHEMA'" $CONNECTION_STRING_WITH_SSL |
+        while read TABLE; do
+          psql -c "COPY $SCHEMA.$TABLE TO STDOUT WITH CSV DELIMITER ',' HEADER ENCODING 'UTF-8'" $CONNECTION_STRING_WITH_SSL >database/data/$FOLDER/$SCHEMA.$TABLE.csv
         done
     fi
   done

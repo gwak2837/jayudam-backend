@@ -27,48 +27,22 @@ fi
 
 echo $CONNECTION_STRING_WITH_SSL
 
-do_not_print=$(PGOPTIONS='--client-min-messages=warning' psql $CONNECTION_STRING_WITH_SSL -f database/initialization.sql)
+do_not_print=$(PGOPTIONS='--client-min-messages=warning' psql -f database/initialization.sql $CONNECTION_STRING_WITH_SSL)
 
 # 테이블 생성 순서와 동일하게
 public_tables=(
   public.user
-  public.group
-  public.user_x_group
-  public.post
-  public.zoom
-  public.user_x_joined_zoom
-  public.zoom_review
-  public.user_x_liked_zoom_review
   public.notification
-  public.comment
-  public.user_x_liked_comment
-  public.poll
-  public.poll_selection
-  public.poll_selection_x_user
-  public.poll_comment
-  public.user_x_liked_poll_comment
 )
 
 # GENERATED ALWAYS AS IDENTITY 컬럼이 있는 테이블
 sequence_tables=(
-  comment
-  \"group\"
   notification
-  poll_comment
-  poll_selection
-  poll
-  post
-  zoom_review
-  zoom
 )
 
 # 테이블 생성 순서와 동일하게
 deleted_tables=(
   deleted.user
-  deleted.group
-  deleted.post
-  deleted.comment
-  deleted.poll_comment
 )
 
 for public_table in "${public_tables[@]}"; do
@@ -79,12 +53,12 @@ done
 
 for sequence_table in "${sequence_tables[@]}"; do
   echo ${sequence_table} sequence
-  psql $CONNECTION_STRING_WITH_SSL -c "
+  psql -c "
     BEGIN;
     LOCK TABLE ${sequence_table} IN EXCLUSIVE MODE;
     SELECT setval(pg_get_serial_sequence('${sequence_table}', 'id'), COALESCE((SELECT MAX(id)+1 FROM ${sequence_table}), 1), false);
     COMMIT;
-  "
+  " $CONNECTION_STRING_WITH_SSL
 done
 
 for deleted_table in "${deleted_tables[@]}"; do
