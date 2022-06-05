@@ -157,7 +157,9 @@ https://docs.docker.com/compose/compose-file/ \
 Jest \
 https://jestjs.io/docs/getting-started \
 
-Database import/export
+Database import/export \
+https://dba.stackexchange.com/questions/137140/how-can-i-dump-all-tables-to-csv-for-a-postgresql-schema \
+https://www.postgresqltutorial.com/postgresql-tutorial/export-postgresql-table-to-csv-file/ \
 
 Kakao OAuth
 
