@@ -7,9 +7,8 @@ const { sign, verify } = jsonwebtoken
 export function generateJWT<T extends Record<string, unknown>>(payload: T, expiresIn = '3d') {
   return new Promise<string>((resolve, reject) => {
     sign(payload, secretKey, { expiresIn }, (err, token) => {
-      if (err) {
-        reject(err)
-      }
+      if (err) reject(err)
+
       resolve(token as string)
     })
   })

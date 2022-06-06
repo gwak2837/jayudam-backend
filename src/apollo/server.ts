@@ -4,14 +4,13 @@ import { BaseRedisCache, RedisClient } from 'apollo-server-cache-redis'
 import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core'
 import { ApolloServer } from 'apollo-server-express'
 import express from 'express'
-import Redis from 'ioredis'
 
+import { setOAuthStrategies } from '../express'
 import { resolvers } from '../graphql'
 import typeDefs from '../graphql/generated/schema.graphql'
-import { redisConnectionString } from '../utils/constants'
+import { redisClient } from '../redis/client'
+import { port, projectEnv } from '../utils/constants'
 import { verifyJWT } from '../utils/jwt'
-
-// import { poolQuery } from '../database/postgres'
 
 export type ApolloContext = {
   userId?: string
@@ -22,37 +21,30 @@ export async function startApolloServer() {
   const app = express()
   app.disable('x-powered-by')
   // app.use(cors())
-  // setOAuthStrategies(app)
+  setOAuthStrategies(app)
   // setFileUploading(app)
   const httpServer = http.createServer(app)
 
   // Same ApolloServer initialization as before, plus the drain plugin.
   const apolloServer = new ApolloServer({
     cache: new BaseRedisCache({
-      client: new Redis(redisConnectionString) as RedisClient,
+      client: redisClient as RedisClient,
     }),
     context: async ({ req }) => {
       const jwt = req.headers.authorization
       if (!jwt) return {}
 
-      const verifiedJwt = await verifyJWT(jwt).catch(() => null)
+      const verifiedJwt = await verifyJWT(jwt)
 
-      if (!verifiedJwt) return {}
-
-      return { userId: verifiedJwt.userId }
-
-      // const { rowCount, rows } = await poolQuery(user, [
-      //   verifiedJwt.userId,
-      //   new Date(((verifiedJwt.iat ?? 0) + 2) * 1000),
-      // ])
+      // redis에 로그아웃 시간 조회
 
       // // 로그아웃 등으로 인해 JWT가 유효하지 않을 때
       // if (!rowCount) return {}
 
-      // return { userId: rows[0].id }
+      return { userId: verifiedJwt.userId }
     },
     csrfPrevention: true,
-    introspection: process.env.ENV?.startsWith('local'),
+    introspection: projectEnv.startsWith('local'),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     resolvers,
     typeDefs,
@@ -66,8 +58,6 @@ export async function startApolloServer() {
   })
 
   return new Promise((resolve) =>
-    httpServer.listen({ port: process.env.PORT ?? 4000 }, () =>
-      resolve(`http://localhost:4000${apolloServer.graphqlPath}`)
-    )
+    httpServer.listen({ port }, () => resolve(`http://localhost:4000${apolloServer.graphqlPath}`))
   )
 }

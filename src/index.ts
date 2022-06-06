@@ -1,14 +1,13 @@
 /* eslint-disable no-console */
 import { startApolloServer } from './apollo/server'
 import { pool } from './database/postgres'
+import { pgUri } from './utils/constants'
 
 pool
   .query('SELECT CURRENT_TIMESTAMP')
   .then(({ rows }) =>
     console.log(
-      `🚅 Connected to ${process.env.CONNECTION_STRING} at ${new Date(
-        rows[0].current_timestamp
-      ).toLocaleString()}`
+      `🚅 Connected to ${pgUri} at ${new Date(rows[0].current_timestamp).toLocaleString()}`
     )
   )
   .catch((error) => {

@@ -6,7 +6,5 @@
       "emitTemplate": "{{dir}}/{{name}}.ts"
     }
   ],
-  "srcDir": "src/",
-  "camelCaseColumnNames": true,
-  "dbUrl": "postgresql://jayudam:Alpaca159!@localhost:5432/jayudam"
+  "srcDir": "src/"
 }

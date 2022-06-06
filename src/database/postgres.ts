@@ -1,15 +1,16 @@
+import { Result } from 'ioredis'
 import pg from 'pg'
 
 import { DatabaseQueryError } from '../apollo/errors'
 import { formatDate } from '../utils'
-import { connectionString } from '../utils/constants'
+import { pgUri, projectEnv } from '../utils/constants'
 
 const { Pool } = pg
 
 export const pool = new Pool({
-  connectionString,
+  connectionString: pgUri,
 
-  ...(process.env.ENV === 'cloud-dev' && {
+  ...(projectEnv === 'cloud-dev' && {
     ssl: {
       rejectUnauthorized: true,
       ca: `-----BEGIN CERTIFICATE-----\n${process.env.CA_CERTIFICATE}\n-----END CERTIFICATE-----`,
@@ -20,13 +21,13 @@ export const pool = new Pool({
   }),
 })
 
-export async function poolQuery(sql: string, values?: unknown[]) {
-  if (process.env.NODE_ENV !== 'production') {
+export async function poolQuery<Results>(sql: string, values?: unknown[]) {
+  if (projectEnv.startsWith('local')) {
     // eslint-disable-next-line no-console
     console.log(formatDate(new Date()), '-', sql, values)
   }
 
-  return pool.query(sql, values).catch((error) => {
+  return pool.query<Results>(sql, values).catch((error) => {
     if (process.env.NODE_ENV === 'production') {
       console.error(error.message)
       console.error(sql, values)

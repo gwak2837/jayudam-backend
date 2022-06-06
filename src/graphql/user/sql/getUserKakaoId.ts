@@ -6,7 +6,7 @@ export type IGetUserKakaoIdParams = void;
 
 /** 'GetUserKakaoId' return type */
 export interface IGetUserKakaoIdResult {
-  kakaoOauth: string | null;
+  kakao_oauth: string | null;
 }
 
 /** 'GetUserKakaoId' query type */

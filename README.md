@@ -4,7 +4,7 @@
 
 ## 💻 Requirements
 
-- macOS 11.5 or Windows Edu 21H2
+- macOS 11.5 (or Windows Edu 21H2 with minor errors)
 - Node.js 18.2
 - Yarn 3.2
 - Git 2.36
@@ -162,6 +162,7 @@ https://dba.stackexchange.com/questions/137140/how-can-i-dump-all-tables-to-csv-
 https://www.postgresqltutorial.com/postgresql-tutorial/export-postgresql-table-to-csv-file/ \
 
 Kakao OAuth
+https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api
 
 Google OAuth
 

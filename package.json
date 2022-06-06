@@ -12,7 +12,7 @@
   "main": "dist/index.js",
   "repository": "https://github.com/rmfpdlxmtidl/jayudam-backend.git",
   "scripts": {
-    "dev": "NODE_ENV=development node esbuild.js & nodemon -r dotenv/config out/index.cjs dotenv_config_path=.env.development.local & graphql-codegen --config codegen.yml --watch --errors-only & pgtyped --watch --config pgtyped.config.json",
+    "dev": "src/dev.sh",
     "build": "NODE_ENV=production node esbuild.js",
     "start": "NODE_ENV=production node -r dotenv/config out/index.cjs dotenv_config_path=.env.local",
     "test": "NODE_ENV=test jest",
@@ -22,7 +22,7 @@
     "type": "tsc --pretty --noEmit",
     "pre-push": "yarn type",
     "generate": "graphql-codegen --config codegen.yml --errors-only",
-    "pgtyped": "pgtyped -c pgtyped.config.json",
+    "pgtyped": "database/pgtyped.sh",
     "export": "database/export.sh",
     "import": "database/import.sh",
     "postinstall": "husky install"
@@ -39,6 +39,7 @@
     "graphql-scalars": "^1.17.0",
     "ioredis": "^5.0.6",
     "jsonwebtoken": "^8.5.1",
+    "node-fetch": "^3.2.5",
     "pg": "^8.7.3"
   },
   "devDependencies": {
