@@ -18,25 +18,25 @@ fi
 export $(grep -v '^#' $ENV_FILE_PATH | xargs)
 
 if [[ $1 == "prod" ]]; then
-  CONNECTION_STRING_WITH_SSL=$CONNECTION_STRING?sslmode=require
+  PGURI_WITH_SSL=$PGURI?sslmode=require
 elif [[ $1 == "dev" ]]; then
-  CONNECTION_STRING_WITH_SSL=$CONNECTION_STRING?sslmode=require
+  PGURI_WITH_SSL=$PGURI?sslmode=require
 else
-  CONNECTION_STRING_WITH_SSL=$CONNECTION_STRING
+  PGURI_WITH_SSL=$PGURI
 fi
 
-echo $CONNECTION_STRING_WITH_SSL
+echo $PGURI_WITH_SSL
 
 rm -rf database/data/$FOLDER
 mkdir -p database/data/$FOLDER
 
-psql -Atc "SELECT schema_name FROM information_schema.schemata" $CONNECTION_STRING_WITH_SSL |
+psql -Atc "SELECT schema_name FROM information_schema.schemata" $PGURI_WITH_SSL |
   while read SCHEMA; do
     if [[ "$SCHEMA" != "pg_catalog" && "$SCHEMA" != "information_schema" ]]; then
-      psql -Atc "SELECT tablename FROM pg_tables WHERE schemaname='$SCHEMA'" $CONNECTION_STRING_WITH_SSL |
+      psql -Atc "SELECT tablename FROM pg_tables WHERE schemaname='$SCHEMA'" $PGURI_WITH_SSL |
         while read TABLE; do
           echo $SCHEMA.$TABLE.csv
-          psql -c "COPY $SCHEMA.$TABLE TO STDOUT WITH CSV DELIMITER ',' HEADER ENCODING 'UTF-8'" $CONNECTION_STRING_WITH_SSL >database/data/$FOLDER/$SCHEMA.$TABLE.csv
+          psql -c "COPY $SCHEMA.$TABLE TO STDOUT WITH CSV DELIMITER ',' HEADER ENCODING 'UTF-8'" $PGURI_WITH_SSL >database/data/$FOLDER/$SCHEMA.$TABLE.csv
         done
     fi
   done

@@ -4,13 +4,6 @@ scalar DateTime
 
 scalar EmailAddress
 
-enum Gender {
-  FEMALE
-  MALE
-  OTHER
-  UNKNOWN
-}
-
 scalar JWT
 
 scalar LastValue
@@ -24,7 +17,6 @@ type Mutation {
   로그아웃 성공 여부 반환
   """
   logout: Boolean!
-  logout2: Boolean!
 
   """
   회원탈퇴 시 사용자 정보가 모두 초기화됩니다
@@ -73,6 +65,13 @@ type Query {
   userByNickname(nickname: NonEmptyString!): User
 }
 
+enum Sex {
+  FEMALE
+  MALE
+  OTHER
+  UNKNOWN
+}
+
 scalar URL
 
 scalar UUID
@@ -83,7 +82,6 @@ type User {
   birthyear: Int!
   creationTime: DateTime!
   email: EmailAddress!
-  gender: Gender!
   hasNewNotifications: Boolean!
   id: UUID!
   imageUrl: URL
@@ -91,6 +89,7 @@ type User {
   modificationTime: DateTime!
   nickname: NonEmptyString
   phoneNumber: NonEmptyString
+  sex: Sex!
 }
 
 input UserModificationInput {
@@ -98,8 +97,8 @@ input UserModificationInput {
   bio: String
   birthday: NonEmptyString
   email: EmailAddress
-  gender: Gender
   imageUrl: URL
   nickname: NonEmptyString
   phoneNumber: NonEmptyString
+  sex: Sex
 }

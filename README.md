@@ -4,7 +4,7 @@
 
 ## 💻 Requirements
 
-- macOS 11.5 (or Windows Edu 21H2 with minor errors)
+- macOS 11.5 (or Windows 10 Edu 21H2 with minor errors)
 - Node.js 18.2
 - Yarn 3.2
 - Git 2.36
@@ -32,7 +32,7 @@ PostgreSQL 서버에 접속해서 사용자와 데이터베이스를 생성합�
 CREATE USER DB사용자이름 WITH PASSWORD 'DB사용자비밀번호';
 CREATE DATABASE DB이름 OWNER DB사용자이름 TEMPLATE template0 LC_COLLATE "C" LC_CTYPE "ko_KR.UTF-8";
 
-\c DB이름 관리자이름
+\c DB이름 관리자이름(e.g. postgres)
 ALTER SCHEMA public OWNER TO DB사용자이름;
 ```
 
@@ -40,15 +40,7 @@ ALTER SCHEMA public OWNER TO DB사용자이름;
 
 루트 폴더에 아래와 같은 내용이 담긴 환경 변수 파일을 생성합니다.
 
-```
-PORT=
-
-GOOGLE_CLOUD_STORAGE_BUCKET=
-
-JWT_SECRET_KEY=
-
-CONNECTION_STRING=postgresql://DB사용자이름:DB사용자암호@DB주소:DB포트/DB이름
-```
+필요한 환경변수 목록은 `src/utils/constants.ts` 파일 안에 있습니다.
 
 - `.env.development.local`: `yarn dev` 스크립트 실행 시 필요
 - `.env.local`: `yarn start` 스크립트 실행 시 필요
@@ -161,15 +153,17 @@ Database import/export \
 https://dba.stackexchange.com/questions/137140/how-can-i-dump-all-tables-to-csv-for-a-postgresql-schema \
 https://www.postgresqltutorial.com/postgresql-tutorial/export-postgresql-table-to-csv-file/ \
 
-Kakao OAuth
-https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api
+Kakao OAuth \
+https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api \
 
-Google OAuth
+Naver OAuth \
+https://developers.naver.com/docs/login/web/web.md \
 
-Naver OAuth
+BBaton OAuth \
+https://www.bbaton.com/docs/%ec%97%b0%eb%8f%99%ed%95%98%ea%b8%b0/ \
 
-BBaton OAuth
+Google OAuth \
 
-Cloud (GCP, Azure)
+Cloud (GCP, Azure) \
 
-Redis 활용해서 JWT 유효시간 넣어서 logout 구현
+Redis 활용해서 JWT 유효시간 넣어서 logout 구현 \

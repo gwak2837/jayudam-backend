@@ -26,18 +26,10 @@ export type Scalars = {
   UUID: any
 }
 
-export enum Gender {
-  Female = 'FEMALE',
-  Male = 'MALE',
-  Other = 'OTHER',
-  Unknown = 'UNKNOWN',
-}
-
 export type Mutation = {
   __typename?: 'Mutation'
   /** 로그아웃 성공 여부 반환 */
   logout: Scalars['Boolean']
-  logout2: Scalars['Boolean']
   /** 회원탈퇴 시 사용자 정보가 모두 초기화됩니다 */
   unregister?: Maybe<User>
   /** 사용자 정보를 수정합니다 */
@@ -77,6 +69,13 @@ export type QueryUserByNicknameArgs = {
   nickname: Scalars['NonEmptyString']
 }
 
+export enum Sex {
+  Female = 'FEMALE',
+  Male = 'MALE',
+  Other = 'OTHER',
+  Unknown = 'UNKNOWN',
+}
+
 export type User = {
   __typename?: 'User'
   bio?: Maybe<Scalars['NonEmptyString']>
@@ -84,7 +83,6 @@ export type User = {
   birthyear: Scalars['Int']
   creationTime: Scalars['DateTime']
   email: Scalars['EmailAddress']
-  gender: Gender
   hasNewNotifications: Scalars['Boolean']
   id: Scalars['UUID']
   imageUrl?: Maybe<Scalars['URL']>
@@ -92,6 +90,7 @@ export type User = {
   modificationTime: Scalars['DateTime']
   nickname?: Maybe<Scalars['NonEmptyString']>
   phoneNumber?: Maybe<Scalars['NonEmptyString']>
+  sex: Sex
 }
 
 export type UserModificationInput = {
@@ -99,10 +98,10 @@ export type UserModificationInput = {
   bio?: InputMaybe<Scalars['String']>
   birthday?: InputMaybe<Scalars['NonEmptyString']>
   email?: InputMaybe<Scalars['EmailAddress']>
-  gender?: InputMaybe<Gender>
   imageUrl?: InputMaybe<Scalars['URL']>
   nickname?: InputMaybe<Scalars['NonEmptyString']>
   phoneNumber?: InputMaybe<Scalars['NonEmptyString']>
+  sex?: InputMaybe<Sex>
 }
 
 export type WithIndex<TObject> = TObject & Record<string, any>
@@ -196,7 +195,6 @@ export type ResolversTypes = ResolversObject<{
   Date: ResolverTypeWrapper<Scalars['Date']>
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>
   EmailAddress: ResolverTypeWrapper<Scalars['EmailAddress']>
-  Gender: Gender
   ID: ResolverTypeWrapper<Scalars['ID']>
   Int: ResolverTypeWrapper<Scalars['Int']>
   JWT: ResolverTypeWrapper<Scalars['JWT']>
@@ -210,6 +208,7 @@ export type ResolversTypes = ResolversObject<{
   Pagination: Pagination
   PositiveInt: ResolverTypeWrapper<Scalars['PositiveInt']>
   Query: ResolverTypeWrapper<{}>
+  Sex: Sex
   String: ResolverTypeWrapper<Scalars['String']>
   URL: ResolverTypeWrapper<Scalars['URL']>
   UUID: ResolverTypeWrapper<Scalars['UUID']>
@@ -280,7 +279,6 @@ export type MutationResolvers<
   ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
 > = ResolversObject<{
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
-  logout2?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   unregister?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   updateUser?: Resolver<
     Maybe<ResolversTypes['User']>,
@@ -341,7 +339,6 @@ export type UserResolvers<
   birthyear?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
   creationTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
   email?: Resolver<ResolversTypes['EmailAddress'], ParentType, ContextType>
-  gender?: Resolver<ResolversTypes['Gender'], ParentType, ContextType>
   hasNewNotifications?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>
   imageUrl?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>
@@ -349,6 +346,7 @@ export type UserResolvers<
   modificationTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
   nickname?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
   phoneNumber?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
+  sex?: Resolver<ResolversTypes['Sex'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 

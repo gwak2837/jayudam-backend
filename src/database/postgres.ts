@@ -1,4 +1,3 @@
-import { Result } from 'ioredis'
 import pg from 'pg'
 
 import { DatabaseQueryError } from '../apollo/errors'

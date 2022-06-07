@@ -5,7 +5,7 @@ type User {
   email: EmailAddress!
   birthyear: Int!
   birthday: NonEmptyString!
-  gender: Gender!
+  sex: Sex!
   hasNewNotifications: Boolean!
 
   # nullable
@@ -18,7 +18,7 @@ type User {
   likedCount: NonNegativeInt!
 }
 
-enum Gender {
+enum Sex {
   UNKNOWN
   MALE
   FEMALE

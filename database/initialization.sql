@@ -16,7 +16,7 @@ COMMENT ON SCHEMA deleted IS 'deleted records history';
 
 GRANT ALL ON SCHEMA deleted TO jayudam_admin;
 
--- gender: 0=미확인, 1=남성, 2=여성
+-- sex: 0=미확인, 1=남성, 2=여성
 CREATE TABLE "user" (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -26,11 +26,13 @@ CREATE TABLE "user" (
   phone_number varchar(20) UNIQUE,
   birthyear char(4),
   birthday char(4),
-  gender int,
+  sex int,
   bio varchar(100),
   image_url text,
   --
-  kakao_oauth text UNIQUE
+  kakao_oauth text UNIQUE,
+  naver_oauth text UNIQUE,
+  bbaton_oauth text UNIQUE
 );
 
 CREATE TABLE notification (
@@ -57,7 +59,7 @@ CREATE TABLE deleted.user (
   bio varchar(100),
   birthyear char(4),
   birthday char(4),
-  gender int,
+  sex int,
   image_url text,
   --
   kakao_oauth text

@@ -1,4 +1,4 @@
-/* @name registerKakaoUser */
+/* @name registerBBatonUser */
 INSERT INTO "user" (
     email,
     nickname,
@@ -8,7 +8,7 @@ INSERT INTO "user" (
     sex,
     bio,
     image_url,
-    kakao_oauth
+    bbaton_oauth
   )
 VALUES(
     $1,

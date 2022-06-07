@@ -14,7 +14,7 @@ input UserModificationInput {
   imageUrl: URL
   email: EmailAddress
   phoneNumber: NonEmptyString
-  gender: Gender
+  sex: Sex
   ageRange: NonEmptyString
   birthday: NonEmptyString
   bio: String

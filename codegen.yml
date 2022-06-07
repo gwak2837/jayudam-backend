@@ -1,4 +1,6 @@
-schema: 'src/graphql/**/*.graphql'
+schema:
+  - 'src/graphql/**/*.graphql'
+  - '!src/graphql/generated'
 generates:
   src/graphql/generated/graphql.ts:
     config:

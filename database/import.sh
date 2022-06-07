@@ -18,16 +18,16 @@ fi
 export $(grep -v '^#' $ENV_FILE_PATH | xargs)
 
 if [[ $1 == "prod" ]]; then
-  CONNECTION_STRING_WITH_SSL=$CONNECTION_STRING?sslmode=require
+  PGURI_WITH_SSL=$PGURI?sslmode=require
 elif [[ $1 == "dev" ]]; then
-  CONNECTION_STRING_WITH_SSL=$CONNECTION_STRING?sslmode=require
+  PGURI_WITH_SSL=$PGURI?sslmode=require
 else
-  CONNECTION_STRING_WITH_SSL=$CONNECTION_STRING
+  PGURI_WITH_SSL=$PGURI
 fi
 
-echo $CONNECTION_STRING_WITH_SSL
+echo $PGURI_WITH_SSL
 
-do_not_print=$(PGOPTIONS='--client-min-messages=warning' psql -f database/initialization.sql $CONNECTION_STRING_WITH_SSL)
+do_not_print=$(PGOPTIONS='--client-min-messages=warning' psql -f database/initialization.sql $PGURI_WITH_SSL)
 
 # 테이블 생성 순서와 동일하게
 public_tables=(
@@ -48,7 +48,7 @@ deleted_tables=(
 for public_table in "${public_tables[@]}"; do
   echo ${public_table}
   columns=$(head -1 database/data/$FOLDER/${public_table}.csv)
-  psql $CONNECTION_STRING_WITH_SSL -c "COPY ${public_table}(${columns}) FROM STDIN WITH CSV DELIMITER ',' HEADER ENCODING 'UTF-8'" <database/data/$FOLDER/${public_table}.csv
+  psql $PGURI_WITH_SSL -c "COPY ${public_table}(${columns}) FROM STDIN WITH CSV DELIMITER ',' HEADER ENCODING 'UTF-8'" <database/data/$FOLDER/${public_table}.csv
 done
 
 for sequence_table in "${sequence_tables[@]}"; do
@@ -58,11 +58,11 @@ for sequence_table in "${sequence_tables[@]}"; do
     LOCK TABLE ${sequence_table} IN EXCLUSIVE MODE;
     SELECT setval(pg_get_serial_sequence('${sequence_table}', 'id'), COALESCE((SELECT MAX(id)+1 FROM ${sequence_table}), 1), false);
     COMMIT;
-  " $CONNECTION_STRING_WITH_SSL
+  " $PGURI_WITH_SSL
 done
 
 for deleted_table in "${deleted_tables[@]}"; do
   echo ${deleted_table}
   columns=$(head -1 database/data/$FOLDER/${deleted_table}.csv)
-  psql $CONNECTION_STRING_WITH_SSL -c "COPY ${deleted_table}(${columns}) FROM STDIN WITH CSV DELIMITER ',' HEADER ENCODING 'UTF-8'" <database/data/$FOLDER/${deleted_table}.csv
+  psql $PGURI_WITH_SSL -c "COPY ${deleted_table}(${columns}) FROM STDIN WITH CSV DELIMITER ',' HEADER ENCODING 'UTF-8'" <database/data/$FOLDER/${deleted_table}.csv
 done
