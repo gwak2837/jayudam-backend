@@ -13,7 +13,7 @@
   "repository": "https://github.com/rmfpdlxmtidl/jayudam-backend.git",
   "scripts": {
     "dev": "src/dev.sh",
-    "build": "NODE_ENV=production node esbuild.js",
+    "build": "(yarn pgtyped & yarn generate) && NODE_ENV=production node esbuild.js",
     "start": "NODE_ENV=production node -r dotenv/config out/index.cjs dotenv_config_path=.env.local",
     "test": "NODE_ENV=test jest",
     "clean": "rm -rf .yarn/cache .yarn/unplugged .yarn/install-state.gz out .pnp.*",

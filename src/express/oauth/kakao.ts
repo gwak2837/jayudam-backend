@@ -16,6 +16,8 @@ import registerKakaoUser from './sql/registerKakaoUser.sql'
 
 export function setKakaoOAuthStrategies(app: Express) {
   // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=fa17772ea56b216e0fd949141f5ed5e2&redirect_uri=http://localhost:4000/oauth/kakao
+  // 필수 수집: 카카오 식별 번호, 성별, 출생년도
+  // 선택 수집: 닉네임, 프로필 사진, 이메일, 출생월일, 전화번호
   app.get('/oauth/kakao', async (req, res) => {
     const code = req.query.code
     if (!code) return res.status(400).send('Bad Request')
@@ -51,7 +53,7 @@ export function setKakaoOAuthStrategies(app: Express) {
       kakaoAccount.phone_number,
       kakaoAccount.birthyear,
       kakaoAccount.birthday,
-      encodeSex(kakaoAccount.sex),
+      encodeSex(kakaoAccount.gender),
       '소개가 아직 없어요.',
       kakaoAccount.profile.profile_image_url,
       kakaoUserInfo.id,

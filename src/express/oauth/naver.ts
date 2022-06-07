@@ -15,6 +15,8 @@ import { IRegisterNaverUserResult } from './sql/registerNaverUser'
 
 export function setNaverOAuthStrategies(app: Express) {
   // https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=FPQoCRnHgbAWgjWYtlLb&redirect_uri=http://localhost:4000/oauth/naver&state=123
+  // 필수 수집: 네이버 식별 번호, 성별, 출생년도
+  // 선택 수집: 닉네임, 프로필 사진, 이메일, 출생월일, 전화번호
   app.get('/oauth/naver', async (req, res) => {
     const code = req.query.code
     if (!code) return res.status(400).send('Bad Request')
@@ -51,7 +53,7 @@ export function setNaverOAuthStrategies(app: Express) {
       naverAccount.mobile_e164,
       naverAccount.birthyear,
       encodeBirthDay(naverAccount.birthday),
-      encodeSex(naverAccount.sex),
+      encodeSex(naverAccount.gender),
       '소개가 아직 없어요.',
       naverAccount.profile_image,
       naverAccount.id,

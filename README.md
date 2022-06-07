@@ -163,6 +163,7 @@ BBaton OAuth \
 https://www.bbaton.com/docs/%ec%97%b0%eb%8f%99%ed%95%98%ea%b8%b0/ \
 
 Google OAuth \
+https://developers.google.com/identity/protocols/oauth2/web-server#obtainingaccesstokens \
 
 Cloud (GCP, Azure) \
 

@@ -32,7 +32,8 @@ CREATE TABLE "user" (
   --
   kakao_oauth text UNIQUE,
   naver_oauth text UNIQUE,
-  bbaton_oauth text UNIQUE
+  bbaton_oauth text UNIQUE,
+  google_oauth text UNIQUE
 );
 
 CREATE TABLE notification (

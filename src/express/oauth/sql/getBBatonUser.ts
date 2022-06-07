@@ -1,11 +1,20 @@
 /** Types generated for queries found in "src/express/oauth/sql/getBBatonUser.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-/** Query 'GetBBatonUser' is invalid, so its result is assigned type 'never' */
-export type IGetBBatonUserResult = never;
+/** 'GetBBatonUser' parameters type */
+export type IGetBBatonUserParams = void;
 
-/** Query 'GetBBatonUser' is invalid, so its parameters are assigned type 'never' */
-export type IGetBBatonUserParams = never;
+/** 'GetBBatonUser' return type */
+export interface IGetBBatonUserResult {
+  id: string;
+  nickname: string | null;
+}
+
+/** 'GetBBatonUser' query type */
+export interface IGetBBatonUserQuery {
+  params: IGetBBatonUserParams;
+  result: IGetBBatonUserResult;
+}
 
 const getBBatonUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  nickname\nFROM \"user\"\nWHERE bbaton_oauth = $1"};
 

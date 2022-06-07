@@ -20,6 +20,10 @@ export const bBatonClientId = process.env.BBATON_CLIENT_ID as string
 export const bBatonClientSecretKey = process.env.BBATON_CLIENT_SECRET_KEY as string
 export const bBatonRedirectUri = process.env.BBATON_REDIRECT_URI as string
 
+export const googleClientId = process.env.GOOGLE_CLIENT_ID as string
+export const googleClientSecretKey = process.env.GOOGLE_CLIENT_SECRET as string
+export const googleRedirectUri = process.env.GOOGLE_REDIRECT_URI as string
+
 if (!port) throw new Error('`PORT` 환경 변수를 설정해주세요.')
 if (!projectEnv) throw new Error('`PROJECT_ENV` 환경 변수를 설정해주세요.')
 if (!jwtSecretKey) throw new Error('`JWT_SECRET_KEY` 환경 변수를 설정해주세요.')
@@ -42,3 +46,7 @@ if (!naverRedirectUri) throw new Error('`NAVER_REDIRECT_URI` 환경 변수를 �
 if (!bBatonClientId) throw new Error('`BBATON_CLIENT_ID` 환경 변수를 설정해주세요.')
 if (!bBatonClientSecretKey) throw new Error('`BBATON_CLIENT_SECRET_KEY` 환경 변수를 설정해주세요.')
 if (!bBatonRedirectUri) throw new Error('`BBATON_REDIRECT_URI` 환경 변수를 설정해주세요.')
+
+if (!googleClientId) throw new Error('`GOOGLE_CLIENT_ID` 환경 변수를 설정해주세요.')
+if (!googleClientSecretKey) throw new Error('`GOOGLE_CLIENT_SECRET` 환경 변수를 설정해주세요.')
+if (!googleRedirectUri) throw new Error('`GOOGLE_REDIRECT_URI` 환경 변수를 설정해주세요.')
