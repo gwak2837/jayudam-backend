@@ -17,6 +17,8 @@
 
 #### Download codes
 
+프로젝트 소스코드를 다운로드 받고 의존 패키지를 설치합니다.
+
 ```
 git clone https://github.com/rmfpdlxmtidl/jayudam-backend.git
 cd jayudam-backend
@@ -24,7 +26,7 @@ git checkout main
 yarn
 ```
 
-#### Initialize database
+#### Start PostgreSQL server and initialize
 
 PostgreSQL 서버에 접속해서 사용자와 데이터베이스를 생성합니다.
 
@@ -36,6 +38,8 @@ CREATE DATABASE DB이름 OWNER DB사용자이름 TEMPLATE template0 LC_COLLATE "
 ALTER SCHEMA public OWNER TO DB사용자이름;
 ```
 
+#### Start Redis server
+
 #### Create environment variables
 
 루트 폴더에 아래와 같은 내용이 담긴 환경 변수 파일을 생성합니다.
@@ -44,6 +48,7 @@ ALTER SCHEMA public OWNER TO DB사용자이름;
 
 - `.env.development.local`: `yarn dev` 스크립트 실행 시 필요
 - `.env.local`: `yarn start` 스크립트 실행 시 필요
+- `.env.test`: `yarn test` 스크립트 실행 시 필요 (예정)
 
 #### Start Node.js server
 
@@ -62,10 +67,10 @@ yarn build && yarn start
 3. Docker 환경에서 Node.js 서버를 실행합니다.
 
 ```
-docker-compose up --detach --build --force-recreate
+docker-compose --env-file .env.local up  --detach --build --force-recreate
 ```
 
-## 설치 과정
+## Configuration
 
 ```
 mkdir jayudam-backend && cd jayudam-backend
@@ -143,7 +148,7 @@ Dockerfile \
 https://docs.docker.com/engine/reference/builder/ \
 https://hub.docker.com/_/node \
 
-docker-compose.yml \
+compose.yaml \
 https://docs.docker.com/compose/compose-file/ \
 
 Jest \
@@ -165,6 +170,20 @@ https://www.bbaton.com/docs/%ec%97%b0%eb%8f%99%ed%95%98%ea%b8%b0/ \
 Google OAuth \
 https://developers.google.com/identity/protocols/oauth2/web-server#obtainingaccesstokens \
 
-Cloud (GCP, Azure) \
+Cloud \
+https://stackoverflow.com/questions/70784083/how-to-deploy-a-full-stack-node-js-project \
+
+Cloud Run \
+https://stackoverflow.com/questions/2387724/node-js-on-multi-core-machines/8685968#8685968 \
+https://stackoverflow.com/questions/70364483/will-node-js-deployed-on-google-cloudrun-utilize-multiple-cores \
+https://www.nearform.com/blog/solving-the-serverless-concurrency-problem-with-google-cloud-run/ \
 
 Redis 활용해서 JWT 유효시간 넣어서 logout 구현 \
+
+## References
+
+Node.js 특징 \
+https://stackoverflow.com/a/34857298/16868717 \
+
+How to connect to the localhost of the machine from inside of a Docker container? \
+https://stackoverflow.com/a/24326540/16868717 \

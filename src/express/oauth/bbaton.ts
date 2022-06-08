@@ -3,9 +3,9 @@ import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
 import {
+  backendUrl,
   bBatonClientId,
   bBatonClientSecretKey,
-  bBatonRedirectUri,
   frontendUrl,
 } from '../../utils/constants'
 import { generateJWT } from '../../utils/jwt'
@@ -77,7 +77,7 @@ async function fetchBBatonUserToken(code: string) {
     },
     body: new URLSearchParams({
       grant_type: 'authorization_code',
-      redirect_uri: bBatonRedirectUri,
+      redirect_uri: `${backendUrl}/oauth/bbaton`,
       code,
     }).toString(),
   })

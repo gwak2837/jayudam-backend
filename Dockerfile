@@ -6,10 +6,12 @@ ENV NODE_ENV=production
 WORKDIR /app
 
 COPY .yarn .yarn
-COPY src src
-COPY .yarnrc.yml package.json esbuild.js tsconfig.json yarn.lock ./
-
+COPY .yarnrc.yml package.json yarn.lock ./
 RUN yarn
+
+COPY codegen.yml esbuild.js pgtyped.config.json tsconfig.json ./
+COPY database database
+COPY src src
 RUN yarn build
 
 # Install only dependency packages

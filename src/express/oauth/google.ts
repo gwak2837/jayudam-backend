@@ -6,7 +6,7 @@ import {
   googleClientId,
   googleClientSecretKey,
   frontendUrl,
-  googleRedirectUri,
+  backendUrl,
 } from '../../utils/constants'
 import { generateJWT } from '../../utils/jwt'
 import { encodeSex } from './naver'
@@ -23,14 +23,11 @@ export function setGoogleOAuthStrategies(app: Express) {
     if (!code) return res.status(400).send('Bad Request')
 
     const googleUserToken = await fetchGoogleUserToken(code as string)
-    console.log('👀 - googleUserToken', googleUserToken)
     if (googleUserToken.error) return res.status(400).send('Bad Request')
 
-    const googleUserInfo = await fetchGoogleUserInfo(googleUserToken.access_token)
-    console.log('👀 - googleUserInfo', googleUserInfo)
+    const googleUserInfo = await fetchGoogleUserInfo('googleUserToken.access_token')
     if (googleUserInfo.error) return res.status(400).send('Bad Request')
 
-    console.log('👀 - req.headers.referer', req.headers.referer)
     const frontendUrl = getFrontendUrl(req.headers.referer)
 
     const { rows: googleUserResult } = await poolQuery<IGetGoogleUserResult>(getGoogleUser, [
@@ -63,7 +60,7 @@ async function fetchGoogleUserToken(code: string) {
       code,
       client_id: googleClientId,
       client_secret: googleClientSecretKey,
-      redirect_uri: googleRedirectUri,
+      redirect_uri: `${backendUrl}/oauth/google`,
       grant_type: 'authorization_code',
     }).toString(),
   })

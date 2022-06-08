@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 import { startApolloServer } from './apollo/server'
 import { pool } from './database/postgres'
-import { pgUri } from './utils/constants'
+import { redisClient } from './database/redis'
+import { pgUri, redisConnectionString } from './utils/constants'
 
 pool
   .query('SELECT CURRENT_TIMESTAMP')
@@ -12,6 +13,17 @@ pool
   )
   .catch((error) => {
     throw new Error('Cannot connect to PostgreSQL server... ' + error)
+  })
+
+redisClient
+  .time()
+  .then((value) =>
+    console.log(
+      `📮 Connected to ${redisConnectionString} at ${new Date(value[0] * 1000).toLocaleString()}`
+    )
+  )
+  .catch((error) => {
+    throw new Error('Cannot connect to Redis server... ' + error)
   })
 
 startApolloServer()

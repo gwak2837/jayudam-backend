@@ -5,10 +5,10 @@ import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core'
 import { ApolloServer } from 'apollo-server-express'
 import express from 'express'
 
+import { redisClient } from '../database/redis'
 import { setOAuthStrategies } from '../express'
 import { resolvers } from '../graphql'
 import typeDefs from '../graphql/generated/schema.graphql'
-import { redisClient } from '../redis/client'
 import { port, projectEnv } from '../utils/constants'
 import { verifyJWT } from '../utils/jwt'
 

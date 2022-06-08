@@ -1,11 +1,6 @@
 import { type Express } from 'express'
 import fetch from 'node-fetch'
-import {
-  frontendUrl,
-  naverClientId,
-  naverClientSecret,
-  naverRedirectUri,
-} from '../../utils/constants'
+import { backendUrl, frontendUrl, naverClientId, naverClientSecret } from '../../utils/constants'
 import registerNaverUser from './sql/registerNaverUser.sql'
 import getNaverUser from './sql/getNaverUser.sql'
 import { poolQuery } from '../../database/postgres'
@@ -80,7 +75,7 @@ async function fetchNaverUserToken(code: string, state: string) {
       client_id: naverClientId,
       client_secret: naverClientSecret,
       code,
-      redirect_uri: naverRedirectUri,
+      redirect_uri: `${backendUrl}/oauth/naver`,
       state,
     })}`,
     {

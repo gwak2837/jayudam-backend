@@ -2,7 +2,7 @@ import pg from 'pg'
 
 import { DatabaseQueryError } from '../apollo/errors'
 import { formatDate } from '../utils'
-import { pgUri, projectEnv } from '../utils/constants'
+import { certificateAuthority, pgUri, projectEnv } from '../utils/constants'
 
 const { Pool } = pg
 
@@ -12,7 +12,7 @@ export const pool = new Pool({
   ...(projectEnv === 'cloud-dev' && {
     ssl: {
       rejectUnauthorized: true,
-      ca: `-----BEGIN CERTIFICATE-----\n${process.env.CA_CERTIFICATE}\n-----END CERTIFICATE-----`,
+      ca: `-----BEGIN CERTIFICATE-----\n${certificateAuthority}\n-----END CERTIFICATE-----`,
       checkServerIdentity: () => {
         return undefined
       },
