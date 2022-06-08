@@ -6,7 +6,7 @@ import { ApolloServer } from 'apollo-server-express'
 import express from 'express'
 
 import { redisClient } from '../database/redis'
-import { setOAuthStrategies } from '../express'
+import { setOAuthStrategies } from '../express/oauth'
 import { resolvers } from '../graphql'
 import typeDefs from '../graphql/generated/schema.graphql'
 import { port, projectEnv } from '../utils/constants'
