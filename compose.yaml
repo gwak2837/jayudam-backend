@@ -1,0 +1,21 @@
+services:
+  jayudam-backend:
+    build: .
+    container_name: jayudam-api
+    depends_on:
+      - redis
+    env_file: .env.local
+    image: jayudam-api:latest
+    restart: on-failure
+    ports:
+      - 4001:4001
+  redis:
+    command: redis-server --save 20 1 --loglevel warning
+    container_name: jayudam-redis
+    image: redis:7-alpine
+    ports:
+      - 6379
+#     volumes:
+#       - 'jayudam:/app'
+# volumes:
+#   jayudam:
