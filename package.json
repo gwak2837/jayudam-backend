@@ -13,7 +13,7 @@
   "repository": "https://github.com/rmfpdlxmtidl/jayudam-backend.git",
   "scripts": {
     "dev": "src/dev.sh",
-    "build": "yarn generate && NODE_ENV=production node esbuild.js",
+    "build": "NODE_ENV=production node esbuild.js",
     "start": "NODE_ENV=production node -r dotenv/config out/index.cjs dotenv_config_path=.env.local",
     "test": "NODE_ENV=test jest",
     "clean": "rm -rf .yarn/cache .yarn/unplugged .yarn/install-state.gz out .pnp.*",
@@ -28,6 +28,7 @@
     "postinstall": "husky install"
   },
   "dependencies": {
+    "@google-cloud/storage": "^6.1.0",
     "@graphql-tools/merge": "^8.2.13",
     "apollo-server-cache-redis": "^3.3.1",
     "apollo-server-core": "^3.8.1",
@@ -39,6 +40,7 @@
     "graphql-scalars": "^1.17.0",
     "ioredis": "^5.0.6",
     "jsonwebtoken": "^8.5.1",
+    "multer": "^1.4.5-lts.1",
     "node-fetch": "^3.2.5",
     "pg": "^8.7.3"
   },
@@ -52,8 +54,10 @@
     "@types/express": "^4.17.13",
     "@types/jest": "^27.5.1",
     "@types/jsonwebtoken": "^8.5.8",
+    "@types/multer": "^1.4.7",
     "@types/node": "^17.0.38",
     "@types/pg": "^8.6.5",
+    "@types/sharp": "^0.30.4",
     "@typescript-eslint/eslint-plugin": "^5.27.0",
     "@typescript-eslint/parser": "^5.27.0",
     "@yarnpkg/esbuild-plugin-pnp": "^3.0.0-rc.6",
