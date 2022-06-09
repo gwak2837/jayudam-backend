@@ -37,11 +37,12 @@ export function setBBatonOAuthStrategies(app: Express) {
 
     // 이미 소셜 로그인 정보가 존재하는 경우
     if (bBatonUser?.id) {
+      const nickname = bBatonUser.nickname
       return res.redirect(
         `${frontendUrl}/oauth?${new URLSearchParams({
           jwt: await generateJWT({ userId: bBatonUser.id }),
-          nickname: bBatonUser.nickname,
-        } as any)}`
+          ...(nickname && { nickname }),
+        })}`
       )
     }
 

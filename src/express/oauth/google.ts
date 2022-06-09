@@ -16,8 +16,9 @@ import { IRegisterGoogleUserResult } from './sql/registerGoogleUser'
 import registerGoogleUser from './sql/registerGoogleUser.sql'
 
 export function setGoogleOAuthStrategies(app: Express) {
-  // https://accounts.google.com/o/oauth2/v2/auth?client_id=289678734309-fd454q2i8b65ud4fjsm6tq7r7vab3d1v.apps.googleusercontent.com&redirect_uri=http://localhost:4000/oauth/google&response_type=code&scope=email%20profile%20openid
-  // 필수 수집: Google 식별 번호, 성별, 생년월일
+  // https://accounts.google.com/o/oauth2/v2/auth?client_id=289678734309-fd454q2i8b65ud4fjsm6tq7r7vab3d1v.apps.googleusercontent.com&redirect_uri=http://localhost:4000/oauth/google&response_type=code&scope=email+profile+openid
+  // 필수 수집: Google 식별 번호
+  // 선택 수집: 이메일, 이름, 프로필 사진, 로케일
   app.get('/oauth/google', async (req, res) => {
     const code = req.query.code
     if (!code) return res.status(400).send('Bad Request')
@@ -25,7 +26,7 @@ export function setGoogleOAuthStrategies(app: Express) {
     const googleUserToken = await fetchGoogleUserToken(code as string)
     if (googleUserToken.error) return res.status(400).send('Bad Request')
 
-    const googleUserInfo = await fetchGoogleUserInfo('googleUserToken.access_token')
+    const googleUserInfo = await fetchGoogleUserInfo(googleUserToken.access_token)
     if (googleUserInfo.error) return res.status(400).send('Bad Request')
 
     const frontendUrl = getFrontendUrl(req.headers.referer)
@@ -37,11 +38,13 @@ export function setGoogleOAuthStrategies(app: Express) {
 
     // 이미 소셜 로그인 정보가 존재하는 경우
     if (googleUser?.id) {
+      const nickname = googleUser.nickname
+
       return res.redirect(
         `${frontendUrl}/oauth?${new URLSearchParams({
           jwt: await generateJWT({ userId: googleUser.id }),
-          nickname: googleUser.nickname,
-        } as any)}`
+          ...(nickname && { nickname }),
+        })}`
       )
     }
 

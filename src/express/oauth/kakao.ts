@@ -38,11 +38,12 @@ export function setKakaoOAuthStrategies(app: Express) {
 
     // 이미 소셜 로그인 정보가 존재하는 경우
     if (kakaoUser?.id) {
+      const nickname = kakaoUser.nickname
       return res.redirect(
         `${frontendUrl}/oauth?${new URLSearchParams({
           jwt: await generateJWT({ userId: kakaoUser.id }),
-          nickname: kakaoUser.nickname,
-        } as any)}`
+          ...(nickname && { nickname }),
+        })}`
       )
     }
 

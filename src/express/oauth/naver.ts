@@ -33,11 +33,12 @@ export function setNaverOAuthStrategies(app: Express) {
 
     // 이미 소셜 로그인 정보가 존재하는 경우
     if (naverUser?.id) {
+      const nickname = naverUser.nickname
       return res.redirect(
         `${frontendUrl}/oauth?${new URLSearchParams({
           jwt: await generateJWT({ userId: naverUser.id }),
-          nickname: naverUser.nickname,
-        } as any)}`
+          ...(nickname && { nickname }),
+        })}`
       )
     }
 
