@@ -13,6 +13,15 @@
 - [PostgreSQL](https://www.postgresql.org/download/) 14.3
 - [Redis](https://redis.io/download/) 7.0
 
+## ☁ Cloud
+
+- [Google Cloud Run](https://cloud.google.com/run)
+- [Google Cloud Storage](https://cloud.google.com/storage)
+- [Google Cloud Build](https://cloud.google.com/build)
+- [Google Container Registry](https://cloud.google.com/container-registry)
+- [Oracle Virtual Machine](https://www.oracle.com/kr/cloud/compute/virtual-machines/)
+- Azure ?
+
 ## 📦 Installation
 
 #### Download codes
@@ -43,7 +52,7 @@ ALTER SCHEMA public OWNER TO DB사용자이름;
 Redis 서버를 실행합니다.
 
 ```bash
-redis-server --save 60 1 --loglevel warning
+redis-server --save 600 10000 --loglevel warning
 ```
 
 #### Create environment variables
@@ -77,7 +86,11 @@ yarn build && yarn start
 docker-compose up --env-file .env.local.docker --detach --build --force-recreate
 ```
 
-## Configuration
+#### CI/CD
+
+GitHub에 push 할 때마다 자동으로 `Cloud Build`에서 새로운 Docker 이미지를 만들어서 `Container Registry`에 저장합니다. 그리고 `Cloud Run`에 요청이 들어오면 새로운 이미지를 기반으로 Docker 컨테이너를 생성합니다.
+
+## ⚙️ Configuration
 
 ```
 mkdir jayudam-backend && cd jayudam-backend
@@ -189,7 +202,7 @@ Cloud Storage \
 https://cloud.google.com/appengine/docs/flexible/nodejs/using-cloud-storage \
 https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-nodejs \
 
-## References
+## 📚 References
 
 Node.js 특징 \
 https://stackoverflow.com/a/34857298/16868717 \
@@ -199,3 +212,9 @@ https://stackoverflow.com/a/24326540/16868717 \
 
 Google storage \
 https://stackoverflow.com/questions/20812676/what-do-gcs-bucket-permissions-all-users-and-all-authenticated-users-and-the
+
+## Redis
+
+connect postgresql ssl and redis ssl
+
+## ELK

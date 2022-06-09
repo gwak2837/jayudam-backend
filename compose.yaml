@@ -10,7 +10,7 @@ services:
     ports:
       - 4002:4002
   redis:
-    command: redis-server --save 60 1 --loglevel warning
+    command: redis-server --loglevel warning --logfile ~/redis
     container_name: jayudam-redis
     image: redis:7-alpine
     ports:

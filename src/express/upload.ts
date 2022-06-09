@@ -14,7 +14,7 @@ export function setUploadingFiles(app: Express) {
     if (!files.length) return res.status(400).send('No file uploaded.')
 
     for (const file of files) {
-      if (!isAllowedExtension(file))
+      if (!isExtensionAllowed(file))
         return res
           .status(400)
           .send(`There is a file with unauthorized extension. File name: ${file.originalname}`)
@@ -41,7 +41,7 @@ const multer = Multer({
 
 const bucket = new Storage().bucket(googleCloudStorageBucket)
 
-function isAllowedExtension(file: Express.Multer.File) {
+function isExtensionAllowed(file: Express.Multer.File) {
   for (const allowedExtension of allowedExtensions) {
     if (file.mimetype.startsWith(allowedExtension)) return true
   }
