@@ -52,9 +52,10 @@ redis-server --save 60 1 --loglevel warning
 
 필요한 환경변수 목록은 [`src/utils/constants.ts`](src/utils/constants.ts) 파일 안에 있습니다.
 
-- `.env.development.local`: `yarn dev` 스크립트 실행 시 필요
-- `.env.local`: `yarn start` 스크립트 실행 시 필요
-- `.env.test`: `yarn test` 스크립트 실행 시 필요 (예정)
+- `.env.development.local`: `yarn dev` 실행 시 필요
+- `.env.local`: `yarn start` 실행 시 필요
+- `.env.local.docker`: `docker-compose up` 실행 시 필요
+- `.env.test`: `yarn test` 실행 시 필요 (예정)
 
 #### Start Node.js server
 
@@ -73,7 +74,7 @@ yarn build && yarn start
 3. Docker 환경에서 Node.js 서버를 실행합니다.
 
 ```
-docker-compose --env-file .env.local up  --detach --build --force-recreate
+docker-compose up --env-file .env.local.docker --detach --build --force-recreate
 ```
 
 ## Configuration

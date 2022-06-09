@@ -1,4 +1,4 @@
-import sharp from 'sharp'
+// import sharp from 'sharp'
 import { Storage } from '@google-cloud/storage'
 import { type Express } from 'express'
 import Multer from 'multer'
@@ -61,15 +61,16 @@ function uploadFileToCloudStorage(file: Express.Multer.File) {
       resolve(`https://storage.googleapis.com/${bucket.name}/${fileName}`)
     })
 
-    blobStream.end(optimizeIfImage(file, 720))
+    blobStream.end(file.buffer)
+    // blobStream.end(optimizeIfImage(file, 720))
   })
 }
 
-async function optimizeIfImage(file: Express.Multer.File, height: number) {
-  if (file.mimetype.startsWith('image')) {
-    return await sharp(file.path)
-      .resize({ height })
-      .withMetadata() // 이미지의 exif 데이터 유지
-      .toBuffer()
-  }
-}
+// async function optimizeIfImage(file: Express.Multer.File, height: number) {
+//   if (file.mimetype.startsWith('image')) {
+//     return await sharp(file.path)
+//       .resize({ height })
+//       .withMetadata() // 이미지의 exif 데이터 유지
+//       .toBuffer()
+//   }
+// }

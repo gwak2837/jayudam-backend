@@ -59,6 +59,8 @@ export async function startApolloServer() {
   })
 
   return new Promise((resolve) =>
-    httpServer.listen({ port }, () => resolve(`http://localhost:4000${apolloServer.graphqlPath}`))
+    httpServer.listen({ port }, () =>
+      resolve(`http://localhost:${port}${apolloServer.graphqlPath}`)
+    )
   )
 }

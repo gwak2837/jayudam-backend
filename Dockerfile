@@ -9,8 +9,7 @@ COPY .yarn .yarn
 COPY .yarnrc.yml package.json yarn.lock ./
 RUN yarn
 
-COPY codegen.yml esbuild.js pgtyped.config.json tsconfig.json ./
-COPY database database
+COPY esbuild.js tsconfig.json ./
 COPY src src
 RUN yarn build
 
