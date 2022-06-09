@@ -11,6 +11,7 @@ export const redisConnectionString = process.env.REDIS_CONNECTION_STRING as stri
 export const googleClientId = process.env.GOOGLE_CLIENT_ID as string
 export const googleClientSecretKey = process.env.GOOGLE_CLIENT_SECRET as string
 export const googleCloudStorageBucket = process.env.GOOGLE_CLOUD_STORAGE_BUCKET as string
+export const googleCloudProject = process.env.GOOGLE_CLOUD_PROJECT as string
 
 export const kakaoAdminKey = process.env.KAKAO_ADMIN_KEY as string
 export const kakaoRestApiKey = process.env.KAKAO_REST_API_KEY as string
@@ -36,6 +37,7 @@ if (!googleClientId) throw new Error('`GOOGLE_CLIENT_ID` 환경 변수를 설정
 if (!googleClientSecretKey) throw new Error('`GOOGLE_CLIENT_SECRET` 환경 변수를 설정해주세요.')
 if (!googleCloudStorageBucket)
   throw new Error('`GOOGLE_CLOUD_STORAGE_BUCKET` 환경 변수를 설정해주세요.')
+if (!googleCloudProject) throw new Error('`GOOGLE_CLOUD_PROJECT` 환경 변수를 설정해주세요.')
 
 if (!kakaoAdminKey) throw new Error('`KAKAO_ADMIN_KEY` 환경 변수를 설정해주세요.')
 if (!kakaoRestApiKey) throw new Error('`KAKAO_REST_API_KEY` 환경 변수를 설정해주세요.')

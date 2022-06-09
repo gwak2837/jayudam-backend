@@ -15,7 +15,7 @@ services:
     image: redis:7-alpine
     ports:
       - 6379
-#     volumes:
-#       - 'jayudam:/app'
-# volumes:
-#   jayudam:
+    volumes:
+      - 'jayudam:/data'
+volumes:
+  jayudam:
