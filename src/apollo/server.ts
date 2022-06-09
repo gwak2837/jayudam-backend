@@ -1,12 +1,13 @@
 import http from 'http'
 
 import { BaseRedisCache, RedisClient } from 'apollo-server-cache-redis'
-import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core'
+import { ApolloServerPluginDrainHttpServer, AuthenticationError } from 'apollo-server-core'
 import { ApolloServer } from 'apollo-server-express'
 import express from 'express'
 
 import { redisClient } from '../database/redis'
 import { setOAuthStrategies } from '../express/oauth'
+import { setUploadingFiles } from '../express/upload'
 import { resolvers } from '../graphql'
 import typeDefs from '../graphql/generated/schema.graphql'
 import { port, projectEnv } from '../utils/constants'
@@ -16,16 +17,18 @@ export type ApolloContext = {
   userId?: string
 }
 
+// https://www.apollographql.com/docs/apollo-server/integrations/middleware#example
 export async function startApolloServer() {
-  // Required logic for integrating with Express
   const app = express()
   app.disable('x-powered-by')
   // app.use(cors())
+  app.use(express.json())
+
   setOAuthStrategies(app)
-  // setFileUploading(app)
+  setUploadingFiles(app)
+
   const httpServer = http.createServer(app)
 
-  // Same ApolloServer initialization as before, plus the drain plugin.
   const apolloServer = new ApolloServer({
     cache: new BaseRedisCache({
       client: redisClient as RedisClient,
@@ -35,22 +38,20 @@ export async function startApolloServer() {
       if (!jwt) return {}
 
       const verifiedJwt = await verifyJWT(jwt)
+      if (!verifiedJwt.iat) throw new AuthenticationError('다시 로그인 해주세요.')
 
-      // redis에 로그아웃 시간 조회
-
-      // // 로그아웃 등으로 인해 JWT가 유효하지 않을 때
-      // if (!rowCount) return {}
+      const logoutTime = await redisClient.get(`${verifiedJwt.userId}:logoutTime`)
+      if (Number(logoutTime) > Number(verifiedJwt.iat))
+        throw new AuthenticationError('다시 로그인 해주세요.')
 
       return { userId: verifiedJwt.userId }
     },
-    csrfPrevention: true,
     introspection: projectEnv.startsWith('local'),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     resolvers,
     typeDefs,
   })
 
-  // More required logic for integrating with Express
   await apolloServer.start()
   apolloServer.applyMiddleware({
     app,

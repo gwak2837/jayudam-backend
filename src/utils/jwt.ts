@@ -4,7 +4,7 @@ import { jwtSecretKey } from './constants'
 
 const { sign, verify } = jsonwebtoken
 
-export function generateJWT<T extends Record<string, unknown>>(payload: T, expiresIn = '3d') {
+export function generateJWT<T extends Record<string, unknown>>(payload: T, expiresIn = '7d') {
   return new Promise<string>((resolve, reject) => {
     sign(payload, jwtSecretKey, { expiresIn }, (err, token) => {
       if (err) reject(err)

@@ -149,3 +149,4 @@ dist
 .pnp.*
 
 .env*
+cloud-storage-key.json

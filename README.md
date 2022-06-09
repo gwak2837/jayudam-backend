@@ -5,13 +5,13 @@
 ## 💻 Requirements
 
 - macOS 11.5 (or Windows 10 Edu 21H2 with minor errors)
-- Node.js 18.2
-- Yarn 3.2
-- Git 2.36
-- Docker 20.10
+- [Node.js](https://nodejs.org/en/) 18.2
+- [Yarn](https://yarnpkg.com/getting-started/install#install-corepack) 3.2
+- [Git](https://git-scm.com/download) 2.36
+- [Docker](https://www.docker.com/products/docker-desktop/) 20.10
 - Docker compose 2.6
-- PostgreSQL 14.3
-- Redis 7
+- [PostgreSQL](https://www.postgresql.org/download/) 14.3
+- [Redis](https://redis.io/download/) 7.0
 
 ## 📦 Installation
 
@@ -40,11 +40,17 @@ ALTER SCHEMA public OWNER TO DB사용자이름;
 
 #### Start Redis server
 
+Redis 서버를 실행합니다.
+
+```bash
+redis-server --save 60 1 --loglevel warning
+```
+
 #### Create environment variables
 
 루트 폴더에 아래와 같은 내용이 담긴 환경 변수 파일을 생성합니다.
 
-필요한 환경변수 목록은 `src/utils/constants.ts` 파일 안에 있습니다.
+필요한 환경변수 목록은 [`src/utils/constants.ts`](src/utils/constants.ts) 파일 안에 있습니다.
 
 - `.env.development.local`: `yarn dev` 스크립트 실행 시 필요
 - `.env.local`: `yarn start` 스크립트 실행 시 필요
@@ -178,7 +184,9 @@ https://stackoverflow.com/questions/2387724/node-js-on-multi-core-machines/86859
 https://stackoverflow.com/questions/70364483/will-node-js-deployed-on-google-cloudrun-utilize-multiple-cores \
 https://www.nearform.com/blog/solving-the-serverless-concurrency-problem-with-google-cloud-run/ \
 
-Redis 활용해서 JWT 유효시간 넣어서 logout 구현 \
+Cloud Storage \
+https://cloud.google.com/appengine/docs/flexible/nodejs/using-cloud-storage \
+https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-nodejs \
 
 ## References
 
@@ -187,3 +195,6 @@ https://stackoverflow.com/a/34857298/16868717 \
 
 How to connect to the localhost of the machine from inside of a Docker container? \
 https://stackoverflow.com/a/24326540/16868717 \
+
+Google storage \
+https://stackoverflow.com/questions/20812676/what-do-gcs-bucket-permissions-all-users-and-all-authenticated-users-and-the
