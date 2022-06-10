@@ -20,7 +20,7 @@
 - [Google Cloud Build](https://cloud.google.com/build)
 - [Google Container Registry](https://cloud.google.com/container-registry)
 - [Oracle Virtual Machine](https://www.oracle.com/kr/cloud/compute/virtual-machines/)
-- Azure ?
+- Azure Cosmos DB?
 
 ## 📦 Installation
 
@@ -97,110 +97,148 @@ mkdir jayudam-backend && cd jayudam-backend
 git init
 ```
 
-.gitignore \
+#### .gitignore
+
 https://www.toptal.com/developers/gitignore/api/node
 
-Yarn 3 \
+#### Yarn 3
+
 https://yarnpkg.com/getting-started/install \
 https://yarnpkg.com/getting-started/recipes \
 https://yarnpkg.com/cli/upgrade-interactive
 
-package.json \
+#### package.json
+
 https://docs.npmjs.com/cli/v8/configuring-npm/package-json
 
-TypeScript \
+#### TypeScript
+
 https://www.typescriptlang.org/download \
 
-tsconfig.json (Node.js 18) \
+#### tsconfig.json (Node.js 18)
+
 https://stackoverflow.com/questions/72380007/what-typescript-configuration-produces-output-closest-to-node-js-18-capabilities/72380008#72380008
 
-ESLint \
+#### ESLint
+
 https://eslint.org/docs/user-guide/getting-started
 
-ESLint plugin \
+#### ESLint plugin
+
 https://github.com/standard/eslint-config-standard \
 https://github.com/import-js/eslint-plugin-import \
 https://github.com/weiran-zsd/eslint-plugin-node#readme \
 https://github.com/xjamundx/eslint-plugin-promise \
 https://github.com/jest-community/eslint-plugin-jest
 
-Prettier \
+#### Prettier
+
 https://prettier.io/docs/en/install.html
 
-ESLint + Prettier \
+#### ESLint + Prettier
+
 https://github.com/prettier/eslint-config-prettier \
 
-Yarn 3 + VSCode + ESLint + Prettier \
+#### Yarn 3 + VSCode + ESLint + Prettier
+
 https://yarnpkg.com/getting-started/editor-sdks \
 
-Husky \
+#### Husky
+
 https://typicode.github.io/husky/#/?id=usage \
 
-PostgreSQL Client \
+#### PostgreSQL Client
+
 https://node-postgres.com/ \
 
-PostgreSQL + TypeScript \
+#### PostgreSQL + TypeScript
+
 https://pgtyped.vercel.app/docs/getting-started \
 
-Apollo Server + Express \
+#### Apollo Server + Express
+
 https://www.apollographql.com/docs/apollo-server/integrations/middleware \
 
 Apollo Server + Redis \
 https://www.apollographql.com/docs/apollo-server/data/data-sources/#using-memcachedredis-as-a-cache-storage-backend \
 
-GraphQL Scalars \
+#### GraphQL Scalars
+
 https://www.graphql-scalars.dev/docs/quick-start \
 
-GraphQL Codegen \
+#### GraphQL Codegen
+
 https://www.graphql-code-generator.com/docs/getting-started/installation \
 
-esbuild \
+#### esbuild
+
 https://esbuild.github.io/getting-started/ \
 
-Nodemon + esbuild watch + GraphQL Codegen watch + pgtyped watch \
+#### Nodemon + esbuild watch + GraphQL Codegen watch + pgtyped watch
+
 (Input `rs` on terminal after `yarn dev` on the first try) \
 https://github.com/remy/nodemon#nodemon \
 https://stackoverflow.com/a/35455532/16868717 \
 https://www.graphql-code-generator.com/docs/config-reference/codegen-config#configuration-options \
 https://pgtyped.vercel.app/docs/cli#flags \
 
-Dockerfile \
+#### Dockerfile
+
 https://docs.docker.com/engine/reference/builder/ \
 https://hub.docker.com/_/node \
 
-compose.yaml \
+#### compose.yaml
+
 https://docs.docker.com/compose/compose-file/ \
 
-Jest \
+#### Jest
+
 https://jestjs.io/docs/getting-started \
 
-Database import/export \
+#### Database import/export
+
 https://dba.stackexchange.com/questions/137140/how-can-i-dump-all-tables-to-csv-for-a-postgresql-schema \
 https://www.postgresqltutorial.com/postgresql-tutorial/export-postgresql-table-to-csv-file/ \
 
-Kakao OAuth \
+#### Kakao OAuth
+
 https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api \
 
-Naver OAuth \
+#### Naver OAuth
+
 https://developers.naver.com/docs/login/web/web.md \
 
-BBaton OAuth \
+#### BBaton OAuth
+
 https://www.bbaton.com/docs/%ec%97%b0%eb%8f%99%ed%95%98%ea%b8%b0/ \
 
-Google OAuth \
+#### Google OAuth
+
 https://developers.google.com/identity/protocols/oauth2/web-server#obtainingaccesstokens \
 
-Cloud \
+#### Cloud
+
 https://stackoverflow.com/questions/70784083/how-to-deploy-a-full-stack-node-js-project \
 
-Cloud Run \
+#### Cloud Run
+
 https://stackoverflow.com/questions/2387724/node-js-on-multi-core-machines/8685968#8685968 \
 https://stackoverflow.com/questions/70364483/will-node-js-deployed-on-google-cloudrun-utilize-multiple-cores \
 https://www.nearform.com/blog/solving-the-serverless-concurrency-problem-with-google-cloud-run/ \
 
-Cloud Storage \
+#### Cloud Storage
+
 https://cloud.google.com/appengine/docs/flexible/nodejs/using-cloud-storage \
 https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-nodejs \
+
+#### Redis
+
+connect postgresql ssl and redis ssl
+둘다 Docker로 관리하기
+아임포트 결제 모듈 연동
+카카오페이 수동 연동
+
+#### ELK
 
 ## 📚 References
 
@@ -212,9 +250,3 @@ https://stackoverflow.com/a/24326540/16868717 \
 
 Google storage \
 https://stackoverflow.com/questions/20812676/what-do-gcs-bucket-permissions-all-users-and-all-authenticated-users-and-the
-
-## Redis
-
-connect postgresql ssl and redis ssl
-
-## ELK
