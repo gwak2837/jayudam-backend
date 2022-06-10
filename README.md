@@ -237,6 +237,7 @@ connect postgresql ssl and redis ssl
 둘다 Docker로 관리하기
 아임포트 결제 모듈 연동
 카카오페이 수동 연동
+docker에 postgres 띄우는 김에 compose.yaml에 postgresql 넣기
 
 #### ELK
 
