@@ -13,15 +13,6 @@
 - [PostgreSQL](https://www.postgresql.org/download/) 14.3
 - [Redis](https://redis.io/download/) 7.0
 
-## ☁ Cloud
-
-- [Google Cloud Run](https://cloud.google.com/run)
-- [Google Cloud Storage](https://cloud.google.com/storage)
-- [Google Cloud Build](https://cloud.google.com/build)
-- [Google Container Registry](https://cloud.google.com/container-registry)
-- [Oracle Virtual Machine](https://www.oracle.com/kr/cloud/compute/virtual-machines/)
-- Azure Cosmos DB?
-
 ## 📦 Installation
 
 #### Download codes
@@ -37,7 +28,7 @@ yarn
 
 #### Start PostgreSQL server and initialize
 
-PostgreSQL 서버에 접속해서 사용자와 데이터베이스를 생성합니다.
+PostgreSQL 서버에 접속해서 아래와 같이 사용자와 데이터베이스를 생성합니다.
 
 ```sql
 CREATE USER DB사용자이름 WITH PASSWORD 'DB사용자비밀번호';
@@ -47,12 +38,18 @@ CREATE DATABASE DB이름 OWNER DB사용자이름 TEMPLATE template0 LC_COLLATE "
 ALTER SCHEMA public OWNER TO DB사용자이름;
 ```
 
+그리고 아래 스크립트를 실행해 데이터베이스에 더미 데이터를 넣어줍니다.
+
+```
+yarn import
+```
+
 #### Start Redis server
 
 Redis 서버를 실행합니다.
 
 ```bash
-redis-server --save 600 10000 --loglevel warning
+redis-server --loglevel warning
 ```
 
 #### Create environment variables
@@ -68,19 +65,19 @@ redis-server --save 600 10000 --loglevel warning
 
 #### Start Node.js server
 
-1. TypeScript 파일을 그대로 사용해 Nodemon으로 서비스를 실행합니다.
+1. 동적 번들링 및 Nodemon으로 서비스를 실행합니다.
 
 ```
 yarn dev
 ```
 
-2. TypeScript 파일을 JavaScript로 트랜스파일한 후 Node.js로 서비스를 실행합니다.
+2. TypeScript 파일을 JavaScript로 트랜스파일 및 번들링 후 Node.js로 서비스를 실행합니다.
 
 ```
 yarn build && yarn start
 ```
 
-3. Docker 환경에서 Node.js 서버를 실행합니다.
+3. Docker 환경에서 Node.js 서버, PostgreSQL 서버, Redis 서버를 실행합니다.
 
 ```
 docker-compose --env-file .env.local.docker up --detach --build --force-recreate
@@ -89,6 +86,99 @@ docker-compose --env-file .env.local.docker up --detach --build --force-recreate
 #### CI/CD
 
 GitHub에 push 할 때마다 자동으로 `Cloud Build`에서 새로운 Docker 이미지를 만들어서 `Container Registry`에 저장합니다. 그리고 `Cloud Run`에 요청이 들어오면 새로운 이미지를 기반으로 Docker 컨테이너를 생성합니다.
+
+## ☁ Cloud
+
+- [Google Cloud Run](https://cloud.google.com/run)
+- [Google Cloud Storage](https://cloud.google.com/storage)
+- [Google Cloud Build](https://cloud.google.com/build)
+- [Google Container Registry](https://cloud.google.com/container-registry)
+- [Oracle Virtual Machine](https://www.oracle.com/kr/cloud/compute/virtual-machines/)
+- Azure Cosmos DB?
+
+#### PostgreSQL
+
+SSL with Docker
+
+```
+# Set variables
+DOCKER_VOLUME_NAME=도커볼륨이름
+POSTGRES_HOST=DB서버주소
+POSTGRES_USER=DB계정이름
+POSTGRES_PASSWORD=DB계정암호
+POSTGRES_DB=DB이름
+
+# generate the server.key and server.crt https://www.postgresql.org/docs/14/ssl-tcp.html
+openssl req -new -nodes -text -out root.csr \
+  -keyout root.key -subj "/CN=Alpacasalon"
+chmod og-rwx root.key
+
+openssl x509 -req -in root.csr -text -days 3650 \
+  -extfile /etc/ssl/openssl.cnf -extensions v3_ca \
+  -signkey root.key -out root.crt
+
+openssl req -new -nodes -text -out server.csr \
+  -keyout server.key -subj "/CN=$POSTGRES_HOST"
+
+openssl x509 -req -in server.csr -text -days 365 \
+  -CA root.crt -CAkey root.key -CAcreateserial \
+  -out server.crt
+
+# set postgres (alpine) user as owner of the server.key and permissions to 600
+sudo chown 0:70 server.key
+sudo chmod 640 server.key
+
+# set client connection policy
+echo "
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# 'local' is for Unix domain socket connections only
+local   all             all                                     trust
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            trust
+# IPv6 local connections:
+host    all             all             ::1/128                 trust
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+local   replication     all                                     trust
+host    replication     all             127.0.0.1/32            trust
+host    replication     all             ::1/128                 trust
+
+hostssl all all all scram-sha-256
+" > pg_hba.conf
+
+# start a postgres docker container, mapping the .key and .crt into the image.
+sudo docker volume create $DOCKER_VOLUME_NAME
+sudo docker run \
+  -d \
+  -e POSTGRES_USER=$POSTGRES_USER \
+  -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
+  -e POSTGRES_DB=$POSTGRES_DB \
+  -e LANG=ko_KR.UTF8 \
+  -e LC_COLLATE=C \
+  -e POSTGRES_INITDB_ARGS=--data-checksums \
+  --name postgres \
+  -p 5432:5432 \
+  --restart=always \
+  --shm-size=256MB \
+  -v "$PWD/server.crt:/var/lib/postgresql/server.crt:ro" \
+  -v "$PWD/server.key:/var/lib/postgresql/server.key:ro" \
+  -v "$PWD/pg_hba.conf:/var/lib/postgresql/pg_hba.conf" \
+  -v $DOCKER_VOLUME_NAME:/var/lib/postgresql/data \
+  postgres:14-alpine \
+  -c ssl=on \
+  -c ssl_cert_file=/var/lib/postgresql/server.crt \
+  -c ssl_key_file=/var/lib/postgresql/server.key \
+  -c hba_file=/var/lib/postgresql/pg_hba.conf
+```
+
+#### Redis
+
+SSL with Docker
+
+```
+
+```
 
 ## ⚙️ Configuration
 
@@ -231,10 +321,8 @@ https://www.nearform.com/blog/solving-the-serverless-concurrency-problem-with-go
 https://cloud.google.com/appengine/docs/flexible/nodejs/using-cloud-storage \
 https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-nodejs \
 
-#### Redis
+#### Payment
 
-connect postgresql ssl and redis ssl
-둘다 Docker로 관리하기
 아임포트 결제 모듈 연동
 카카오페이 수동 연동
 
