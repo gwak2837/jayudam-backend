@@ -4,18 +4,35 @@ services:
     container_name: jayudam-api
     depends_on:
       - redis
+      - postgres
     env_file: .env.local.docker
     image: jayudam-api:latest
     restart: on-failure
     ports:
       - 4002:4002
+
   redis:
-    command: redis-server --loglevel warning --logfile ~/redis
-    container_name: jayudam-redis
     image: redis:7-alpine
+    command: redis-server --loglevel warning
+    container_name: jayudam-redis
     ports:
       - 6379
+    restart: on-failure
     volumes:
-      - 'jayudam:/data'
+      - 'redis:/data'
+
+  postgres:
+    image: postgres:14-alpine
+    container_name: jayudam-postgres
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - 5432
+    restart: on-failure
+    volumes:
+      - 'postgres:/var/lib/postgresql/data'
+
 volumes:
-  jayudam:
+  redis:
+  postgres:
