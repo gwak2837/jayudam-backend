@@ -248,8 +248,11 @@ https://pgtyped.vercel.app/docs/getting-started \
 #### Apollo Server + Express
 
 https://www.apollographql.com/docs/apollo-server/integrations/middleware \
+https://expressjs.com/en/advanced/best-practice-performance.html \
+https://expressjs.com/en/advanced/best-practice-security.html \
 
-Apollo Server + Redis \
+#### Apollo Server + Redis
+
 https://www.apollographql.com/docs/apollo-server/data/data-sources/#using-memcachedredis-as-a-cache-storage-backend \
 
 #### GraphQL Scalars
@@ -321,10 +324,14 @@ https://www.nearform.com/blog/solving-the-serverless-concurrency-problem-with-go
 https://cloud.google.com/appengine/docs/flexible/nodejs/using-cloud-storage \
 https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-nodejs \
 
-#### Payment
+#### I'mport
 
 아임포트 결제 모듈 연동
 카카오페이 수동 연동
+
+window.location.host = 프론트엔드 주소
+
+#### 채널톡 (Channel Talk)
 
 #### ELK
 
