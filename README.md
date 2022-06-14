@@ -100,9 +100,9 @@ GitHub에 push 할 때마다 자동으로 `Cloud Build`에서 새로운 Docker �
 
 SSL with Docker
 
-```
-# Set variables
-DOCKER_VOLUME_NAME=도커볼륨이름
+```bash
+# set variables
+POSTGRES_DOCKER_VOLUME_NAME=DB도커볼륨이름
 POSTGRES_HOST=DB서버주소
 POSTGRES_USER=DB계정이름
 POSTGRES_PASSWORD=DB계정암호
@@ -110,7 +110,7 @@ POSTGRES_DB=DB이름
 
 # generate the server.key and server.crt https://www.postgresql.org/docs/14/ssl-tcp.html
 openssl req -new -nodes -text -out root.csr \
-  -keyout root.key -subj "/CN=Alpacasalon"
+  -keyout root.key -subj "/CN=$POSTGRES_USER"
 chmod og-rwx root.key
 
 openssl x509 -req -in root.csr -text -days 3650 \
@@ -124,7 +124,7 @@ openssl x509 -req -in server.csr -text -days 365 \
   -CA root.crt -CAkey root.key -CAcreateserial \
   -out server.crt
 
-# set postgres (alpine) user as owner of the server.key and permissions to 600
+# https://stackoverflow.com/questions/55072221/deploying-postgresql-docker-with-ssl-certificate-and-key-with-volumes
 sudo chown 0:70 server.key
 sudo chmod 640 server.key
 
@@ -148,7 +148,7 @@ hostssl all all all scram-sha-256
 " > pg_hba.conf
 
 # start a postgres docker container, mapping the .key and .crt into the image.
-sudo docker volume create $DOCKER_VOLUME_NAME
+sudo docker volume create $POSTGRES_DOCKER_VOLUME_NAME
 sudo docker run \
   -d \
   -e POSTGRES_USER=$POSTGRES_USER \
@@ -161,12 +161,14 @@ sudo docker run \
   -p 5432:5432 \
   --restart=always \
   --shm-size=256MB \
+  -v "$PWD/root.crt:/var/lib/postgresql/root.crt:ro" \
   -v "$PWD/server.crt:/var/lib/postgresql/server.crt:ro" \
   -v "$PWD/server.key:/var/lib/postgresql/server.key:ro" \
   -v "$PWD/pg_hba.conf:/var/lib/postgresql/pg_hba.conf" \
-  -v $DOCKER_VOLUME_NAME:/var/lib/postgresql/data \
+  -v $POSTGRES_DOCKER_VOLUME_NAME:/var/lib/postgresql/data \
   postgres:14-alpine \
   -c ssl=on \
+  -c ssl_ca_file=/var/lib/postgresql/root.crt \
   -c ssl_cert_file=/var/lib/postgresql/server.crt \
   -c ssl_key_file=/var/lib/postgresql/server.key \
   -c hba_file=/var/lib/postgresql/pg_hba.conf
@@ -176,8 +178,12 @@ sudo docker run \
 
 SSL with Docker
 
-```
+```bash
+# set variables
+REDIS_DOCKER_VOLUME_NAME=Redis도커볼륨이름
 
+
+sudo docker volume create $REDIS_DOCKER_VOLUME_NAME
 ```
 
 ## ⚙️ Configuration

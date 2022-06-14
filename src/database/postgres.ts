@@ -6,10 +6,13 @@ import { certificateAuthority, pgUri, projectEnv } from '../utils/constants'
 
 const { Pool } = pg
 
+// https://github.com/brianc/node-postgres/issues/2089
 export const pool = new Pool({
   connectionString: pgUri,
 
-  ...(projectEnv === 'cloud-dev' && {
+  ...((projectEnv === 'cloud-dev' ||
+    projectEnv === 'cloud-production' ||
+    projectEnv === 'local-production') && {
     ssl: {
       rejectUnauthorized: true,
       ca: `-----BEGIN CERTIFICATE-----\n${certificateAuthority}\n-----END CERTIFICATE-----`,
@@ -28,8 +31,7 @@ export async function poolQuery<Results>(sql: string, values?: unknown[]) {
 
   return pool.query<Results>(sql, values).catch((error) => {
     if (process.env.NODE_ENV === 'production') {
-      console.error(error.message)
-      console.error(sql, values)
+      console.error(error.message, sql, values)
       throw new DatabaseQueryError('Database query error')
     } else {
       throw new DatabaseQueryError(error)
