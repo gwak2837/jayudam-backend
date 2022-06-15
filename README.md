@@ -44,13 +44,13 @@ PostgreSQL 서버를 실행하는 방법은 아래와 같이 2가지 있습니�
 
 ```bash
 # set variables
-POSTGRES_DOCKER_VOLUME_NAME=DB도커볼륨이름
 POSTGRES_HOST=DB서버주소
 POSTGRES_USER=DB계정이름
 POSTGRES_PASSWORD=DB계정암호
 POSTGRES_DB=DB이름
+POSTGRES_DOCKER_VOLUME_NAME=DB도커볼륨이름
 
-# generate the server.key and server.crt https://www.postgresql.org/docs/14/ssl-tcp.html
+# https://www.postgresql.org/docs/14/ssl-tcp.html
 openssl req -new -nodes -text -out root.csr \
   -keyout root.key -subj "/CN=$POSTGRES_USER"
 
@@ -71,7 +71,7 @@ openssl x509 -req -in server.csr -text -days 365 \
 sudo chown 0:70 server.key
 sudo chmod 640 server.key
 
-# set client connection policy
+# https://www.postgresql.org/docs/14/auth-pg-hba-conf.html
 echo "
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
 
@@ -102,7 +102,7 @@ sudo docker run \
   -e POSTGRES_INITDB_ARGS=--data-checksums \
   --name postgres \
   -p 5432:5432 \
-  --restart=always \
+  --restart=on-failure \
   --shm-size=256MB \
   -v "$PWD/root.crt:/var/lib/postgresql/root.crt:ro" \
   -v "$PWD/server.crt:/var/lib/postgresql/server.crt:ro" \
@@ -156,17 +156,53 @@ yarn import
 Redis 서버를 실행합니다.
 
 ```bash
-redis-server --loglevel warning
+# https://redis.io/docs/manual/security/encryption/
+git clone https://github.com/redis/redis.git
+vi ./redis/utils/gen-test-certs.sh
 ```
-
-SSL with Docker
 
 ```bash
 # set variables
-REDIS_DOCKER_VOLUME_NAME=Redis도커볼륨이름
+REDIS_USER=REDIS_계정_이름
+REDIS_PASSWORD=REDIS_계정_암호
+REDIS_HOST=REDIS_주소
+REDIS_DOCKER_VOLUME_NAME=REDIS_도커_볼륨_이름
 
+# generate certificates
+./redis/utils/gen-test-certs.sh $REDIS_HOST
 
+echo "
+user $REDIS_USER on >$REDIS_PASSWORD allkeys allchannels allcommands
+" > users.acl
+
+# https://github.com/moby/moby/issues/25245#issuecomment-365970076
 sudo docker volume create $REDIS_DOCKER_VOLUME_NAME
+sudo docker container create --name dummy-container -v $REDIS_DOCKER_VOLUME_NAME:/root hello-world
+sudo docker cp ./tests/tls/server.crt dummy-container:/root
+sudo docker cp ./tests/tls/server.key dummy-container:/root
+sudo docker cp ./tests/tls/ca.crt dummy-container:/root
+sudo docker cp ./tests/tls/redis.dh dummy-container:/root
+sudo docker cp ./users.acl dummy-container:/root
+sudo docker rm dummy-container
+
+sudo docker run \
+  --detach \
+  -e REDIS_PASSWORD=redis \
+  --name=redis \
+  --publish 6379:6379 \
+  --restart=on-failure \
+  --volume $REDIS_DOCKER_VOLUME_NAME:/data \
+  redis:7-alpine \
+  redis-server \
+  --loglevel warning \
+  --tls-port 6379 --port 0 \
+  --tls-cert-file /data/server.crt \
+  --tls-key-file /data/server.key \
+  --tls-ca-cert-file /data/ca.crt \
+  --tls-dh-params-file /data/redis.dh \
+  --appendonly yes --appendfsync no \
+  --requirepass $REDIS_PASSWORD \
+  --aclfile /data/users.acl
 ```
 
 ### Create environment variables

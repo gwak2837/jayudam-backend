@@ -2,7 +2,7 @@ import pg from 'pg'
 
 import { DatabaseQueryError } from '../apollo/errors'
 import { formatDate } from '../utils'
-import { certificateAuthority, pgUri, projectEnv } from '../utils/constants'
+import { pgUri, postgresCA, projectEnv } from '../utils/constants'
 
 const { Pool } = pg
 
@@ -14,8 +14,7 @@ export const pool = new Pool({
     projectEnv === 'cloud-production' ||
     projectEnv === 'local-production') && {
     ssl: {
-      rejectUnauthorized: true,
-      ca: `-----BEGIN CERTIFICATE-----\n${certificateAuthority}\n-----END CERTIFICATE-----`,
+      ca: `-----BEGIN CERTIFICATE-----\n${postgresCA}\n-----END CERTIFICATE-----`,
       checkServerIdentity: () => {
         return undefined
       },
