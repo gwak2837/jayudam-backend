@@ -13,80 +13,6 @@
 - [PostgreSQL](https://www.postgresql.org/download/) 14.3
 - [Redis](https://redis.io/download/) 7.0
 
-## 📦 Installation
-
-#### Download codes
-
-프로젝트 소스코드를 다운로드 받고 의존 패키지를 설치합니다.
-
-```
-git clone https://github.com/rmfpdlxmtidl/jayudam-backend.git
-cd jayudam-backend
-git checkout main
-yarn
-```
-
-#### Start PostgreSQL server and initialize
-
-PostgreSQL 서버에 접속해서 아래와 같이 사용자와 데이터베이스를 생성합니다.
-
-```sql
-CREATE USER DB사용자이름 WITH PASSWORD 'DB사용자비밀번호';
-CREATE DATABASE DB이름 OWNER DB사용자이름 TEMPLATE template0 LC_COLLATE "C" LC_CTYPE "ko_KR.UTF-8";
-
-\c DB이름 관리자이름(e.g. postgres)
-ALTER SCHEMA public OWNER TO DB사용자이름;
-```
-
-그리고 아래 스크립트를 실행해 데이터베이스에 더미 데이터를 넣어줍니다.
-
-```
-yarn import
-```
-
-#### Start Redis server
-
-Redis 서버를 실행합니다.
-
-```bash
-redis-server --loglevel warning
-```
-
-#### Create environment variables
-
-루트 폴더에 아래와 같은 내용이 담긴 환경 변수 파일을 생성합니다.
-
-필요한 환경변수 목록은 [`src/utils/constants.ts`](src/utils/constants.ts) 파일 안에 있습니다.
-
-- `.env.development.local`: `yarn dev` 실행 시 필요
-- `.env.local`: `yarn start` 실행 시 필요
-- `.env.local.docker`: `docker-compose up` 실행 시 필요
-- `.env.test`: `yarn test` 실행 시 필요 (예정)
-
-#### Start Node.js server
-
-1. 동적 번들링 및 Nodemon으로 서비스를 실행합니다.
-
-```
-yarn dev
-```
-
-2. TypeScript 파일을 JavaScript로 트랜스파일 및 번들링 후 Node.js로 서비스를 실행합니다.
-
-```
-yarn build && yarn start
-```
-
-3. Docker 환경에서 Node.js 서버, PostgreSQL 서버, Redis 서버를 실행합니다.
-
-```
-docker-compose --env-file .env.local.docker up --detach --build --force-recreate
-```
-
-#### CI/CD
-
-GitHub에 push 할 때마다 자동으로 `Cloud Build`에서 새로운 Docker 이미지를 만들어서 `Container Registry`에 저장합니다. 그리고 `Cloud Run`에 요청이 들어오면 새로운 이미지를 기반으로 Docker 컨테이너를 생성합니다.
-
 ## ☁ Cloud
 
 - [Google Cloud Run](https://cloud.google.com/run)
@@ -96,21 +22,38 @@ GitHub에 push 할 때마다 자동으로 `Cloud Build`에서 새로운 Docker �
 - [Oracle Virtual Machine](https://www.oracle.com/kr/cloud/compute/virtual-machines/)
 - Azure Cosmos DB?
 
-#### PostgreSQL
+## 📦 Installation
 
-SSL with Docker
+### Download codes
+
+프로젝트 소스코드를 다운로드 받고 의존 패키지를 설치합니다.
 
 ```
-# Set variables
-DOCKER_VOLUME_NAME=도커볼륨이름
+git clone https://github.com/rmfpdlxmtidl/jayudam-backend.git
+cd jayudam-backend
+yarn
+```
+
+### Start PostgreSQL server
+
+PostgreSQL 서버를 실행하는 방법은 아래와 같이 2가지 있습니다.
+
+#### 1. Docker 환경에서 설정하기
+
+아래는 SSL 연결만 허용하는 설정입니다.
+
+```bash
+# set variables
 POSTGRES_HOST=DB서버주소
 POSTGRES_USER=DB계정이름
 POSTGRES_PASSWORD=DB계정암호
 POSTGRES_DB=DB이름
+POSTGRES_DOCKER_VOLUME_NAME=DB도커볼륨이름
 
-# generate the server.key and server.crt https://www.postgresql.org/docs/14/ssl-tcp.html
+# https://www.postgresql.org/docs/14/ssl-tcp.html
 openssl req -new -nodes -text -out root.csr \
-  -keyout root.key -subj "/CN=Alpacasalon"
+  -keyout root.key -subj "/CN=$POSTGRES_USER"
+
 chmod og-rwx root.key
 
 openssl x509 -req -in root.csr -text -days 3650 \
@@ -124,11 +67,11 @@ openssl x509 -req -in server.csr -text -days 365 \
   -CA root.crt -CAkey root.key -CAcreateserial \
   -out server.crt
 
-# set postgres (alpine) user as owner of the server.key and permissions to 600
+# https://stackoverflow.com/questions/55072221/deploying-postgresql-docker-with-ssl-certificate-and-key-with-volumes
 sudo chown 0:70 server.key
 sudo chmod 640 server.key
 
-# set client connection policy
+# https://www.postgresql.org/docs/14/auth-pg-hba-conf.html
 echo "
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
 
@@ -148,7 +91,7 @@ hostssl all all all scram-sha-256
 " > pg_hba.conf
 
 # start a postgres docker container, mapping the .key and .crt into the image.
-sudo docker volume create $DOCKER_VOLUME_NAME
+sudo docker volume create $POSTGRES_DOCKER_VOLUME_NAME
 sudo docker run \
   -d \
   -e POSTGRES_USER=$POSTGRES_USER \
@@ -159,26 +102,145 @@ sudo docker run \
   -e POSTGRES_INITDB_ARGS=--data-checksums \
   --name postgres \
   -p 5432:5432 \
-  --restart=always \
+  --restart=on-failure \
   --shm-size=256MB \
+  -v "$PWD/root.crt:/var/lib/postgresql/root.crt:ro" \
   -v "$PWD/server.crt:/var/lib/postgresql/server.crt:ro" \
   -v "$PWD/server.key:/var/lib/postgresql/server.key:ro" \
   -v "$PWD/pg_hba.conf:/var/lib/postgresql/pg_hba.conf" \
-  -v $DOCKER_VOLUME_NAME:/var/lib/postgresql/data \
+  -v $POSTGRES_DOCKER_VOLUME_NAME:/var/lib/postgresql/data \
   postgres:14-alpine \
   -c ssl=on \
+  -c ssl_ca_file=/var/lib/postgresql/root.crt \
   -c ssl_cert_file=/var/lib/postgresql/server.crt \
   -c ssl_key_file=/var/lib/postgresql/server.key \
   -c hba_file=/var/lib/postgresql/pg_hba.conf
 ```
 
-#### Redis
+위 명령어를 실행하면 아래와 같은 파일이 생성됩니다.
 
-SSL with Docker
+- `pg_hba.conf`: PostgreSQL 클라이언트 연결 방식 설정
+- `root.crt`: 루트 인증서. 클라이언트 쪽에 복사
+- `root.csr`: ?
+- `root.key`: 루트/리프 인증서 생성 시 필요. 유츌되면 새로 만들어야 함
+- `server.crt`: 리프 인증서
+- `server.csr`: ?
+- `server.key`: 리프 인증서 생성 시 필요
+
+그리고 아래 스크립트를 실행해 데이터베이스에 더미 데이터를 넣어줍니다.
 
 ```
+yarn import
+```
+
+#### 2. Native 환경에서 설정하기
+
+PostgreSQL 서버에 접속해서 아래와 같이 사용자와 데이터베이스를 생성합니다. PostgreSQL 기본 관리자 이름은 `postgres` 입니다.
+
+```sql
+CREATE USER DB_사용자_이름 WITH PASSWORD 'DB_사용자_비밀번호';
+CREATE DATABASE DB_이름 OWNER DB_사용자_이름 TEMPLATE template0 LC_COLLATE "C" LC_CTYPE "ko_KR.UTF-8";
+
+\c DB_이름 DB_관리자_이름
+ALTER SCHEMA public OWNER TO DB_사용자_이름;
+```
+
+그리고 아래 스크립트를 실행해 데이터베이스에 더미 데이터를 넣어줍니다.
 
 ```
+yarn import
+```
+
+### Start Redis server
+
+Redis 서버를 실행합니다.
+
+```bash
+# https://redis.io/docs/manual/security/encryption/
+git clone https://github.com/redis/redis.git
+vi ./redis/utils/gen-test-certs.sh
+```
+
+```bash
+# set variables
+REDIS_USER=REDIS_계정_이름
+REDIS_PASSWORD=REDIS_계정_암호
+REDIS_HOST=REDIS_주소
+REDIS_DOCKER_VOLUME_NAME=REDIS_도커_볼륨_이름
+
+# generate certificates
+./redis/utils/gen-test-certs.sh $REDIS_HOST
+
+echo "
+user $REDIS_USER on >$REDIS_PASSWORD allkeys allchannels allcommands
+" > users.acl
+
+# https://github.com/moby/moby/issues/25245#issuecomment-365970076
+sudo docker volume create $REDIS_DOCKER_VOLUME_NAME
+sudo docker container create --name dummy-container -v $REDIS_DOCKER_VOLUME_NAME:/root hello-world
+sudo docker cp ./tests/tls/server.crt dummy-container:/root
+sudo docker cp ./tests/tls/server.key dummy-container:/root
+sudo docker cp ./tests/tls/ca.crt dummy-container:/root
+sudo docker cp ./tests/tls/redis.dh dummy-container:/root
+sudo docker cp ./users.acl dummy-container:/root
+sudo docker rm dummy-container
+
+sudo docker run \
+  --detach \
+  -e REDIS_PASSWORD=redis \
+  --name=redis \
+  --publish 6379:6379 \
+  --restart=on-failure \
+  --volume $REDIS_DOCKER_VOLUME_NAME:/data \
+  redis:7-alpine \
+  redis-server \
+  --loglevel warning \
+  --tls-port 6379 --port 0 \
+  --tls-cert-file /data/server.crt \
+  --tls-key-file /data/server.key \
+  --tls-ca-cert-file /data/ca.crt \
+  --tls-dh-params-file /data/redis.dh \
+  --appendonly yes --appendfsync no \
+  --requirepass $REDIS_PASSWORD \
+  --aclfile /data/users.acl
+```
+
+### Create environment variables
+
+루트 폴더에 아래와 같은 내용이 담긴 환경 변수 파일을 생성합니다.
+
+필요한 환경변수 목록은 [`src/utils/constants.ts`](src/utils/constants.ts) 파일 안에 있습니다.
+
+- `.env.development.local`: `yarn dev` 실행 시 필요
+- `.env.local`: `yarn start` 실행 시 필요
+- `.env.local.docker`: `docker-compose up` 실행 시 필요
+- `.env.test`: `yarn test` 실행 시 필요 (예정)
+
+### Start Node.js server
+
+Node.js 서버를 실행하는 방법은 아래와 같이 3가지 있습니다.
+
+1. 동적 번들링 및 Nodemon으로 서버를 실행합니다.
+
+```
+yarn dev
+```
+
+2. TypeScript 파일을 JavaScript로 트랜스파일 및 번들링 후 Node.js로 서버를 실행합니다.
+
+```
+yarn build && yarn start
+```
+
+3. Docker 환경에서 Node.js 서버, PostgreSQL 서버, Redis 서버를 실행합니다.
+
+```
+docker-compose --env-file .env.local.docker up --detach --build --force-recreate
+```
+
+### CI/CD
+
+GitHub에 push 할 때마다 자동으로 `Cloud Build`에서 새로운 Docker 이미지를 만들어서 `Container Registry`에 저장합니다. 그리고 `Cloud Run`에 요청이 들어오면 새로운 이미지를 기반으로 Docker 컨테이너를 생성합니다.
 
 ## ⚙️ Configuration
 
