@@ -9,9 +9,9 @@
   "editor.tabSize": 2,
   "files.eol": "\n",
   "search.exclude": {
+    "**/.git": true,
     "**/.yarn": true,
     "**/.pnp.*": true,
-    "**/.git": true,
     "**/out": true,
     "yarn.lock": true
   },
@@ -21,6 +21,7 @@
   "typescript.tsdk": ".yarn/sdks/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "sort-imports.default-sort-style": "module",
+
   "sqltools.format": {
     "reservedWordCase": "upper",
     "linesBetweenQueries": 2

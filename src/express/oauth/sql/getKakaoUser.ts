@@ -1,22 +1,26 @@
 /** Types generated for queries found in "src/express/oauth/sql/getKakaoUser.sql" */
-import { PreparedQuery } from '@pgtyped/query';
+import { PreparedQuery } from '@pgtyped/query'
 
 /** 'GetKakaoUser' parameters type */
-export type IGetKakaoUserParams = void;
+export type IGetKakaoUserParams = void
 
 /** 'GetKakaoUser' return type */
 export interface IGetKakaoUserResult {
-  id: string;
-  nickname: string | null;
+  id: string
+  nickname: string | null
 }
 
 /** 'GetKakaoUser' query type */
 export interface IGetKakaoUserQuery {
-  params: IGetKakaoUserParams;
-  result: IGetKakaoUserResult;
+  params: IGetKakaoUserParams
+  result: IGetKakaoUserResult
 }
 
-const getKakaoUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  nickname\nFROM \"user\"\nWHERE kakao_oauth = $1"};
+const getKakaoUserIR: any = {
+  usedParamSet: {},
+  params: [],
+  statement: 'SELECT id,\n  nickname\nFROM "user"\nWHERE kakao_oauth = $1',
+}
 
 /**
  * Query generated from SQL:
@@ -27,6 +31,6 @@ const getKakaoUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT i
  * WHERE kakao_oauth = $1
  * ```
  */
-export const getKakaoUser = new PreparedQuery<IGetKakaoUserParams,IGetKakaoUserResult>(getKakaoUserIR);
-
-
+export const getKakaoUser = new PreparedQuery<IGetKakaoUserParams, IGetKakaoUserResult>(
+  getKakaoUserIR
+)

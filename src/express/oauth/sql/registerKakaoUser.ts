@@ -1,21 +1,26 @@
 /** Types generated for queries found in "src/express/oauth/sql/registerKakaoUser.sql" */
-import { PreparedQuery } from '@pgtyped/query';
+import { PreparedQuery } from '@pgtyped/query'
 
 /** 'RegisterKakaoUser' parameters type */
-export type IRegisterKakaoUserParams = void;
+export type IRegisterKakaoUserParams = void
 
 /** 'RegisterKakaoUser' return type */
 export interface IRegisterKakaoUserResult {
-  id: string;
+  id: string
 }
 
 /** 'RegisterKakaoUser' query type */
 export interface IRegisterKakaoUserQuery {
-  params: IRegisterKakaoUserParams;
-  result: IRegisterKakaoUserResult;
+  params: IRegisterKakaoUserParams
+  result: IRegisterKakaoUserResult
 }
 
-const registerKakaoUserIR: any = {"usedParamSet":{},"params":[],"statement":"INSERT INTO \"user\" (\n    email,\n    nickname,\n    phone_number,\n    birthyear,\n    birthday,\n    sex,\n    bio,\n    image_url,\n    kakao_oauth\n  )\nVALUES(\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9\n  )\nRETURNING id"};
+const registerKakaoUserIR: any = {
+  usedParamSet: {},
+  params: [],
+  statement:
+    'INSERT INTO "user" (\n    email,\n    nickname,\n    phone_number,\n    birthyear,\n    birthday,\n    sex,\n    bio,\n    image_url,\n    kakao_oauth\n  )\nVALUES(\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9\n  )\nRETURNING id',
+}
 
 /**
  * Query generated from SQL:
@@ -45,6 +50,7 @@ const registerKakaoUserIR: any = {"usedParamSet":{},"params":[],"statement":"INS
  * RETURNING id
  * ```
  */
-export const registerKakaoUser = new PreparedQuery<IRegisterKakaoUserParams,IRegisterKakaoUserResult>(registerKakaoUserIR);
-
-
+export const registerKakaoUser = new PreparedQuery<
+  IRegisterKakaoUserParams,
+  IRegisterKakaoUserResult
+>(registerKakaoUserIR)

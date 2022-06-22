@@ -10,36 +10,28 @@
 
 - 프로젝트를 개발하기 위해 필요한 [개발 환경](README.md)을 확인합니다.
 - [Code of conduct](CODE_OF_CONDUCT.md)를 읽어보셨나요?
-- 프로젝트에 존재하는 [이슈](https://github.com/rmfpdlxmtidl/jayudam/issues)를 확인합니다.
+- 프로젝트에 존재하는 [이슈](https://github.com/rmfpdlxmtidl/jayudam-backend/issues)를 확인합니다.
 
 ## Git Flow
 
 본 프로젝트는 프로젝트 참여 인원이 적기 때문에 main, develop, feature 브랜치 위주로 이용합니다.
-
-## Issue 등록
-
-다른 사람에게 자신의 진행 상황을 공유하기 위해 GitHub에 자신이 할 일을 이슈로 등록합니다.
-
-이슈 등록 시 [이슈 템플릿](https://github.com/rmfpdlxmtidl/jayudam/issues/new/choose)을 이용합니다. 이슈 제목은 제목을 보고 대략적으로 내용을 알 수 있을 정도로 한글 또는 영어로 작성합니다. 그리고 오른쪽의 Assignee는 자신으로, Labels과 Projects는 적절하게 선택하고 이슈 내용은 어떤 기능을 개발할 것인지 제목보다 상세하게 적습니다. 이슈 내용에 내용 이해를 돕는 이미지·영상을 첨부하면 더 좋습니다.
 
 ## Branch 생성
 
 생성한 이슈를 기반으로 develop 브랜치에서 자신이 작업할 feature 브랜치를 아래와 같은 이름으로 생성합니다.
 
 ```
-feature/#이슈번호/설명
+feature/성명/설명
 fix/#이슈번호/설명
 ```
 
-브랜치를 생성하기 전엔 다른 사람의 커밋을 항상 최신으로 유지하기 위해 `git pull, yarn` 등을 실행합니다. 만약 이슈 번호가 `#1`이면 브랜치 이름은 `feature/#1/description-of-feature`와 같은 형식으로 짓고, 설명 부분은 [Kebob Case](https://en.wiktionary.org/wiki/kebab_case)를 사용해서 영어로 간단히 짓습니다. 나중에 브랜치 단위로 코드 리뷰가 이뤄지므로 브랜치 단위는 코드 변경 사항이 최소 (+100)줄, 최대 (+500)줄이 되도록 설정하는 것을 권장합니다.
+브랜치를 생성하기 전엔 다른 사람의 커밋을 항상 최신으로 유지하기 위해 `git pull, yarn` 등을 실행합니다. 만약 이슈 번호가 `#1`이면 브랜치 이름은 `feature/gwak/description-of-feature`와 같은 형식으로 짓고, 설명 부분은 [Kebob Case](https://en.wiktionary.org/wiki/kebab_case)를 사용해서 영어로 간단히 짓습니다. 나중에 브랜치 단위로 코드 리뷰가 이뤄지므로 브랜치 단위는 코드 변경 사항이 최소 (+100)줄, 최대 (+500)줄이 되도록 설정하는 것을 권장합니다.
 
 ## Pull Request 생성
 
 팀원에게 자신의 진행 상황을 공유하기 위해 GitHub에 feature 브랜치를 develop 브랜치로 병합하는 PR을 `Draft`로 생성합니다.
 
-PR 제목은 병합하려는 브랜치 이름으로 합니다. 예를 들어 `feature/#1/project-setting` 브랜치를 develop 브랜치로 병합하는 PR의 제목은 `Feature/#1/project setting` 형식으로 짓습니다.
-
-이슈와 마찬가지로 PR를 등록할 때 오른쪽의 Assignee는 자신으로 설정하고, Labels와 Projects는 적절하게 선택합니다.
+PR를 등록할 때 PR 제목은 병합하려는 브랜치 이름으로 하고, 오른쪽의 Assignee는 자신으로 설정하고, Labels와 Projects는 적절하게 선택합니다.
 
 ## 코드 작성 및 커밋
 
