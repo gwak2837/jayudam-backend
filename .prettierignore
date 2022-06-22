@@ -1,3 +1,4 @@
+.yarn/plugins
+.yarn/releases
 out
-.yarn
-.pnp*
+.pnp.*

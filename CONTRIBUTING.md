@@ -9,7 +9,7 @@
 개발을 시작하기 전에
 
 - 프로젝트를 개발하기 위해 필요한 [개발 환경](README.md)을 확인합니다.
-- [Code of conduct](CODE_OF_CONDUCT.md)를 읽어보셨나요?
+- [Code of conduct](CODE_OF_CONDUCT.md)를 읽어봅니다.
 - 프로젝트에 존재하는 [이슈](https://github.com/rmfpdlxmtidl/jayudam-backend/issues)를 확인합니다.
 
 ## Git Flow
@@ -21,11 +21,11 @@
 생성한 이슈를 기반으로 develop 브랜치에서 자신이 작업할 feature 브랜치를 아래와 같은 이름으로 생성합니다.
 
 ```
-feature/성명/설명
+feature/설명
 fix/#이슈번호/설명
 ```
 
-브랜치를 생성하기 전엔 다른 사람의 커밋을 항상 최신으로 유지하기 위해 `git pull, yarn` 등을 실행합니다. 만약 이슈 번호가 `#1`이면 브랜치 이름은 `feature/gwak/description-of-feature`와 같은 형식으로 짓고, 설명 부분은 [Kebob Case](https://en.wiktionary.org/wiki/kebab_case)를 사용해서 영어로 간단히 짓습니다. 나중에 브랜치 단위로 코드 리뷰가 이뤄지므로 브랜치 단위는 코드 변경 사항이 최소 (+100)줄, 최대 (+500)줄이 되도록 설정하는 것을 권장합니다.
+브랜치를 생성하기 전엔 다른 사람의 커밋을 항상 최신으로 유지하기 위해 `git pull && yarn` 등을 실행합니다. 브랜치 이름은 `feature/new-submit-button`와 같은 형식으로 짓고, 설명 부분은 [Kebob Case](https://en.wiktionary.org/wiki/kebab_case)를 사용해서 영어로 간단히 짓습니다. 나중에 브랜치 단위로 코드 리뷰가 이뤄지므로 브랜치 단위는 코드 변경 사항이 최소 (+100)줄, 최대 (+500)줄이 되도록 설정하는 것을 권장합니다.
 
 ## Pull Request 생성
 
