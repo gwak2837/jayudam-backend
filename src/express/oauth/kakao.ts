@@ -1,4 +1,4 @@
-import { type Express } from 'express'
+import { Express } from 'express'
 import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
@@ -13,6 +13,7 @@ import { IGetKakaoUserResult } from './sql/getKakaoUser'
 import getKakaoUser from './sql/getKakaoUser.sql'
 import { IRegisterKakaoUserResult } from './sql/registerKakaoUser'
 import registerKakaoUser from './sql/registerKakaoUser.sql'
+import { isValidFrontendUrl } from '.'
 
 export function setKakaoOAuthStrategies(app: Express) {
   // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=fa17772ea56b216e0fd949141f5ed5e2&redirect_uri=http://localhost:4000/oauth/kakao
@@ -28,8 +29,11 @@ export function setKakaoOAuthStrategies(app: Express) {
     const kakaoUserInfo = await fetchKakaoUserInfo(kakaoUserToken.access_token)
     if (!kakaoUserInfo.id) return res.status(400).send('Bad Request')
 
+    const referer = req.headers.referer as string
+    if (!isValidFrontendUrl(referer)) return res.status(400).send('Bad Request')
+
+    const frontendUrl = getFrontendUrl(referer)
     const kakaoAccount = kakaoUserInfo.kakao_account
-    const frontendUrl = getFrontendUrl(req.headers.referer)
 
     const findKakaoUserResult = await poolQuery<IGetKakaoUserResult>(getKakaoUser, [
       kakaoUserInfo.id,
@@ -48,24 +52,7 @@ export function setKakaoOAuthStrategies(app: Express) {
     }
 
     // 소셜 로그인 정보가 없는 경우
-    const { rows } = await poolQuery<IRegisterKakaoUserResult>(registerKakaoUser, [
-      kakaoAccount.email,
-      kakaoAccount.profile.nickname,
-      kakaoAccount.phone_number,
-      kakaoAccount.birthyear,
-      kakaoAccount.birthday,
-      encodeSex(kakaoAccount.gender),
-      '소개가 아직 없어요.',
-      kakaoAccount.profile.profile_image_url,
-      kakaoUserInfo.id,
-    ])
-
-    return res.redirect(
-      `${frontendUrl}/oauth?${new URLSearchParams({
-        jwt: await generateJWT({ userId: rows[0].id }),
-        nickname: kakaoAccount.profile.nickname,
-      })}`
-    )
+    return res.status(401).send('The account associated with the Kakao account does not exist.')
   })
 
   app.get('/oauth/kakao/unregister', async (req, res) => {

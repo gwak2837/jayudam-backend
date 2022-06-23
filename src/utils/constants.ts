@@ -1,6 +1,5 @@
 export const port = process.env.PORT as string
 export const frontendUrl = process.env.FRONTEND_URL as string
-export const backendUrl = process.env.BACKEND_URL as string
 
 export const projectEnv = process.env.PROJECT_ENV as string
 export const jwtSecretKey = process.env.JWT_SECRET_KEY as string
@@ -30,7 +29,6 @@ export const bBatonClientSecretKey = process.env.BBATON_CLIENT_SECRET_KEY as str
 
 if (!port) throw new Error('`PORT` 환경 변수를 설정해주세요.')
 if (!frontendUrl) throw new Error('`FRONTEND_URL` 환경 변수를 설정해주세요.')
-if (!backendUrl) throw new Error('`BACKEND_URL` 환경 변수를 설정해주세요.')
 
 if (!projectEnv) throw new Error('`PROJECT_ENV` 환경 변수를 설정해주세요.')
 if (!jwtSecretKey) throw new Error('`JWT_SECRET_KEY` 환경 변수를 설정해주세요.')

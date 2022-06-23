@@ -24,15 +24,16 @@ CREATE TABLE "user" (
   email varchar(50) UNIQUE,
   nickname varchar(20) UNIQUE,
   phone_number varchar(20) UNIQUE,
+  bio varchar(100),
   birthyear char(4),
   birthday char(4),
-  sex int,
-  bio varchar(100),
   image_url text,
+  name varchar(20),
+  sex int,
   --
   kakao_oauth text UNIQUE,
   naver_oauth text UNIQUE,
-  bbaton_oauth text UNIQUE,
+  bbaton_oauth text NOT NULL UNIQUE,
   google_oauth text UNIQUE
 );
 

@@ -1,6 +1,6 @@
 // import sharp from 'sharp'
 import { Storage } from '@google-cloud/storage'
-import { type Express } from 'express'
+import { Express } from 'express'
 import Multer from 'multer'
 import path from 'node:path'
 

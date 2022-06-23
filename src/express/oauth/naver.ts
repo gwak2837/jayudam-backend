@@ -1,29 +1,36 @@
-import { type Express } from 'express'
+import { Express } from 'express'
 import fetch from 'node-fetch'
-import { backendUrl, frontendUrl, naverClientId, naverClientSecret } from '../../utils/constants'
-import registerNaverUser from './sql/registerNaverUser.sql'
-import getNaverUser from './sql/getNaverUser.sql'
+
 import { poolQuery } from '../../database/postgres'
+import { frontendUrl, naverClientId, naverClientSecret } from '../../utils/constants'
 import { generateJWT } from '../../utils/jwt'
 import { IGetNaverUserResult } from './sql/getNaverUser'
+import getNaverUser from './sql/getNaverUser.sql'
 import { IRegisterNaverUserResult } from './sql/registerNaverUser'
+import registerNaverUser from './sql/registerNaverUser.sql'
+import { isValidFrontendUrl } from '.'
 
 export function setNaverOAuthStrategies(app: Express) {
   // https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=FPQoCRnHgbAWgjWYtlLb&redirect_uri=http://localhost:4000/oauth/naver&state=123
   // 필수 수집: 네이버 식별 번호, 성별, 출생년도
   // 선택 수집: 닉네임, 프로필 사진, 이메일, 출생월일, 전화번호
   app.get('/oauth/naver', async (req, res) => {
-    const code = req.query.code
-    if (!code) return res.status(400).send('Bad Request')
+    const code = req.query.code as string
+    const backendUrl = req.headers.host as string
+    const state = req.query.state as string
+    if (!code || !backendUrl || !state) return res.status(400).send('Bad Request')
 
-    const naverUserToken = await fetchNaverUserToken(code as string, req.query.state as string)
+    const naverUserToken = await fetchNaverUserToken(code, backendUrl, state)
     if (naverUserToken.error) return res.status(400).send('Bad Request')
 
     const naverUserInfo = await fetchNaverUserInfo(naverUserToken.access_token)
     if (naverUserInfo.resultcode !== '00') return res.status(400).send('Bad Request')
 
+    const referer = req.headers.referer as string
+    if (!isValidFrontendUrl(referer)) return res.status(400).send('Bad Request')
+
+    const frontendUrl = getFrontendUrl(referer)
     const naverAccount = naverUserInfo.response
-    const frontendUrl = getFrontendUrl(req.headers.referer)
     console.log('👀 - req.headers.referer', req.headers.referer)
 
     const { rows: naverUserResult } = await poolQuery<IGetNaverUserResult>(getNaverUser, [
@@ -43,24 +50,7 @@ export function setNaverOAuthStrategies(app: Express) {
     }
 
     // 소셜 로그인 정보가 없는 경우
-    const { rows } = await poolQuery<IRegisterNaverUserResult>(registerNaverUser, [
-      naverAccount.email,
-      naverAccount.nickname,
-      naverAccount.mobile_e164,
-      naverAccount.birthyear,
-      encodeBirthDay(naverAccount.birthday),
-      encodeSex(naverAccount.gender),
-      '소개가 아직 없어요.',
-      naverAccount.profile_image,
-      naverAccount.id,
-    ])
-
-    return res.redirect(
-      `${frontendUrl}/oauth?${new URLSearchParams({
-        jwt: await generateJWT({ userId: rows[0].id }),
-        nickname: naverAccount.nickname,
-      })}`
-    )
+    return res.status(401).send('The account associated with the Naver account does not exist.')
   })
 
   app.get('/oauth/naver/unregister', async (req, res) => {
@@ -69,7 +59,7 @@ export function setNaverOAuthStrategies(app: Express) {
   })
 }
 
-async function fetchNaverUserToken(code: string, state: string) {
+async function fetchNaverUserToken(code: string, backendUrl: string, state: string) {
   const response = await fetch(
     `https://nid.naver.com/oauth2.0/token?${new URLSearchParams({
       grant_type: 'authorization_code',
