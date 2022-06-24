@@ -1,0 +1,35 @@
+/** Types generated for queries found in "src/express/oauth/sql/updateKakaoUser.sql" */
+import { PreparedQuery } from '@pgtyped/query';
+
+/** 'UpdateKakaoUser' parameters type */
+export type IUpdateKakaoUserParams = void;
+
+/** 'UpdateKakaoUser' return type */
+export type IUpdateKakaoUserResult = void;
+
+/** 'UpdateKakaoUser' query type */
+export interface IUpdateKakaoUserQuery {
+  params: IUpdateKakaoUserParams;
+  result: IUpdateKakaoUserResult;
+}
+
+const updateKakaoUserIR: any = {"usedParamSet":{},"params":[],"statement":"UPDATE \"user\"\nSET modification_time = CURRENT_TIMESTAMP,\n  email = COALESCE(email, $2),\n  image_url = COALESCE(image_url, $3),\n  kakao_oauth = $4\nWHERE id = $1\n  AND (\n    email IS NULL\n    OR image_url IS NULL\n  )"};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * UPDATE "user"
+ * SET modification_time = CURRENT_TIMESTAMP,
+ *   email = COALESCE(email, $2),
+ *   image_url = COALESCE(image_url, $3),
+ *   kakao_oauth = $4
+ * WHERE id = $1
+ *   AND (
+ *     email IS NULL
+ *     OR image_url IS NULL
+ *   )
+ * ```
+ */
+export const updateKakaoUser = new PreparedQuery<IUpdateKakaoUserParams,IUpdateKakaoUserResult>(updateKakaoUserIR);
+
+

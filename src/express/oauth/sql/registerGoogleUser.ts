@@ -1,26 +1,21 @@
 /** Types generated for queries found in "src/express/oauth/sql/registerGoogleUser.sql" */
-import { PreparedQuery } from '@pgtyped/query'
+import { PreparedQuery } from '@pgtyped/query';
 
 /** 'RegisterGoogleUser' parameters type */
-export type IRegisterGoogleUserParams = void
+export type IRegisterGoogleUserParams = void;
 
 /** 'RegisterGoogleUser' return type */
 export interface IRegisterGoogleUserResult {
-  id: string
+  id: string;
 }
 
 /** 'RegisterGoogleUser' query type */
 export interface IRegisterGoogleUserQuery {
-  params: IRegisterGoogleUserParams
-  result: IRegisterGoogleUserResult
+  params: IRegisterGoogleUserParams;
+  result: IRegisterGoogleUserResult;
 }
 
-const registerGoogleUserIR: any = {
-  usedParamSet: {},
-  params: [],
-  statement:
-    'INSERT INTO "user" (\n    email,\n    nickname,\n    phone_number,\n    birthyear,\n    birthday,\n    sex,\n    bio,\n    image_url,\n    google_oauth\n  )\nVALUES(\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9\n  )\nRETURNING id',
-}
+const registerGoogleUserIR: any = {"usedParamSet":{},"params":[],"statement":"INSERT INTO \"user\" (\n    email,\n    nickname,\n    phone_number,\n    birthyear,\n    birthday,\n    sex,\n    bio,\n    image_url,\n    google_oauth\n  )\nVALUES(\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9\n  )\nRETURNING id"};
 
 /**
  * Query generated from SQL:
@@ -50,7 +45,6 @@ const registerGoogleUserIR: any = {
  * RETURNING id
  * ```
  */
-export const registerGoogleUser = new PreparedQuery<
-  IRegisterGoogleUserParams,
-  IRegisterGoogleUserResult
->(registerGoogleUserIR)
+export const registerGoogleUser = new PreparedQuery<IRegisterGoogleUserParams,IRegisterGoogleUserResult>(registerGoogleUserIR);
+
+

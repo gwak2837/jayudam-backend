@@ -12,7 +12,15 @@ export function setOAuthStrategies(app: Express) {
   setGoogleOAuthStrategies(app)
 }
 
-export type BBatonUserInfo = {
+export type BBatonUserToken = {
+  access_token: string
+  token_type: string
+  expires_in: number
+  scope: string
+  error?: string
+}
+
+export type BBatonUser = {
   user_id: string
   adult_flag: string
   birth_year: string
@@ -27,9 +35,23 @@ export type BBatonUserInfo = {
 const urlRegex = /^https:\/\/jayudam-[-a-z0-9]{1,50}-gwak2837\.vercel\.app\//
 
 export function isValidFrontendUrl(url: string) {
+  if (!url) return true
   if (url.startsWith('https://jayudam.app/')) return true
   if (url.startsWith('https://jayudam.vercel.app/')) return true
   if (url.match(urlRegex)) return true
 
   return false
+}
+
+export function encodeSex(sex: string) {
+  switch (sex) {
+    case 'M':
+    case 'male':
+      return 1
+    case 'F':
+    case 'female':
+      return 2
+    default:
+      return 0
+  }
 }

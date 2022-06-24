@@ -1,26 +1,21 @@
 /** Types generated for queries found in "src/express/oauth/sql/registerBBatonUser.sql" */
-import { PreparedQuery } from '@pgtyped/query'
+import { PreparedQuery } from '@pgtyped/query';
 
 /** 'RegisterBBatonUser' parameters type */
-export type IRegisterBBatonUserParams = void
+export type IRegisterBBatonUserParams = void;
 
 /** 'RegisterBBatonUser' return type */
 export interface IRegisterBBatonUserResult {
-  id: string
+  id: string;
 }
 
 /** 'RegisterBBatonUser' query type */
 export interface IRegisterBBatonUserQuery {
-  params: IRegisterBBatonUserParams
-  result: IRegisterBBatonUserResult
+  params: IRegisterBBatonUserParams;
+  result: IRegisterBBatonUserResult;
 }
 
-const registerBBatonUserIR: any = {
-  usedParamSet: {},
-  params: [],
-  statement:
-    'INSERT INTO "user" (\n    email,\n    nickname,\n    phone_number,\n    birthyear,\n    birthday,\n    sex,\n    bio,\n    image_url,\n    bbaton_oauth\n  )\nVALUES(\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9\n  )\nRETURNING id',
-}
+const registerBBatonUserIR: any = {"usedParamSet":{},"params":[],"statement":"INSERT INTO \"user\" (\n    email,\n    nickname,\n    phone_number,\n    birthyear,\n    birthday,\n    sex,\n    bio,\n    image_url,\n    bbaton_oauth\n  )\nVALUES(\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9\n  )\nRETURNING id"};
 
 /**
  * Query generated from SQL:
@@ -50,7 +45,6 @@ const registerBBatonUserIR: any = {
  * RETURNING id
  * ```
  */
-export const registerBBatonUser = new PreparedQuery<
-  IRegisterBBatonUserParams,
-  IRegisterBBatonUserResult
->(registerBBatonUserIR)
+export const registerBBatonUser = new PreparedQuery<IRegisterBBatonUserParams,IRegisterBBatonUserResult>(registerBBatonUserIR);
+
+

@@ -1,5 +1,6 @@
 /* @name getGoogleUser */
 SELECT id,
-  nickname
+  nickname,
+  name
 FROM "user"
 WHERE google_oauth = $1;
