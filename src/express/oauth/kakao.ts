@@ -25,7 +25,7 @@ export function setKakaoOAuthStrategies(app: Express) {
   // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=fa17772ea56b216e0fd949141f5ed5e2&redirect_uri=http://localhost:4000/oauth/kakao&state=jwt
   // Kakao 계정으로 로그인하기
   app.get('/oauth/kakao', async (req, res) => {
-    // request 검사
+    // 입력값 검사
     const code = req.query.code as string
     const referer = req.headers.referer as string
     if (!code || !isValidFrontendUrl(referer)) return res.status(400).send('Bad Request')
@@ -41,8 +41,24 @@ export function setKakaoOAuthStrategies(app: Express) {
     const frontendUrl = getFrontendUrl(referer)
 
     // 자유담 사용자 정보 가져오기
-    const { rows } = await poolQuery<IGetKakaoUserResult>(getKakaoUser, [kakaoUser.id])
+    const { rowCount, rows } = await poolQuery<IGetKakaoUserResult>(getKakaoUser, [kakaoUser.id])
     const jayudamUser = rows[0]
+
+    // 소셜 로그인 정보가 없는 경우
+    if (rowCount === 0)
+      return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=false&oauth=kakao`)
+
+    // 정지된 계정인 경우
+    if (jayudamUser.blocking_start_time)
+      return res.redirect(
+        `${frontendUrl}/oauth?isBlocked=true&from=${jayudamUser.blocking_start_time}&to=${jayudamUser.blocking_end_time}`
+      )
+
+    // 휴먼 계정인 경우
+    if (jayudamUser.sleeping_time)
+      return res.redirect(
+        `${frontendUrl}/oauth?hasBeenSleeping=true&since=${jayudamUser.sleeping_time}`
+      )
 
     // OAuth 사용자 정보와 자유담 사용자 정보 비교
     if (
@@ -54,18 +70,13 @@ export function setKakaoOAuthStrategies(app: Express) {
     )
       return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=kakao`)
 
-    // 이미 소셜 로그인 정보가 존재하는 경우
-    if (jayudamUser?.id) {
-      const nickname = jayudamUser.nickname
-      const querystring = new URLSearchParams({
-        jwt: await generateJWT({ userId: jayudamUser.id }),
-        ...(nickname && { nickname }),
-      })
-      return res.redirect(`${frontendUrl}/oauth?${querystring}`)
-    }
-
-    // 소셜 로그인 정보가 없는 경우
-    return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=false&oauth=kakao`)
+    // 소셜 로그인 정보가 존재하는 경우
+    const nickname = jayudamUser.nickname
+    const querystring = new URLSearchParams({
+      jwt: await generateJWT({ userId: jayudamUser.id }),
+      ...(nickname && { nickname }),
+    })
+    return res.redirect(`${frontendUrl}/oauth?${querystring}`)
   })
 
   // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=fa17772ea56b216e0fd949141f5ed5e2&redirect_uri=http://localhost:4000/oauth/kakao/register
@@ -73,7 +84,7 @@ export function setKakaoOAuthStrategies(app: Express) {
   // 필수 수집: 카카오 식별 번호, 성별, 출생년도, 출생월일, 이름, 전화번호
   // 선택 수집: 닉네임, 프로필 사진, 이메일
   app.get('/oauth/kakao/register', async (req, res) => {
-    // request 검사
+    // 입력값 검사
     const code = req.query.code as string
     const backendUrl = req.headers.host as string
     const jwt = req.query.state as string
@@ -119,7 +130,7 @@ export function setKakaoOAuthStrategies(app: Express) {
     await poolQuery<IUpdateKakaoUserResult>(updateKakaoUser, [
       jayudamUser.id,
       kakaoUser.email,
-      kakaoUser.profile.is_default_image ? null : kakaoUser.profile.profile_image_url,
+      kakaoUser.profile.is_default_image ? null : [kakaoUser.profile.profile_image_url],
       kakaoUser2.id,
     ])
 

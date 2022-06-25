@@ -77,18 +77,12 @@ scalar URL
 scalar UUID
 
 type User {
-  bio: NonEmptyString
-  birthday: NonEmptyString!
-  birthyear: Int!
+  bio: String
+  birthyear: Int
   creationTime: DateTime!
-  email: EmailAddress!
-  hasNewNotifications: Boolean!
   id: UUID!
   imageUrl: URL
-  likedCount: NonNegativeInt!
-  modificationTime: DateTime!
-  nickname: NonEmptyString
-  phoneNumber: NonEmptyString
+  nickname: String
   sex: Sex!
 }
 

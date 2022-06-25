@@ -35,7 +35,7 @@ const allowedExtensions = ['image', 'video', 'audio', 'application/ogg']
 const multer = Multer({
   storage: Multer.memoryStorage(),
   limits: {
-    fileSize: 10_000_000, // no larger than 10MB
+    fileSize: 100_000_000, // no larger than 100 MB
   },
 })
 

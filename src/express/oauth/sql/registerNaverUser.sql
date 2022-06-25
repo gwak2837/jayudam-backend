@@ -7,7 +7,7 @@ INSERT INTO "user" (
     birthday,
     sex,
     bio,
-    image_url,
+    image_urls,
     naver_oauth
   )
 VALUES(

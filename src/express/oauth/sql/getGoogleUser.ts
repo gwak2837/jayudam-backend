@@ -6,9 +6,12 @@ export type IGetGoogleUserParams = void;
 
 /** 'GetGoogleUser' return type */
 export interface IGetGoogleUserResult {
+  blocking_end_time: Date | null;
+  blocking_start_time: Date | null;
   id: string;
   name: string | null;
   nickname: string | null;
+  sleeping_time: Date | null;
 }
 
 /** 'GetGoogleUser' query type */
@@ -17,14 +20,17 @@ export interface IGetGoogleUserQuery {
   result: IGetGoogleUserResult;
 }
 
-const getGoogleUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  nickname,\n  name\nFROM \"user\"\nWHERE google_oauth = $1"};
+const getGoogleUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  blocking_start_time,\n  blocking_end_time,\n  nickname,\n  name,\n  sleeping_time\nFROM \"user\"\nWHERE google_oauth = $1"};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT id,
+ *   blocking_start_time,
+ *   blocking_end_time,
  *   nickname,
- *   name
+ *   name,
+ *   sleeping_time
  * FROM "user"
  * WHERE google_oauth = $1
  * ```

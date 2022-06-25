@@ -33,6 +33,19 @@ services:
     volumes:
       - 'postgres:/var/lib/postgresql/data'
 
+  postgres-archive:
+    image: postgres:14-alpine
+    container_name: jayudam-postgres-archive
+    environment:
+      POSTGRES_PASSWORD: example2
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - 54321
+    restart: on-failure
+    volumes:
+      - 'postgres-archive:/var/lib/postgresql/data'
+
 volumes:
   redis:
   postgres:
+  postgres-archive:

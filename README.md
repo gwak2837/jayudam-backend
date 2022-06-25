@@ -20,7 +20,6 @@
 - [Google Cloud Build](https://cloud.google.com/build)
 - [Google Container Registry](https://cloud.google.com/container-registry)
 - [Oracle Virtual Machine](https://www.oracle.com/kr/cloud/compute/virtual-machines/)
-- Azure Cosmos DB?
 
 ## 📦 Installation
 
@@ -38,7 +37,7 @@ yarn
 
 PostgreSQL 서버를 실행하는 방법은 아래와 같이 2가지 있습니다.
 
-#### 1. Docker 환경에서 설정하기
+#### 1. Docker 환경에서 실행하기
 
 아래는 SSL 연결만 허용하는 설정입니다.
 
@@ -92,6 +91,13 @@ hostssl all all all scram-sha-256
 
 # start a postgres docker container, mapping the .key and .crt into the image.
 sudo docker volume create $POSTGRES_DOCKER_VOLUME_NAME
+sudo docker container create --name dummy-container --volume $POSTGRES_DOCKER_VOLUME_NAME:/root hello-world
+sudo docker cp ./root.crt dummy-container:/root
+sudo docker cp ./server.crt dummy-container:/root
+sudo docker cp ./server.key dummy-container:/root
+sudo docker cp ./pg_hba.conf dummy-container:/root
+sudo docker rm dummy-container
+
 sudo docker run \
   -d \
   -e POSTGRES_USER=$POSTGRES_USER \
@@ -104,36 +110,32 @@ sudo docker run \
   -p 5432:5432 \
   --restart=on-failure \
   --shm-size=256MB \
-  -v "$PWD/root.crt:/var/lib/postgresql/root.crt:ro" \
-  -v "$PWD/server.crt:/var/lib/postgresql/server.crt:ro" \
-  -v "$PWD/server.key:/var/lib/postgresql/server.key:ro" \
-  -v "$PWD/pg_hba.conf:/var/lib/postgresql/pg_hba.conf" \
-  -v $POSTGRES_DOCKER_VOLUME_NAME:/var/lib/postgresql/data \
+  --volume $POSTGRES_DOCKER_VOLUME_NAME:/var/lib/postgresql/data \
   postgres:14-alpine \
   -c ssl=on \
-  -c ssl_ca_file=/var/lib/postgresql/root.crt \
-  -c ssl_cert_file=/var/lib/postgresql/server.crt \
-  -c ssl_key_file=/var/lib/postgresql/server.key \
-  -c hba_file=/var/lib/postgresql/pg_hba.conf
+  -c ssl_ca_file=/var/lib/postgresql/data/root.crt \
+  -c ssl_cert_file=/var/lib/postgresql/data/server.crt \
+  -c ssl_key_file=/var/lib/postgresql/data/server.key \
+  -c hba_file=/var/lib/postgresql/data/pg_hba.conf
 ```
 
 위 명령어를 실행하면 아래와 같은 파일이 생성됩니다.
 
 - `pg_hba.conf`: PostgreSQL 클라이언트 연결 방식 설정
-- `root.crt`: 루트 인증서. 클라이언트 쪽에 복사
+- `root.crt`: 루트 인증서. 서버에서 사용. 클라이언트 쪽에 복사
 - `root.csr`: ?
 - `root.key`: 루트/리프 인증서 생성 시 필요. 유츌되면 새로 만들어야 함
-- `server.crt`: 리프 인증서
+- `server.crt`: 리프 인증서. 서버에서 사용
 - `server.csr`: ?
-- `server.key`: 리프 인증서 생성 시 필요
+- `server.key`: 리프 인증서 생성 시 필요. 서버에서 사용
 
-그리고 아래 스크립트를 실행해 데이터베이스에 더미 데이터를 넣어줍니다.
+그리고 아래 스크립트를 실행하거나 수동으로 데이터베이스에 더미 데이터를 넣어줍니다.
 
 ```
 yarn import
 ```
 
-#### 2. Native 환경에서 설정하기
+#### 2. Native 환경에서 실행하기
 
 PostgreSQL 서버에 접속해서 아래와 같이 사용자와 데이터베이스를 생성합니다. PostgreSQL 기본 관리자 이름은 `postgres` 입니다.
 
@@ -145,7 +147,7 @@ CREATE DATABASE DB_이름 OWNER DB_사용자_이름 TEMPLATE template0 LC_COLLAT
 ALTER SCHEMA public OWNER TO DB_사용자_이름;
 ```
 
-그리고 아래 스크립트를 실행해 데이터베이스에 더미 데이터를 넣어줍니다.
+그리고 아래 스크립트를 실행하거나 수동으로 데이터베이스에 더미 데이터를 넣어줍니다.
 
 ```
 yarn import
@@ -389,6 +391,7 @@ https://cloud.google.com/storage/docs/reference/libraries#client-libraries-insta
 #### I'mport
 
 아임포트 결제 모듈 연동
+
 카카오페이 수동 연동
 
 window.location.host = 프론트엔드 주소
@@ -396,6 +399,26 @@ window.location.host = 프론트엔드 주소
 #### 채널톡 (Channel Talk)
 
 #### ELK
+
+#### 개인정보보호법 제39조의6
+
+https://www.law.go.kr/법령/개인정보보호법/(20200805,16930,20200204)/제39조의6
+
+1년 이상 미접속 계정은 휴먼계정으로 관리
+
+1. 논리적 분리
+
+- 테이블 분리
+- 스키마 분리
+
+2. 물리적 분리 (권장)
+
+- 데이터베이스 분리
+- 컨테이너 분리 ✅
+- 호스트 분리
+
+데이터 보관용 DB는 저전력 모드로 실행시키기 \
+https://repodev.com/blog/running-postgresql-in-power-saving-mode \
 
 ## 📚 References
 

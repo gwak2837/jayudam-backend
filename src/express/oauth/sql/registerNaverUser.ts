@@ -15,7 +15,7 @@ export interface IRegisterNaverUserQuery {
   result: IRegisterNaverUserResult;
 }
 
-const registerNaverUserIR: any = {"usedParamSet":{},"params":[],"statement":"INSERT INTO \"user\" (\n    email,\n    nickname,\n    phone_number,\n    birthyear,\n    birthday,\n    sex,\n    bio,\n    image_url,\n    naver_oauth\n  )\nVALUES(\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9\n  )\nRETURNING id"};
+const registerNaverUserIR: any = {"usedParamSet":{},"params":[],"statement":"INSERT INTO \"user\" (\n    email,\n    nickname,\n    phone_number,\n    birthyear,\n    birthday,\n    sex,\n    bio,\n    image_urls,\n    naver_oauth\n  )\nVALUES(\n    $1,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9\n  )\nRETURNING id"};
 
 /**
  * Query generated from SQL:
@@ -28,7 +28,7 @@ const registerNaverUserIR: any = {"usedParamSet":{},"params":[],"statement":"INS
  *     birthday,
  *     sex,
  *     bio,
- *     image_url,
+ *     image_urls,
  *     naver_oauth
  *   )
  * VALUES(

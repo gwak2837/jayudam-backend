@@ -17,7 +17,7 @@ export function setNaverOAuthStrategies(app: Express) {
   // https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=FPQoCRnHgbAWgjWYtlLb&redirect_uri=http://localhost:4000/oauth/naver
   // Naver 계정으로 로그인하기
   app.get('/oauth/naver', async (req, res) => {
-    // request 검사
+    // 입력값 검사
     const code = req.query.code as string
     const backendUrl = req.headers.host as string
     const state = req.query.state as string
@@ -36,8 +36,24 @@ export function setNaverOAuthStrategies(app: Express) {
     const naverUser = naverUser2.response
 
     // 자유담 사용자 정보 가져오기
-    const { rows } = await poolQuery<IGetNaverUserResult>(getNaverUser, [naverUser.id])
+    const { rowCount, rows } = await poolQuery<IGetNaverUserResult>(getNaverUser, [naverUser.id])
     const jayudamUser = rows[0]
+
+    // 소셜 로그인 정보가 없는 경우
+    if (rowCount === 0)
+      return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=false&oauth=naver`)
+
+    // 정지된 계정인 경우
+    if (jayudamUser.blocking_start_time)
+      return res.redirect(
+        `${frontendUrl}/oauth?isBlocked=true&from=${jayudamUser.blocking_start_time}&to=${jayudamUser.blocking_end_time}`
+      )
+
+    // 휴먼 계정인 경우
+    if (jayudamUser.sleeping_time)
+      return res.redirect(
+        `${frontendUrl}/oauth?hasBeenSleeping=true&since=${jayudamUser.sleeping_time}`
+      )
 
     // OAuth 사용자 정보와 자유담 사용자 정보 비교
     if (
@@ -49,19 +65,14 @@ export function setNaverOAuthStrategies(app: Express) {
     )
       return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=naver`)
 
-    // 이미 소셜 로그인 정보가 존재하는 경우
-    if (jayudamUser?.id) {
-      const nickname = jayudamUser.nickname
-      return res.redirect(
-        `${frontendUrl}/oauth?${new URLSearchParams({
-          jwt: await generateJWT({ userId: jayudamUser.id }),
-          ...(nickname && { nickname }),
-        })}`
-      )
-    }
-
-    // 소셜 로그인 정보가 없는 경우
-    return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=false&oauth=naver`)
+    // 소셜 로그인 정보가 존재하는 경우
+    const nickname = jayudamUser.nickname
+    return res.redirect(
+      `${frontendUrl}/oauth?${new URLSearchParams({
+        jwt: await generateJWT({ userId: jayudamUser.id }),
+        ...(nickname && { nickname }),
+      })}`
+    )
   })
 
   // https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=FPQoCRnHgbAWgjWYtlLb&redirect_uri=http://localhost:4000/oauth/naver/register&state=jwt
@@ -69,7 +80,7 @@ export function setNaverOAuthStrategies(app: Express) {
   // 필수 수집: 네이버 식별 번호, 성별, 출생년도, 출생월일, 전화번호, 이름
   // 선택 수집: 닉네임, 프로필 사진, 이메일
   app.get('/oauth/google/register', async (req, res) => {
-    // request 검사
+    // 입력값 검사
     const code = req.query.code as string
     const backendUrl = req.headers.host as string
     const jwt = req.query.state as string
@@ -113,7 +124,7 @@ export function setNaverOAuthStrategies(app: Express) {
     await poolQuery<IUpdateNaverUserResult>(updateNaverUser, [
       jayudamUser.id,
       naverUser.email,
-      naverUser.profile_image || null,
+      naverUser.profile_image ? [naverUser.profile_image] : null,
       naverUser.id,
     ])
 

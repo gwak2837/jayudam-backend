@@ -8,11 +8,14 @@ export type IGetNaverUserParams = void;
 export interface IGetNaverUserResult {
   birthday: string | null;
   birthyear: string | null;
+  blocking_end_time: Date | null;
+  blocking_start_time: Date | null;
   id: string;
   name: string | null;
   nickname: string | null;
   phone_number: string | null;
-  sex: number;
+  sex: number | null;
+  sleeping_time: Date | null;
 }
 
 /** 'GetNaverUser' query type */
@@ -21,18 +24,21 @@ export interface IGetNaverUserQuery {
   result: IGetNaverUserResult;
 }
 
-const getNaverUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  nickname,\n  sex,\n  birthyear,\n  birthday,\n  name,\n  phone_number\nFROM \"user\"\nWHERE naver_oauth = $1"};
+const getNaverUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  blocking_start_time,\n  blocking_end_time,\n  nickname,\n  sex,\n  birthyear,\n  birthday,\n  name,\n  phone_number,\n  sleeping_time\nFROM \"user\"\nWHERE naver_oauth = $1"};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT id,
+ *   blocking_start_time,
+ *   blocking_end_time,
  *   nickname,
  *   sex,
  *   birthyear,
  *   birthday,
  *   name,
- *   phone_number
+ *   phone_number,
+ *   sleeping_time
  * FROM "user"
  * WHERE naver_oauth = $1
  * ```

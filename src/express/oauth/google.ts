@@ -17,7 +17,7 @@ export function setGoogleOAuthStrategies(app: Express) {
   // https://accounts.google.com/o/oauth2/v2/auth?client_id=289678734309-fd454q2i8b65ud4fjsm6tq7r7vab3d1v.apps.googleusercontent.com&redirect_uri=http://localhost:4000/oauth/google&response_type=code&scope=openid+profile
   // Google 계정으로 로그인하기
   app.get('/oauth/google', async (req, res) => {
-    // request 검사
+    // 입력값 검사
     const code = req.query.code as string
     const backendUrl = req.headers.host as string
     const referer = req.headers.referer as string
@@ -34,25 +34,36 @@ export function setGoogleOAuthStrategies(app: Express) {
     const frontendUrl = getFrontendUrl(referer)
 
     // 자유담 사용자 정보 가져오기
-    const { rows } = await poolQuery<IGetGoogleUserResult>(getGoogleUser, [googleUser.id])
+    const { rowCount, rows } = await poolQuery<IGetGoogleUserResult>(getGoogleUser, [googleUser.id])
     const jayudamUser = rows[0]
+
+    // 소셜 로그인 정보가 없는 경우
+    if (rowCount === 0)
+      return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=false&oauth=google`)
+
+    // 정지된 계정인 경우
+    if (jayudamUser.blocking_start_time)
+      return res.redirect(
+        `${frontendUrl}/oauth?isBlocked=true&from=${jayudamUser.blocking_start_time}&to=${jayudamUser.blocking_end_time}`
+      )
+
+    // 휴먼 계정인 경우
+    if (jayudamUser.sleeping_time)
+      return res.redirect(
+        `${frontendUrl}/oauth?hasBeenSleeping=true&since=${jayudamUser.sleeping_time}`
+      )
 
     // OAuth 사용자 정보와 자유담 사용자 정보 비교
     if (jayudamUser.name && jayudamUser.name !== googleUser.name)
       return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=google`)
 
-    // 이미 소셜 로그인 정보가 존재하는 경우
-    if (jayudamUser?.id) {
-      const nickname = jayudamUser.nickname
-      const querystring = new URLSearchParams({
-        jwt: await generateJWT({ userId: jayudamUser.id }),
-        ...(nickname && { nickname }),
-      })
-      return res.redirect(`${frontendUrl}/oauth?${querystring}`)
-    }
-
-    // 소셜 로그인 정보가 없는 경우
-    return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=false&oauth=google`)
+    // 소셜 로그인 정보가 존재하는 경우
+    const nickname = jayudamUser.nickname
+    const querystring = new URLSearchParams({
+      jwt: await generateJWT({ userId: jayudamUser.id }),
+      ...(nickname && { nickname }),
+    })
+    return res.redirect(`${frontendUrl}/oauth?${querystring}`)
   })
 
   // https://accounts.google.com/o/oauth2/v2/auth?client_id=289678734309-fd454q2i8b65ud4fjsm6tq7r7vab3d1v.apps.googleusercontent.com&redirect_uri=http://localhost:4000/oauth/google/register&response_type=code&scope=email+profile+openid&state=jwt
@@ -60,7 +71,7 @@ export function setGoogleOAuthStrategies(app: Express) {
   // 필수 수집: Google 식별 번호, 이름
   // 선택 수집: 이메일, 프로필 사진
   app.get('/oauth/google/register', async (req, res) => {
-    // request 검사
+    // 입력값 검사
     const code = req.query.code as string
     const backendUrl = req.headers.host as string
     const jwt = req.query.state as string
@@ -98,7 +109,7 @@ export function setGoogleOAuthStrategies(app: Express) {
     await poolQuery<IUpdateGoogleUserResult>(updateGoogleUser, [
       jayudamUser.id,
       googleUser.email,
-      googleUser.picture,
+      googleUser.picture ? [googleUser.picture] : null,
       googleUser.id,
     ])
 

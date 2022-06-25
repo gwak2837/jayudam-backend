@@ -78,18 +78,12 @@ export enum Sex {
 
 export type User = {
   __typename?: 'User'
-  bio?: Maybe<Scalars['NonEmptyString']>
-  birthday: Scalars['NonEmptyString']
-  birthyear: Scalars['Int']
+  bio?: Maybe<Scalars['String']>
+  birthyear?: Maybe<Scalars['Int']>
   creationTime: Scalars['DateTime']
-  email: Scalars['EmailAddress']
-  hasNewNotifications: Scalars['Boolean']
   id: Scalars['UUID']
   imageUrl?: Maybe<Scalars['URL']>
-  likedCount: Scalars['NonNegativeInt']
-  modificationTime: Scalars['DateTime']
-  nickname?: Maybe<Scalars['NonEmptyString']>
-  phoneNumber?: Maybe<Scalars['NonEmptyString']>
+  nickname?: Maybe<Scalars['String']>
   sex: Sex
 }
 
@@ -334,18 +328,12 @@ export type UserResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']
 > = ResolversObject<{
-  bio?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
-  birthday?: Resolver<ResolversTypes['NonEmptyString'], ParentType, ContextType>
-  birthyear?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  birthyear?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
   creationTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
-  email?: Resolver<ResolversTypes['EmailAddress'], ParentType, ContextType>
-  hasNewNotifications?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>
   imageUrl?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>
-  likedCount?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>
-  modificationTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
-  nickname?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
-  phoneNumber?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
+  nickname?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   sex?: Resolver<ResolversTypes['Sex'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>

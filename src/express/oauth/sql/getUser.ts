@@ -1,6 +1,8 @@
 /** Types generated for queries found in "src/express/oauth/sql/getUser.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
+export type stringArray = (string)[];
+
 /** 'GetUser' parameters type */
 export type IGetUserParams = void;
 
@@ -11,13 +13,13 @@ export interface IGetUserResult {
   email: string | null;
   google_oauth: string | null;
   id: string;
-  image_url: string | null;
+  image_urls: stringArray | null;
   kakao_oauth: string | null;
   name: string | null;
   naver_oauth: string | null;
   nickname: string | null;
   phone_number: string | null;
-  sex: number;
+  sex: number | null;
 }
 
 /** 'GetUser' query type */
@@ -26,7 +28,7 @@ export interface IGetUserQuery {
   result: IGetUserResult;
 }
 
-const getUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  nickname,\n  sex,\n  birthyear,\n  birthday,\n  email,\n  name,\n  phone_number,\n  image_url,\n  google_oauth,\n  kakao_oauth,\n  naver_oauth\nFROM \"user\"\nWHERE id = $1"};
+const getUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  nickname,\n  sex,\n  birthyear,\n  birthday,\n  email,\n  name,\n  phone_number,\n  image_urls,\n  google_oauth,\n  kakao_oauth,\n  naver_oauth\nFROM \"user\"\nWHERE id = $1"};
 
 /**
  * Query generated from SQL:
@@ -39,7 +41,7 @@ const getUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n 
  *   email,
  *   name,
  *   phone_number,
- *   image_url,
+ *   image_urls,
  *   google_oauth,
  *   kakao_oauth,
  *   naver_oauth

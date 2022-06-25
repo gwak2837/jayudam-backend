@@ -1,21 +1,11 @@
 type User {
   id: UUID!
   creationTime: DateTime!
-  modificationTime: DateTime!
-  email: EmailAddress!
-  birthyear: Int!
-  birthday: NonEmptyString!
-  sex: Sex!
-  hasNewNotifications: Boolean!
-
-  # nullable
-  bio: NonEmptyString
+  bio: String
+  birthyear: Int
   imageUrl: URL
-  nickname: NonEmptyString
-  phoneNumber: NonEmptyString
-
-  # from other table
-  likedCount: NonNegativeInt!
+  nickname: String
+  sex: Sex!
 }
 
 enum Sex {

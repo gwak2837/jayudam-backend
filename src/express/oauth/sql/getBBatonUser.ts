@@ -6,8 +6,11 @@ export type IGetBBatonUserParams = void;
 
 /** 'GetBBatonUser' return type */
 export interface IGetBBatonUserResult {
+  blocking_end_time: Date | null;
+  blocking_start_time: Date | null;
   id: string;
   nickname: string | null;
+  sleeping_time: Date | null;
 }
 
 /** 'GetBBatonUser' query type */
@@ -16,13 +19,16 @@ export interface IGetBBatonUserQuery {
   result: IGetBBatonUserResult;
 }
 
-const getBBatonUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  nickname\nFROM \"user\"\nWHERE bbaton_oauth = $1"};
+const getBBatonUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  blocking_start_time,\n  blocking_end_time,\n  nickname,\n  sleeping_time\nFROM \"user\"\nWHERE bbaton_oauth = $1"};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT id,
- *   nickname
+ *   blocking_start_time,
+ *   blocking_end_time,
+ *   nickname,
+ *   sleeping_time
  * FROM "user"
  * WHERE bbaton_oauth = $1
  * ```

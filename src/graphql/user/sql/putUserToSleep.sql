@@ -1,0 +1,4 @@
+UPDATE "user"
+SET
+WHERE id = $1
+RETURNING *;

@@ -7,7 +7,7 @@ SELECT id,
   email,
   name,
   phone_number,
-  image_url,
+  image_urls,
   google_oauth,
   kakao_oauth,
   naver_oauth
