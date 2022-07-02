@@ -36,6 +36,7 @@ const urlRegex = /^https:\/\/jayudam-[-a-z0-9]{1,50}-gwak2837\.vercel\.app\//
 
 export function isValidFrontendUrl(url: string) {
   if (!url) return true
+  if (url === 'http://localhost:3000/') return true
   if (url.startsWith('https://jayudam.app/')) return true
   if (url.startsWith('https://jayudam.vercel.app/')) return true
   if (url.match(urlRegex)) return true

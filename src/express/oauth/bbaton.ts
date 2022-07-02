@@ -2,7 +2,7 @@ import { Express } from 'express'
 import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
-import { bBatonClientId, bBatonClientSecretKey, frontendUrl } from '../../utils/constants'
+import { BBATON_CLIENT_ID, BBATON_CLIENT_SECRET_KEY, FRONTEND_URL } from '../../utils/constants'
 import { generateJWT } from '../../utils/jwt'
 import { IAwakeBBatonUserResult } from './sql/awakeBBatonUser'
 import awakeBBatonUser from './sql/awakeBBatonUser.sql'
@@ -13,24 +13,22 @@ import registerBBatonUser from './sql/registerBBatonUser.sql'
 import { BBatonUser, BBatonUserToken, encodeSex, isValidFrontendUrl } from '.'
 
 export function setBBatonOAuthStrategies(app: Express) {
-  // https://bauth.bbaton.com/oauth/authorize?client_id=JDJhJDA0JHRqNmFYckhyZXBWVGlKLnFkNzUvTGV5VWYwVGdyTEdXLkpYUzFP&redirect_uri=http://localhost:4000/oauth/bbaton&response_type=code&scope=read_profile&state={%22personalDataStoringPeriod%22:3}
   // BBaton 계정으로 가입하기
-  // 필수 수집: BBaton 식별 번호, 성별, 성인여부, 연령대
   app.get('/oauth/bbaton', async (req, res) => {
     // 입력값 검사
     const code = req.query.code as string
     const backendUrl = req.headers.host as string
     const referer = req.headers.referer as string
-    const registerConfig = JSON.parse(req.query.state as string)
-    if (!code || !backendUrl || !isValidFrontendUrl(referer) || !registerConfig)
+    const registerConfig = getRegisterConfig(req.query.state as string)
+    if (!code || !backendUrl || !isValidFrontendUrl(referer))
       return res.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기
-    const bBatonUserToken = await fetchBBatonUserToken(code, backendUrl)
-    if (bBatonUserToken.error) return res.status(400).send('Bad Request')
+    const bBatonUserToken = await fetchBBatonUserToken(code, `${req.protocol}://${backendUrl}`)
+    if (bBatonUserToken.error) return res.status(400).send('Bad Request2')
 
     const bBatonUser = await fetchBBatonUser(bBatonUserToken.access_token)
-    if (bBatonUser.error) return res.status(400).send('Bad Request')
+    if (bBatonUser.error) return res.status(400).send('Bad Request3')
 
     const frontendUrl = getFrontendUrl(referer)
 
@@ -41,6 +39,20 @@ export function setBBatonOAuthStrategies(app: Express) {
       bBatonUser.user_id,
     ])
     const jayudamUser = rows2[0]
+
+    // 처음 가입하는 경우
+    if (rowCount === 0) {
+      const { rows } = await poolQuery<IRegisterBBatonUserResult>(registerBBatonUser, [
+        encodeSex(bBatonUser.gender),
+        registerConfig?.personalDataStoringPeriod ?? 1,
+        bBatonUser.user_id,
+      ])
+
+      const querystring = new URLSearchParams({
+        jwt: await generateJWT({ userId: rows[0].id }),
+      })
+      return res.redirect(`${frontendUrl}/oauth?${querystring}`)
+    }
 
     // 정지된 계정인 경우
     if (jayudamUser.blocking_start_time)
@@ -65,31 +77,25 @@ export function setBBatonOAuthStrategies(app: Express) {
     }
 
     // 이미 가입된 경우
-    if (rowCount === 1) {
-      const nickname = jayudamUser.nickname
-      const querystring = new URLSearchParams({
-        jwt: await generateJWT({ userId: jayudamUser.id }),
-        ...(nickname && { nickname }),
-      })
-      return res.redirect(`${frontendUrl}/oauth?${querystring}`)
-    }
-
-    // 처음 가입하는 경우
-    const { rows } = await poolQuery<IRegisterBBatonUserResult>(registerBBatonUser, [
-      encodeSex(bBatonUser.gender),
-      registerConfig.personalDataStoringPeriod ?? 1,
-      bBatonUser.user_id,
-    ])
-
+    const nickname = jayudamUser.nickname
     const querystring = new URLSearchParams({
-      jwt: await generateJWT({ userId: rows[0].id }),
+      jwt: await generateJWT({ userId: jayudamUser.id }),
+      ...(nickname && { nickname }),
     })
     return res.redirect(`${frontendUrl}/oauth?${querystring}`)
   })
 }
 
+function getRegisterConfig(string: string) {
+  try {
+    return JSON.parse(string)
+  } catch (error) {
+    return null
+  }
+}
+
 async function fetchBBatonUserToken(code: string, backendUrl: string) {
-  const bBatonAuthString = `${bBatonClientId}:${bBatonClientSecretKey}`
+  const bBatonAuthString = `${BBATON_CLIENT_ID}:${BBATON_CLIENT_SECRET_KEY}`
 
   const response = await fetch('https://bauth.bbaton.com/oauth/token', {
     method: 'POST',
@@ -121,7 +127,7 @@ function getFrontendUrl(referer?: string) {
     case 'https://accounts.bbaton.com/':
     case 'https://bauth.bbaton.com/':
     case undefined:
-      return frontendUrl
+      return FRONTEND_URL
     default:
       return referer.substring(0, referer?.length - 1)
   }

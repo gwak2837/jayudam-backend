@@ -4,7 +4,7 @@
 
 ## 💻 Requirements
 
-- macOS 11.5 (or Windows 10 Edu 21H2 with minor errors)
+- macOS 12.4 (or Windows 10 Edu 21H2 with minor errors)
 - [Node.js](https://nodejs.org/en/) 18.2
 - [Yarn](https://yarnpkg.com/getting-started/install#install-corepack) 3.2
 - [Git](https://git-scm.com/download) 2.36

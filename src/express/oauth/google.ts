@@ -3,7 +3,7 @@ import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
-import { frontendUrl, googleClientId, googleClientSecretKey } from '../../utils/constants'
+import { FRONTEND_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../../utils/constants'
 import { generateJWT, verifyJWT } from '../../utils/jwt'
 import { IGetGoogleUserResult } from './sql/getGoogleUser'
 import getGoogleUser from './sql/getGoogleUser.sql'
@@ -14,7 +14,6 @@ import updateGoogleUser from './sql/updateGoogleUser.sql'
 import { isValidFrontendUrl } from '.'
 
 export function setGoogleOAuthStrategies(app: Express) {
-  // https://accounts.google.com/o/oauth2/v2/auth?client_id=289678734309-fd454q2i8b65ud4fjsm6tq7r7vab3d1v.apps.googleusercontent.com&redirect_uri=http://localhost:4000/oauth/google&response_type=code&scope=openid+profile
   // Google 계정으로 로그인하기
   app.get('/oauth/google', async (req, res) => {
     // 입력값 검사
@@ -68,8 +67,6 @@ export function setGoogleOAuthStrategies(app: Express) {
 
   // https://accounts.google.com/o/oauth2/v2/auth?client_id=289678734309-fd454q2i8b65ud4fjsm6tq7r7vab3d1v.apps.googleusercontent.com&redirect_uri=http://localhost:4000/oauth/google/register&response_type=code&scope=email+profile+openid&state=jwt
   // Google 계정 연결하기
-  // 필수 수집: Google 식별 번호, 이름
-  // 선택 수집: 이메일, 프로필 사진
   app.get('/oauth/google/register', async (req, res) => {
     // 입력값 검사
     const code = req.query.code as string
@@ -92,14 +89,14 @@ export function setGoogleOAuthStrategies(app: Express) {
     // OAuth 사용자 정보 가져오기
     const [{ rowCount, rows: userResult }, googleUser] = await Promise.all([
       poolQuery<IGetUserResult>(getUser, [verifiedJwt.userId]),
-      fetchFromGoogle(code, backendUrl),
+      fetchFromGoogle(code, `${req.protocol}://${backendUrl}`),
     ])
     if (rowCount === 0 || googleUser.error) return res.status(400).send('Bad Request') // user가 존재하지 않으면 JWT secret key가 유출됐다는 뜻
 
     const jayudamUser = userResult[0]
 
     // 이미 OAuth 연결되어 있으면
-    if (jayudamUser.google_oauth)
+    if (jayudamUser.oauth_google)
       return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=true&oauth=google`)
 
     // OAuth 사용자 정보와 자유담 사용자 정보 비교
@@ -140,8 +137,8 @@ async function fetchGoogleUserToken(code: string, backendUrl: string) {
     },
     body: new URLSearchParams({
       code,
-      client_id: googleClientId,
-      client_secret: googleClientSecretKey,
+      client_id: GOOGLE_CLIENT_ID,
+      client_secret: GOOGLE_CLIENT_SECRET,
       redirect_uri: `${backendUrl}/oauth/google`,
       grant_type: 'authorization_code',
     }).toString(),
@@ -164,7 +161,7 @@ function getFrontendUrl(referer?: string) {
     case 'https://com/':
     case 'https://googleapis.com/':
     case undefined:
-      return frontendUrl
+      return FRONTEND_URL
     default:
       return referer.substring(0, referer?.length - 1)
   }

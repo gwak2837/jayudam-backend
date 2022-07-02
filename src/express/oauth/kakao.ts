@@ -5,10 +5,10 @@ import fetch from 'node-fetch'
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
 import {
-  frontendUrl,
-  kakaoAdminKey,
-  kakaoClientSecret,
-  kakaoRestApiKey,
+  FRONTEND_URL,
+  KAKAO_ADMIN_KEY,
+  KAKAO_CLIENT_SECRET,
+  KAKAO_REST_API_KEY,
 } from '../../utils/constants'
 import { generateJWT, verifyJWT } from '../../utils/jwt'
 import { IGetKakaoUserResult } from './sql/getKakaoUser'
@@ -22,7 +22,6 @@ import { encodeSex, isValidFrontendUrl } from '.'
 const Lunar = LunarJS.Lunar
 
 export function setKakaoOAuthStrategies(app: Express) {
-  // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=fa17772ea56b216e0fd949141f5ed5e2&redirect_uri=http://localhost:4000/oauth/kakao&state=jwt
   // Kakao 계정으로 로그인하기
   app.get('/oauth/kakao', async (req, res) => {
     // 입력값 검사
@@ -45,8 +44,10 @@ export function setKakaoOAuthStrategies(app: Express) {
     const jayudamUser = rows[0]
 
     // 소셜 로그인 정보가 없는 경우
-    if (rowCount === 0)
+    if (rowCount === 0) {
+      unregisterKakaoUser(kakaoUser.id)
       return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=false&oauth=kakao`)
+    }
 
     // 정지된 계정인 경우
     if (jayudamUser.blocking_start_time)
@@ -79,18 +80,14 @@ export function setKakaoOAuthStrategies(app: Express) {
     return res.redirect(`${frontendUrl}/oauth?${querystring}`)
   })
 
-  // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=fa17772ea56b216e0fd949141f5ed5e2&redirect_uri=http://localhost:4000/oauth/kakao/register
+  // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=fa17772ea56b216e0fd949141f5ed5e2&redirect_uri=http://localhost:4000/oauth/kakao/register&state=jwt
   // Kakao 계정 연결하기
-  // 필수 수집: 카카오 식별 번호, 성별, 출생년도, 출생월일, 이름, 전화번호
-  // 선택 수집: 닉네임, 프로필 사진, 이메일
   app.get('/oauth/kakao/register', async (req, res) => {
     // 입력값 검사
     const code = req.query.code as string
-    const backendUrl = req.headers.host as string
     const jwt = req.query.state as string
     const referer = req.headers.referer as string
-    if (!code || !backendUrl || !jwt || !isValidFrontendUrl(referer))
-      return res.status(400).send('Bad Request')
+    if (!code || !jwt || !isValidFrontendUrl(referer)) return res.status(400).send('Bad Request')
 
     const frontendUrl = getFrontendUrl(referer)
 
@@ -114,7 +111,7 @@ export function setKakaoOAuthStrategies(app: Express) {
     const kakaoUserBirthday = getKakaoSolarBirthday(kakaoUser)
 
     // 이미 OAuth 연결되어 있으면
-    if (jayudamUser.kakao_oauth)
+    if (jayudamUser.oauth_kakao)
       return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=true&oauth=kakao`)
 
     // OAuth 사용자 정보와 자유담 사용자 정보 비교
@@ -143,7 +140,7 @@ export function setKakaoOAuthStrategies(app: Express) {
   })
 
   app.get('/oauth/kakao/unregister', async (req, res) => {
-    if (req.headers.Authorization !== kakaoAdminKey) {
+    if (req.headers.Authorization !== KAKAO_ADMIN_KEY) {
       return res.status(400).send('400 Bad Request')
     }
 
@@ -170,9 +167,9 @@ async function fetchKakaoUserToken(code: string) {
     },
     body: new URLSearchParams({
       grant_type: 'authorization_code',
-      client_id: kakaoRestApiKey,
+      client_id: KAKAO_REST_API_KEY,
       code,
-      client_secret: kakaoClientSecret,
+      client_secret: KAKAO_CLIENT_SECRET,
     }).toString(),
   })
 
@@ -193,7 +190,7 @@ function getFrontendUrl(referer?: string) {
     case 'https://accounts.kakao.com/':
     case 'https://kauth.kakao.com/':
     case undefined:
-      return frontendUrl
+      return FRONTEND_URL
     default:
       return referer.substring(0, referer?.length - 1)
   }
@@ -204,7 +201,7 @@ export async function unregisterKakaoUser(kakaoUserId: string) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `KakaoAK ${kakaoAdminKey}`,
+      Authorization: `KakaoAK ${KAKAO_ADMIN_KEY}`,
     },
     body: new URLSearchParams({
       target_id_type: 'user_id',

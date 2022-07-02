@@ -10,7 +10,7 @@ import { setOAuthStrategies } from '../express/oauth'
 import { setUploadingFiles } from '../express/upload'
 import { resolvers } from '../graphql'
 import typeDefs from '../graphql/generated/schema.graphql'
-import { port, projectEnv } from '../utils/constants'
+import { PORT, PROJECT_ENV } from '../utils/constants'
 import { verifyJWT } from '../utils/jwt'
 
 export type ApolloContext = {
@@ -46,7 +46,7 @@ export async function startApolloServer() {
 
       return { userId: verifiedJwt.userId }
     },
-    introspection: projectEnv.startsWith('local'),
+    introspection: PROJECT_ENV.startsWith('local'),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     resolvers,
     typeDefs,
@@ -59,8 +59,8 @@ export async function startApolloServer() {
   })
 
   return new Promise((resolve) =>
-    httpServer.listen({ port }, () =>
-      resolve(`http://localhost:${port}${apolloServer.graphqlPath}`)
+    httpServer.listen({ port: PORT }, () =>
+      resolve(`http://localhost:${PORT}${apolloServer.graphqlPath}`)
     )
   )
 }

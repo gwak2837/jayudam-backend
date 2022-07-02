@@ -1,14 +1,18 @@
+import { networkInterfaces } from 'os'
+
 /* eslint-disable no-console */
 import { startApolloServer } from './apollo/server'
 import { pool } from './database/postgres'
 import { redisClient } from './database/redis'
-import { pgUri, redisConnectionString } from './utils/constants'
+import { PGURI, PORT, REDIS_CONNECTION_STRING } from './utils/constants'
+
+const nets = networkInterfaces()
 
 pool
   .query('SELECT CURRENT_TIMESTAMP')
   .then(({ rows }) =>
     console.log(
-      `🚅 Connected to ${pgUri} at ${new Date(rows[0].current_timestamp).toLocaleString()}`
+      `🚅 Connected to ${PGURI} at ${new Date(rows[0].current_timestamp).toLocaleString()}`
     )
   )
   .catch((error) => {
@@ -19,7 +23,7 @@ redisClient
   .time()
   .then((value) =>
     console.log(
-      `📮 Connected to ${redisConnectionString} at ${new Date(value[0] * 1000).toLocaleString()}`
+      `📮 Connected to ${REDIS_CONNECTION_STRING} at ${new Date(value[0] * 1000).toLocaleString()}`
     )
   )
   .catch((error) => {
@@ -27,7 +31,11 @@ redisClient
   })
 
 startApolloServer()
-  .then((url) => console.log(`🚀 Server ready at ${url}`))
+  .then((url) => {
+    console.log(`🚀 Server ready at: ${url}`)
+    if (process.env.NODE_ENV !== 'production' && nets.en0)
+      console.log(`🚀 On Your Network: http://${nets.en0[1].address}:${PORT}`)
+  })
   .catch((error) => {
     throw new Error('Cannot start Apollo server... ' + error)
   })

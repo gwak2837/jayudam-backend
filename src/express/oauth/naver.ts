@@ -3,7 +3,7 @@ import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
-import { frontendUrl, naverClientId, naverClientSecret } from '../../utils/constants'
+import { FRONTEND_URL, NAVER_CLIENT_ID, NAVER_CLIENT_SECRET } from '../../utils/constants'
 import { generateJWT, verifyJWT } from '../../utils/jwt'
 import { IGetNaverUserResult } from './sql/getNaverUser'
 import getNaverUser from './sql/getNaverUser.sql'
@@ -14,7 +14,6 @@ import updateNaverUser from './sql/updateNaverUser.sql'
 import { encodeSex, isValidFrontendUrl } from '.'
 
 export function setNaverOAuthStrategies(app: Express) {
-  // https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=FPQoCRnHgbAWgjWYtlLb&redirect_uri=http://localhost:4000/oauth/naver
   // Naver 계정으로 로그인하기
   app.get('/oauth/naver', async (req, res) => {
     // 입력값 검사
@@ -77,8 +76,6 @@ export function setNaverOAuthStrategies(app: Express) {
 
   // https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=FPQoCRnHgbAWgjWYtlLb&redirect_uri=http://localhost:4000/oauth/naver/register&state=jwt
   // Naver 계정 연결하기
-  // 필수 수집: 네이버 식별 번호, 성별, 출생년도, 출생월일, 전화번호, 이름
-  // 선택 수집: 닉네임, 프로필 사진, 이메일
   app.get('/oauth/google/register', async (req, res) => {
     // 입력값 검사
     const code = req.query.code as string
@@ -108,7 +105,7 @@ export function setNaverOAuthStrategies(app: Express) {
     const jayudamUser = userResult[0]
 
     // 이미 OAuth 연결되어 있으면
-    if (jayudamUser.naver_oauth)
+    if (jayudamUser.oauth_naver)
       return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=true&oauth=naver`)
 
     // OAuth 사용자 정보와 자유담 사용자 정보 비교
@@ -151,16 +148,16 @@ async function fetchNaverUserToken(code: string, backendUrl: string, state: stri
   const response = await fetch(
     `https://nid.naver.com/oauth2.0/token?${new URLSearchParams({
       grant_type: 'authorization_code',
-      client_id: naverClientId,
-      client_secret: naverClientSecret,
+      client_id: NAVER_CLIENT_ID,
+      client_secret: NAVER_CLIENT_SECRET,
       code,
       redirect_uri: `${backendUrl}/oauth/naver`,
       state,
     })}`,
     {
       headers: {
-        'X-Naver-Client-Id': naverClientId,
-        'X-Naver-Client-Secret': naverClientSecret,
+        'X-Naver-Client-Id': NAVER_CLIENT_ID,
+        'X-Naver-Client-Secret': NAVER_CLIENT_SECRET,
       },
     }
   )
@@ -183,7 +180,7 @@ function getFrontendUrl(referer?: string) {
     case 'https://naver.com/':
     case 'https://nid.naver.com/':
     case undefined:
-      return frontendUrl
+      return FRONTEND_URL
     default:
       return referer.substring(0, referer?.length - 1)
   }

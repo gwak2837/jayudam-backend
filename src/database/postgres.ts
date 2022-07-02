@@ -2,19 +2,19 @@ import pg from 'pg'
 
 import { DatabaseQueryError } from '../apollo/errors'
 import { formatDate } from '../utils'
-import { pgUri, postgresCA, projectEnv } from '../utils/constants'
+import { PGURI, POSTGRES_CA, PROJECT_ENV } from '../utils/constants'
 
 const { Pool } = pg
 
 // https://github.com/brianc/node-postgres/issues/2089
 export const pool = new Pool({
-  connectionString: pgUri,
+  connectionString: PGURI,
 
-  ...((projectEnv === 'cloud-dev' ||
-    projectEnv === 'cloud-production' ||
-    projectEnv === 'local-production') && {
+  ...((PROJECT_ENV === 'cloud-dev' ||
+    PROJECT_ENV === 'cloud-production' ||
+    PROJECT_ENV === 'local-production') && {
     ssl: {
-      ca: `-----BEGIN CERTIFICATE-----\n${postgresCA}\n-----END CERTIFICATE-----`,
+      ca: `-----BEGIN CERTIFICATE-----\n${POSTGRES_CA}\n-----END CERTIFICATE-----`,
       checkServerIdentity: () => {
         return undefined
       },
@@ -23,7 +23,7 @@ export const pool = new Pool({
 })
 
 export async function poolQuery<Results>(sql: string, values?: unknown[]) {
-  if (projectEnv.startsWith('local')) {
+  if (PROJECT_ENV.startsWith('local')) {
     // eslint-disable-next-line no-console
     console.log(formatDate(new Date()), '-', sql, values)
   }
