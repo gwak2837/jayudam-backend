@@ -38,14 +38,14 @@ CREATE TABLE "user" (
   is_verified_name boolean NOT NULL DEFAULT FALSE,
   is_verified_phone_number boolean NOT NULL DEFAULT FALSE,
   is_verified_sex boolean NOT NULL DEFAULT FALSE,
-  locations text [],
+  locations varchar(200) [],
   locations_verification_count int [],
   name varchar(50),
   nickname varchar(20) UNIQUE,
-  oauth_kakao text UNIQUE,
-  oauth_naver text UNIQUE,
-  oauth_bbaton text NOT NULL UNIQUE,
-  oauth_google text UNIQUE,
+  oauth_kakao varchar(100) UNIQUE,
+  oauth_naver varchar(100) UNIQUE,
+  oauth_bbaton varchar(100) NOT NULL UNIQUE,
+  oauth_google varchar(100) UNIQUE,
   phone_number varchar(20) UNIQUE,
   sex int,
   sleeping_time timestamptz,
@@ -54,8 +54,23 @@ CREATE TABLE "user" (
   personal_data_storing_period int NOT NULL DEFAULT 1
 );
 
+-- 검증 요청
+CREATE TABLE certificate_pending (
+  id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  birth_date date NOT NULL,
+  issue_date date NOT NULL,
+  name varchar(50) NOT NULL,
+  sex int,
+  verification_code varchar(100) NOT NULL,
+  --
+  user_id uuid REFERENCES "user" ON DELETE
+  SET NULL
+);
+
 -- 한 증명서에 effective_date이 여러 개면 가장 빠른 날짜가 기준
 CREATE TABLE certificate (
+  id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   birth_date date NOT NULL,
   content text NOT NULL,
@@ -65,7 +80,7 @@ CREATE TABLE certificate (
   sex int,
   verification_code varchar(100) NOT NULL,
   --
-  user_id uuid PRIMARY KEY REFERENCES "user" ON DELETE
+  user_id uuid REFERENCES "user" ON DELETE
   SET NULL
 );
 
@@ -79,7 +94,7 @@ CREATE TABLE notification (
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "type" int NOT NULL,
   content text NOT NULL,
-  link text NOT NULL,
+  link_url text NOT NULL,
   is_read boolean NOT NULL DEFAULT FALSE,
   --
   receiver_id uuid NOT NULL REFERENCES "user" ON DELETE CASCADE,

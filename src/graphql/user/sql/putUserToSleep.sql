@@ -16,5 +16,4 @@ SET modification_time = CURRENT_TIMESTAMP,
   name = NULL,
   sex = NULL,
   sleeping_time = CURRENT_TIMESTAMP
-WHERE id = $1
-RETURNING *;
+WHERE id = $1;

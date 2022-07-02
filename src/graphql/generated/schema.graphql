@@ -10,6 +10,14 @@ type Certificate {
   userId: UUID!
 }
 
+input CertificateCreationInput {
+  birthDate: DateTime!
+  issueDate: DateTime!
+  name: NonEmptyString!
+  sex: Sex!
+  verificationCode: NonEmptyString!
+}
+
 scalar Date
 
 scalar DateTime
@@ -25,22 +33,14 @@ scalar Latitude
 scalar Longitude
 
 type Mutation {
+  createPost(input: PostCreationInput!): Post
+  deletePost(id: ID!): Post
   logout: Boolean!
-
-  """
-  로그아웃 성공 여부 반환
-  """
-  submitMyCertificate: Boolean!
-
-  """
-  회원탈퇴 시 사용자 정보가 모두 초기화됩니다
-  """
+  submitCertificateInfo(input: CertificateCreationInput!): Boolean
   unregister: User
-
-  """
-  사용자 정보를 수정합니다
-  """
+  updatePost(input: PostUpdateInput!): Post
   updateUser(input: UserModificationInput!): User
+  wakeUser: User
 }
 
 scalar NonEmptyString
@@ -62,10 +62,35 @@ input Pagination {
 
 scalar PositiveInt
 
+type Post {
+  author: User
+  content: NonEmptyString
+  creationTime: DateTime
+  deletionTime: DateTime
+  id: ID!
+  imageUrls: [URL]
+  likeCount: NonNegativeInt
+  modificationTime: DateTime
+}
+
+input PostCreationInput {
+  content: NonEmptyString!
+  imageUrls: [URL!]
+  parentPostId: ID
+}
+
+input PostUpdateInput {
+  content: NonEmptyString!
+  id: ID!
+  imageUrls: [URL!]
+}
+
 type Query {
   getCertificateJWT: JWT!
-  isNicknameUnique(nickname: NonEmptyString!): Boolean!
+  isUniqueNickname(nickname: NonEmptyString!): Boolean!
   me: User
+  post(id: ID!): Post
+  posts: [Post!]
   userByNickname(nickname: NonEmptyString!): User
   verifyCertificateJWT(jwt: JWT!): Certificate
 }

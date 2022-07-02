@@ -1,14 +1,11 @@
 type Mutation {
-  createCertificate(input: CertificateCreationInput!): Boolean
+  submitCertificateInfo(input: CertificateCreationInput!): Boolean
 }
 
-input UserModificationInput {
-  nickname: NonEmptyString
-  imageUrl: URL
-  email: EmailAddress
-  phoneNumber: NonEmptyString
-  sex: Sex
-  ageRange: NonEmptyString
-  birthday: NonEmptyString
-  bio: String
+input CertificateCreationInput {
+  birthDate: DateTime!
+  issueDate: DateTime!
+  name: NonEmptyString!
+  sex: Sex!
+  verificationCode: NonEmptyString!
 }
