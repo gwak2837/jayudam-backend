@@ -1,0 +1,18 @@
+type Certificate {
+  userId: UUID!
+  creationTime: DateTime!
+  birthDate: String
+  certificateId: String
+  content: String
+  effectiveDate: Date
+  issueDate: Date
+  name: NonEmptyString
+  sex: Sex
+}
+
+enum Sex {
+  UNKNOWN
+  MALE
+  FEMALE
+  OTHER
+}

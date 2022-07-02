@@ -8,7 +8,7 @@ INSERT INTO "user" (
     sex,
     bio,
     image_urls,
-    kakao_oauth
+    oauth_kakao
   )
 VALUES(
     $1,

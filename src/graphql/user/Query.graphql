@@ -1,10 +1,5 @@
 type Query {
-  "현재 로그인된(JWT) 사용자 정보를 반환"
+  isUniqueNickname(nickname: NonEmptyString!): Boolean!
   me: User
-
-  "사용자 닉네임 중복 여부 검사"
-  isNicknameUnique(nickname: NonEmptyString!): Boolean!
-
-  "닉네임으로 사용자 검색"
   userByNickname(nickname: NonEmptyString!): User
 }

@@ -26,10 +26,24 @@ export type Scalars = {
   UUID: any
 }
 
+export type Certificate = {
+  __typename?: 'Certificate'
+  birthDate?: Maybe<Scalars['String']>
+  certificateId?: Maybe<Scalars['String']>
+  content?: Maybe<Scalars['String']>
+  creationTime: Scalars['DateTime']
+  effectiveDate?: Maybe<Scalars['Date']>
+  issueDate?: Maybe<Scalars['Date']>
+  name?: Maybe<Scalars['NonEmptyString']>
+  sex?: Maybe<Sex>
+  userId: Scalars['UUID']
+}
+
 export type Mutation = {
   __typename?: 'Mutation'
-  /** 로그아웃 성공 여부 반환 */
   logout: Scalars['Boolean']
+  /** 로그아웃 성공 여부 반환 */
+  submitMyCertificate: Scalars['Boolean']
   /** 회원탈퇴 시 사용자 정보가 모두 초기화됩니다 */
   unregister?: Maybe<User>
   /** 사용자 정보를 수정합니다 */
@@ -53,12 +67,11 @@ export type Pagination = {
 
 export type Query = {
   __typename?: 'Query'
-  /** 사용자 닉네임 중복 여부 검사 */
+  getCertificateJWT: Scalars['JWT']
   isNicknameUnique: Scalars['Boolean']
-  /** 현재 로그인된(JWT) 사용자 정보를 반환 */
   me?: Maybe<User>
-  /** 닉네임으로 사용자 검색 */
   userByNickname?: Maybe<User>
+  verifyCertificateJWT?: Maybe<Certificate>
 }
 
 export type QueryIsNicknameUniqueArgs = {
@@ -67,6 +80,10 @@ export type QueryIsNicknameUniqueArgs = {
 
 export type QueryUserByNicknameArgs = {
   nickname: Scalars['NonEmptyString']
+}
+
+export type QueryVerifyCertificateJwtArgs = {
+  jwt: Scalars['JWT']
 }
 
 export enum Sex {
@@ -186,6 +203,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>
+  Certificate: ResolverTypeWrapper<Certificate>
   Date: ResolverTypeWrapper<Scalars['Date']>
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>
   EmailAddress: ResolverTypeWrapper<Scalars['EmailAddress']>
@@ -213,6 +231,7 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']
+  Certificate: Certificate
   Date: Scalars['Date']
   DateTime: Scalars['DateTime']
   EmailAddress: Scalars['EmailAddress']
@@ -233,6 +252,22 @@ export type ResolversParentTypes = ResolversObject<{
   UUID: Scalars['UUID']
   User: User
   UserModificationInput: UserModificationInput
+}>
+
+export type CertificateResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Certificate'] = ResolversParentTypes['Certificate']
+> = ResolversObject<{
+  birthDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  certificateId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  creationTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
+  effectiveDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
+  issueDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
+  name?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
+  sex?: Resolver<Maybe<ResolversTypes['Sex']>, ParentType, ContextType>
+  userId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
@@ -273,6 +308,7 @@ export type MutationResolvers<
   ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
 > = ResolversObject<{
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  submitMyCertificate?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   unregister?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   updateUser?: Resolver<
     Maybe<ResolversTypes['User']>,
@@ -301,6 +337,7 @@ export type QueryResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
 > = ResolversObject<{
+  getCertificateJWT?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>
   isNicknameUnique?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
@@ -313,6 +350,12 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     RequireFields<QueryUserByNicknameArgs, 'nickname'>
+  >
+  verifyCertificateJWT?: Resolver<
+    Maybe<ResolversTypes['Certificate']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryVerifyCertificateJwtArgs, 'jwt'>
   >
 }>
 
@@ -339,6 +382,7 @@ export type UserResolvers<
 }>
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  Certificate?: CertificateResolvers<ContextType>
   Date?: GraphQLScalarType
   DateTime?: GraphQLScalarType
   EmailAddress?: GraphQLScalarType

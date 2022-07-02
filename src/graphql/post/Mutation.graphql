@@ -1,0 +1,17 @@
+type Mutation {
+  createPost(input: PostCreationInput!): Post
+  updatePost(input: PostUpdateInput!): Post
+  deletePost(id: ID!): Post
+}
+
+input PostCreationInput {
+  content: NonEmptyString!
+  imageUrls: [URL!]
+  parentPostId: ID
+}
+
+input PostUpdateInput {
+  id: ID!
+  content: NonEmptyString!
+  imageUrls: [URL!]
+}

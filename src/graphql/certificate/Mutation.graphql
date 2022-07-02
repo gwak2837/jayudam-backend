@@ -1,8 +1,5 @@
 type Mutation {
-  logout: Boolean!
-  updateUser(input: UserModificationInput!): User
-  unregister: User
-  wakeUser: User
+  createCertificate(input: CertificateCreationInput!): Boolean
 }
 
 input UserModificationInput {

@@ -6,7 +6,7 @@ export type IGetUserKakaoIdParams = void;
 
 /** 'GetUserKakaoId' return type */
 export interface IGetUserKakaoIdResult {
-  kakao_oauth: string | null;
+  oauth_kakao: string | null;
 }
 
 /** 'GetUserKakaoId' query type */
@@ -15,12 +15,12 @@ export interface IGetUserKakaoIdQuery {
   result: IGetUserKakaoIdResult;
 }
 
-const getUserKakaoIdIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT kakao_oauth\nFROM \"user\"\nWHERE id = $1\n  AND nickname = $2"};
+const getUserKakaoIdIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT oauth_kakao\nFROM \"user\"\nWHERE id = $1\n  AND nickname = $2"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT kakao_oauth
+ * SELECT oauth_kakao
  * FROM "user"
  * WHERE id = $1
  *   AND nickname = $2

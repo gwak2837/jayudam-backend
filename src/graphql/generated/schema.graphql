@@ -1,3 +1,15 @@
+type Certificate {
+  birthDate: String
+  certificateId: String
+  content: String
+  creationTime: DateTime!
+  effectiveDate: Date
+  issueDate: Date
+  name: NonEmptyString
+  sex: Sex
+  userId: UUID!
+}
+
 scalar Date
 
 scalar DateTime
@@ -13,10 +25,12 @@ scalar Latitude
 scalar Longitude
 
 type Mutation {
+  logout: Boolean!
+
   """
   로그아웃 성공 여부 반환
   """
-  logout: Boolean!
+  submitMyCertificate: Boolean!
 
   """
   회원탈퇴 시 사용자 정보가 모두 초기화됩니다
@@ -49,20 +63,11 @@ input Pagination {
 scalar PositiveInt
 
 type Query {
-  """
-  사용자 닉네임 중복 여부 검사
-  """
+  getCertificateJWT: JWT!
   isNicknameUnique(nickname: NonEmptyString!): Boolean!
-
-  """
-  현재 로그인된(JWT) 사용자 정보를 반환
-  """
   me: User
-
-  """
-  닉네임으로 사용자 검색
-  """
   userByNickname(nickname: NonEmptyString!): User
+  verifyCertificateJWT(jwt: JWT!): Certificate
 }
 
 enum Sex {

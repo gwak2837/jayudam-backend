@@ -1,0 +1,5 @@
+type Query {
+  getCertificateJWT: JWT!
+
+  verifyCertificateJWT(jwt: JWT!): Certificate
+}

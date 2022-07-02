@@ -24,7 +24,7 @@ export interface IGetKakaoUserQuery {
   result: IGetKakaoUserResult;
 }
 
-const getKakaoUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  blocking_start_time,\n  blocking_end_time,\n  nickname,\n  name,\n  sex,\n  birthyear,\n  birthday,\n  phone_number,\n  sleeping_time\nFROM \"user\"\nWHERE kakao_oauth = $1"};
+const getKakaoUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  blocking_start_time,\n  blocking_end_time,\n  nickname,\n  name,\n  sex,\n  birthyear,\n  birthday,\n  phone_number,\n  sleeping_time\nFROM \"user\"\nWHERE oauth_kakao = $1"};
 
 /**
  * Query generated from SQL:
@@ -40,7 +40,7 @@ const getKakaoUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT i
  *   phone_number,
  *   sleeping_time
  * FROM "user"
- * WHERE kakao_oauth = $1
+ * WHERE oauth_kakao = $1
  * ```
  */
 export const getKakaoUser = new PreparedQuery<IGetKakaoUserParams,IGetKakaoUserResult>(getKakaoUserIR);

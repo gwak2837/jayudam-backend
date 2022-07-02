@@ -8,7 +8,7 @@ INSERT INTO "user" (
     sex,
     bio,
     image_urls,
-    google_oauth
+    oauth_google
   )
 VALUES(
     $1,

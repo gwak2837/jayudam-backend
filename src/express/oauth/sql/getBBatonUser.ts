@@ -19,7 +19,7 @@ export interface IGetBBatonUserQuery {
   result: IGetBBatonUserResult;
 }
 
-const getBBatonUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  blocking_start_time,\n  blocking_end_time,\n  nickname,\n  sleeping_time\nFROM \"user\"\nWHERE bbaton_oauth = $1"};
+const getBBatonUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  blocking_start_time,\n  blocking_end_time,\n  nickname,\n  sleeping_time\nFROM \"user\"\nWHERE oauth_bbaton = $1"};
 
 /**
  * Query generated from SQL:
@@ -30,7 +30,7 @@ const getBBatonUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT 
  *   nickname,
  *   sleeping_time
  * FROM "user"
- * WHERE bbaton_oauth = $1
+ * WHERE oauth_bbaton = $1
  * ```
  */
 export const getBBatonUser = new PreparedQuery<IGetBBatonUserParams,IGetBBatonUserResult>(getBBatonUserIR);

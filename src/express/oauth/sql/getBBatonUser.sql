@@ -5,4 +5,4 @@ SELECT id,
   nickname,
   sleeping_time
 FROM "user"
-WHERE bbaton_oauth = $1;
+WHERE oauth_bbaton = $1;
