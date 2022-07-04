@@ -1,8 +1,6 @@
 type Certificate {
-  userId: UUID!
-  creationTime: DateTime!
+  id: ID!
   birthDate: String
-  certificateId: String
   content: String
   effectiveDate: Date
   issueDate: Date

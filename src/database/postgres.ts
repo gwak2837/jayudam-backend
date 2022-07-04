@@ -2,7 +2,7 @@ import pg from 'pg'
 
 import { DatabaseQueryError } from '../apollo/errors'
 import { formatDate } from '../utils'
-import { PGURI, POSTGRES_CA, PROJECT_ENV } from '../utils/constants'
+import { NODE_ENV, PGURI, POSTGRES_CA, PROJECT_ENV } from '../utils/constants'
 
 const { Pool } = pg
 
@@ -29,7 +29,7 @@ export async function poolQuery<Results>(sql: string, values?: unknown[]) {
   }
 
   return pool.query<Results>(sql, values).catch((error) => {
-    if (process.env.NODE_ENV === 'production') {
+    if (NODE_ENV === 'production') {
       console.error(error.message, sql, values)
       throw new DatabaseQueryError('Database query error')
     } else {

@@ -1,5 +1,6 @@
 import { Express } from 'express'
 
+import { FRONTEND_URL } from '../../utils/constants'
 import { setBBatonOAuthStrategies } from './bbaton'
 import { setGoogleOAuthStrategies } from './google'
 import { setKakaoOAuthStrategies } from './kakao'
@@ -34,14 +35,26 @@ export type BBatonUser = {
 
 const urlRegex = /^https:\/\/jayudam-[-a-z0-9]{1,50}-gwak2837\.vercel\.app\//
 
-export function isValidFrontendUrl(url: string) {
-  if (!url) return true
-  if (url === 'http://localhost:3000/') return true
-  if (url.startsWith('https://jayudam.app/')) return true
-  if (url.startsWith('https://jayudam.vercel.app/')) return true
-  if (url.match(urlRegex)) return true
+export function getFrontendUrl(referer?: string) {
+  console.log('👀 - referer', referer)
+  switch (referer) {
+    case 'http://localhost:3000/':
+    case 'https://jayudam.app/':
+    case 'https://jayudam.vercel.app/':
+      return referer.substring(0, referer.length - 1)
+    case 'https://accounts.bbaton.com/':
+    case 'https://bauth.bbaton.com/':
+    case 'https://accounts.kakao.com/':
+    case 'https://kauth.kakao.com/':
+    case 'https://naver.com/':
+    case 'https://nid.naver.com/':
+    case 'https://googleapis.com/':
+    case undefined:
+      return FRONTEND_URL
+  }
 
-  return false
+  // dev, feature, fix 브랜치 배포 주소
+  if (referer.match(urlRegex)) return referer.substring(0, referer.length - 1)
 }
 
 export function encodeSex(sex: string) {

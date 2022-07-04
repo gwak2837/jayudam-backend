@@ -25,9 +25,9 @@ export const PositiveInt = PositiveIntResolver
 export const URL = URLResolver
 export const UUID = UUIDResolver
 
-export const LastValue = new GraphQLScalarType({
-  name: 'LastValue',
-  description: 'Last value of pagination',
+export const Any = new GraphQLScalarType({
+  name: 'Any',
+  description: 'Any value',
   parseValue: (value) => value,
   parseLiteral: (ast) => {
     switch (ast.kind) {

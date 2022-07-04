@@ -1,5 +1,8 @@
 type Query {
-  getCertificateJWT: JWT!
-
+  getCertificateJWT(input: CertificateAgreementInput!): JWT!
   verifyCertificateJWT(jwt: JWT!): Certificate
+}
+
+input CertificateAgreementInput {
+  showName: Boolean!
 }

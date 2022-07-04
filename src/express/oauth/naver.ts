@@ -11,7 +11,7 @@ import { IGetUserResult } from './sql/getUser'
 import getUser from './sql/getUser.sql'
 import { IUpdateNaverUserResult } from './sql/updateNaverUser'
 import updateNaverUser from './sql/updateNaverUser.sql'
-import { encodeSex, isValidFrontendUrl } from '.'
+import { encodeSex, getFrontendUrl } from '.'
 
 export function setNaverOAuthStrategies(app: Express) {
   // Naver 계정으로 로그인하기
@@ -20,9 +20,7 @@ export function setNaverOAuthStrategies(app: Express) {
     const code = req.query.code as string
     const backendUrl = req.headers.host as string
     const state = req.query.state as string
-    const referer = req.headers.referer as string
-    if (!code || !backendUrl || !state || !isValidFrontendUrl(referer))
-      return res.status(400).send('Bad Request')
+    if (!code || !backendUrl || !state) return res.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기
     const naverUserToken = await fetchNaverUserToken(code, `${req.protocol}://${backendUrl}`, state)
@@ -31,7 +29,7 @@ export function setNaverOAuthStrategies(app: Express) {
     const naverUser2 = await fetchNaverUser(naverUserToken.access_token)
     if (naverUser2.resultcode !== '00') return res.status(400).send('Bad Request')
 
-    const frontendUrl = getFrontendUrl(referer)
+    const frontendUrl = getFrontendUrl(req.headers.referer)
     const naverUser = naverUser2.response
 
     // 자유담 사용자 정보 가져오기
@@ -81,11 +79,9 @@ export function setNaverOAuthStrategies(app: Express) {
     const code = req.query.code as string
     const backendUrl = req.headers.host as string
     const jwt = req.query.state as string
-    const referer = req.headers.referer as string
-    if (!code || !backendUrl || !jwt || !isValidFrontendUrl(referer))
-      return res.status(400).send('Bad Request')
+    if (!code || !backendUrl || !jwt) return res.status(400).send('Bad Request')
 
-    const frontendUrl = getFrontendUrl(referer)
+    const frontendUrl = getFrontendUrl(req.headers.referer)
 
     // JWT 유효성 검사
     const verifiedJwt = await verifyJWT(jwt)
@@ -172,18 +168,6 @@ async function fetchNaverUser(accessToken: string) {
     },
   })
   return response.json() as Promise<Record<string, any>>
-}
-
-function getFrontendUrl(referer?: string) {
-  console.log('👀 - referer', referer)
-  switch (referer) {
-    case 'https://naver.com/':
-    case 'https://nid.naver.com/':
-    case undefined:
-      return FRONTEND_URL
-    default:
-      return referer.substring(0, referer?.length - 1)
-  }
 }
 
 function encodeBirthDay(birthday: string) {

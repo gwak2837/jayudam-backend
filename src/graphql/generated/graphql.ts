@@ -12,11 +12,11 @@ export type Scalars = {
   Boolean: boolean
   Int: number
   Float: number
+  Any: any
   Date: any
   DateTime: any
   EmailAddress: any
   JWT: any
-  LastValue: any
   Latitude: any
   Longitude: any
   NonEmptyString: any
@@ -29,14 +29,16 @@ export type Scalars = {
 export type Certificate = {
   __typename?: 'Certificate'
   birthDate?: Maybe<Scalars['String']>
-  certificateId?: Maybe<Scalars['String']>
   content?: Maybe<Scalars['String']>
-  creationTime: Scalars['DateTime']
   effectiveDate?: Maybe<Scalars['Date']>
+  id: Scalars['ID']
   issueDate?: Maybe<Scalars['Date']>
   name?: Maybe<Scalars['NonEmptyString']>
   sex?: Maybe<Sex>
-  userId: Scalars['UUID']
+}
+
+export type CertificateAgreementInput = {
+  showName: Scalars['Boolean']
 }
 
 export type CertificateCreationInput = {
@@ -86,7 +88,7 @@ export enum OrderDirection {
 
 export type Pagination = {
   lastId?: InputMaybe<Scalars['ID']>
-  lastValue?: InputMaybe<Scalars['LastValue']>
+  lastValue?: InputMaybe<Scalars['Any']>
   limit: Scalars['PositiveInt']
 }
 
@@ -123,6 +125,10 @@ export type Query = {
   posts?: Maybe<Array<Post>>
   userByNickname?: Maybe<User>
   verifyCertificateJWT?: Maybe<Certificate>
+}
+
+export type QueryGetCertificateJwtArgs = {
+  input: CertificateAgreementInput
 }
 
 export type QueryIsUniqueNicknameArgs = {
@@ -257,8 +263,10 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  Any: ResolverTypeWrapper<Scalars['Any']>
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>
   Certificate: ResolverTypeWrapper<Certificate>
+  CertificateAgreementInput: CertificateAgreementInput
   CertificateCreationInput: CertificateCreationInput
   Date: ResolverTypeWrapper<Scalars['Date']>
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>
@@ -266,7 +274,6 @@ export type ResolversTypes = ResolversObject<{
   ID: ResolverTypeWrapper<Scalars['ID']>
   Int: ResolverTypeWrapper<Scalars['Int']>
   JWT: ResolverTypeWrapper<Scalars['JWT']>
-  LastValue: ResolverTypeWrapper<Scalars['LastValue']>
   Latitude: ResolverTypeWrapper<Scalars['Latitude']>
   Longitude: ResolverTypeWrapper<Scalars['Longitude']>
   Mutation: ResolverTypeWrapper<{}>
@@ -289,8 +296,10 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+  Any: Scalars['Any']
   Boolean: Scalars['Boolean']
   Certificate: Certificate
+  CertificateAgreementInput: CertificateAgreementInput
   CertificateCreationInput: CertificateCreationInput
   Date: Scalars['Date']
   DateTime: Scalars['DateTime']
@@ -298,7 +307,6 @@ export type ResolversParentTypes = ResolversObject<{
   ID: Scalars['ID']
   Int: Scalars['Int']
   JWT: Scalars['JWT']
-  LastValue: Scalars['LastValue']
   Latitude: Scalars['Latitude']
   Longitude: Scalars['Longitude']
   Mutation: {}
@@ -317,19 +325,21 @@ export type ResolversParentTypes = ResolversObject<{
   UserModificationInput: UserModificationInput
 }>
 
+export interface AnyScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Any'], any> {
+  name: 'Any'
+}
+
 export type CertificateResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Certificate'] = ResolversParentTypes['Certificate']
 > = ResolversObject<{
   birthDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  certificateId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  creationTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
   effectiveDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>
   issueDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   name?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
   sex?: Resolver<Maybe<ResolversTypes['Sex']>, ParentType, ContextType>
-  userId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
@@ -349,11 +359,6 @@ export interface EmailAddressScalarConfig
 
 export interface JwtScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JWT'], any> {
   name: 'JWT'
-}
-
-export interface LastValueScalarConfig
-  extends GraphQLScalarTypeConfig<ResolversTypes['LastValue'], any> {
-  name: 'LastValue'
 }
 
 export interface LatitudeScalarConfig
@@ -439,7 +444,12 @@ export type QueryResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
 > = ResolversObject<{
-  getCertificateJWT?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>
+  getCertificateJWT?: Resolver<
+    ResolversTypes['JWT'],
+    ParentType,
+    ContextType,
+    RequireFields<QueryGetCertificateJwtArgs, 'input'>
+  >
   isUniqueNickname?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
@@ -491,12 +501,12 @@ export type UserResolvers<
 }>
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  Any?: GraphQLScalarType
   Certificate?: CertificateResolvers<ContextType>
   Date?: GraphQLScalarType
   DateTime?: GraphQLScalarType
   EmailAddress?: GraphQLScalarType
   JWT?: GraphQLScalarType
-  LastValue?: GraphQLScalarType
   Latitude?: GraphQLScalarType
   Longitude?: GraphQLScalarType
   Mutation?: MutationResolvers<ContextType>

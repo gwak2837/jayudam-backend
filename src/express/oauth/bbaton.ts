@@ -10,7 +10,7 @@ import { IGetBBatonUserResult } from './sql/getBBatonUser'
 import getBBatonUser from './sql/getBBatonUser.sql'
 import { IRegisterBBatonUserResult } from './sql/registerBBatonUser'
 import registerBBatonUser from './sql/registerBBatonUser.sql'
-import { BBatonUser, BBatonUserToken, encodeSex, isValidFrontendUrl } from '.'
+import { BBatonUser, BBatonUserToken, encodeSex, getFrontendUrl } from '.'
 
 export function setBBatonOAuthStrategies(app: Express) {
   // BBaton 계정으로 가입하기
@@ -18,10 +18,8 @@ export function setBBatonOAuthStrategies(app: Express) {
     // 입력값 검사
     const code = req.query.code as string
     const backendUrl = req.headers.host as string
-    const referer = req.headers.referer as string
     const registerConfig = getRegisterConfig(req.query.state as string)
-    if (!code || !backendUrl || !isValidFrontendUrl(referer))
-      return res.status(400).send('Bad Request')
+    if (!code || !backendUrl) return res.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기
     const bBatonUserToken = await fetchBBatonUserToken(code, `${req.protocol}://${backendUrl}`)
@@ -30,7 +28,7 @@ export function setBBatonOAuthStrategies(app: Express) {
     const bBatonUser = await fetchBBatonUser(bBatonUserToken.access_token)
     if (bBatonUser.error) return res.status(400).send('Bad Request3')
 
-    const frontendUrl = getFrontendUrl(referer)
+    const frontendUrl = getFrontendUrl(req.headers.referer)
 
     if (bBatonUser.adult_flag !== 'Y') return res.redirect(`${frontendUrl}/oauth?isAdult=false`)
 
@@ -43,9 +41,9 @@ export function setBBatonOAuthStrategies(app: Express) {
     // 처음 가입하는 경우
     if (rowCount === 0) {
       const { rows } = await poolQuery<IRegisterBBatonUserResult>(registerBBatonUser, [
-        encodeSex(bBatonUser.gender),
-        registerConfig?.personalDataStoringPeriod ?? 1,
         bBatonUser.user_id,
+        registerConfig?.personalDataStoringPeriod ?? 1,
+        encodeSex(bBatonUser.gender),
       ])
 
       const querystring = new URLSearchParams({
@@ -68,19 +66,19 @@ export function setBBatonOAuthStrategies(app: Express) {
         encodeSex(bBatonUser.gender),
       ])
 
-      const nickname = jayudamUser.nickname
+      const nickname = jayudamUser.nickname ?? ''
       const querystring = new URLSearchParams({
         jwt: await generateJWT({ userId: jayudamUser.id }),
-        ...(nickname && { nickname }),
+        nickname,
       })
       return res.redirect(`${frontendUrl}/oauth?${querystring}`)
     }
 
     // 이미 가입된 경우
-    const nickname = jayudamUser.nickname
+    const nickname = jayudamUser.nickname ?? ''
     const querystring = new URLSearchParams({
       jwt: await generateJWT({ userId: jayudamUser.id }),
-      ...(nickname && { nickname }),
+      nickname,
     })
     return res.redirect(`${frontendUrl}/oauth?${querystring}`)
   })
@@ -120,15 +118,4 @@ async function fetchBBatonUser(accessToken: string) {
     },
   })
   return response.json() as Promise<BBatonUser>
-}
-
-function getFrontendUrl(referer?: string) {
-  switch (referer) {
-    case 'https://accounts.bbaton.com/':
-    case 'https://bauth.bbaton.com/':
-    case undefined:
-      return FRONTEND_URL
-    default:
-      return referer.substring(0, referer?.length - 1)
-  }
 }

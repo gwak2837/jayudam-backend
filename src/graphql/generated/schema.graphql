@@ -1,13 +1,17 @@
+scalar Any
+
 type Certificate {
   birthDate: String
-  certificateId: String
   content: String
-  creationTime: DateTime!
   effectiveDate: Date
+  id: ID!
   issueDate: Date
   name: NonEmptyString
   sex: Sex
-  userId: UUID!
+}
+
+input CertificateAgreementInput {
+  showName: Boolean!
 }
 
 input CertificateCreationInput {
@@ -25,8 +29,6 @@ scalar DateTime
 scalar EmailAddress
 
 scalar JWT
-
-scalar LastValue
 
 scalar Latitude
 
@@ -56,7 +58,7 @@ enum OrderDirection {
 
 input Pagination {
   lastId: ID
-  lastValue: LastValue
+  lastValue: Any
   limit: PositiveInt!
 }
 
@@ -86,7 +88,7 @@ input PostUpdateInput {
 }
 
 type Query {
-  getCertificateJWT: JWT!
+  getCertificateJWT(input: CertificateAgreementInput!): JWT!
   isUniqueNickname(nickname: NonEmptyString!): Boolean!
   me: User
   post(id: ID!): Post

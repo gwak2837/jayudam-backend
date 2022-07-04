@@ -15,16 +15,16 @@ export interface IRegisterBBatonUserQuery {
   result: IRegisterBBatonUserResult;
 }
 
-const registerBBatonUserIR: any = {"usedParamSet":{},"params":[],"statement":"INSERT INTO \"user\" (\n    is_verified_sex,\n    sex,\n    personal_data_storing_period,\n    oauth_bbaton\n  )\nVALUES(TRUE, $1, $2, $3)\nRETURNING id"};
+const registerBBatonUserIR: any = {"usedParamSet":{},"params":[],"statement":"INSERT INTO \"user\" (\n    is_verified_sex,\n    oauth_bbaton,\n    personal_data_storing_period,\n    sex\n  )\nVALUES(TRUE, $1, $2, $3)\nRETURNING id"};
 
 /**
  * Query generated from SQL:
  * ```
  * INSERT INTO "user" (
  *     is_verified_sex,
- *     sex,
+ *     oauth_bbaton,
  *     personal_data_storing_period,
- *     oauth_bbaton
+ *     sex
  *   )
  * VALUES(TRUE, $1, $2, $3)
  * RETURNING id

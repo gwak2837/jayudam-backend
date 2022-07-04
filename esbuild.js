@@ -4,6 +4,8 @@
 import { pnpPlugin } from '@yarnpkg/esbuild-plugin-pnp'
 import esbuild from 'esbuild'
 
+const NODE_ENV = process.env.NODE_ENV
+
 esbuild
   .build({
     bundle: true,
@@ -14,13 +16,13 @@ esbuild
       '.ts': 'ts',
     },
     metafile: true,
-    minify: process.env.NODE_ENV === 'production',
+    minify: NODE_ENV === 'production',
     outfile: 'out/index.cjs',
     platform: 'node',
     plugins: [pnpPlugin()],
     target: ['node18'],
     treeShaking: true,
-    watch: process.env.NODE_ENV === 'development' && {
+    watch: NODE_ENV === 'development' && {
       onRebuild(error, result) {
         if (error) {
           console.error('watch build failed:', error)

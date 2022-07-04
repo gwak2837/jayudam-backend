@@ -3,7 +3,7 @@ import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
-import { FRONTEND_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../../utils/constants'
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../../utils/constants'
 import { generateJWT, verifyJWT } from '../../utils/jwt'
 import { IGetGoogleUserResult } from './sql/getGoogleUser'
 import getGoogleUser from './sql/getGoogleUser.sql'
@@ -11,7 +11,7 @@ import { IGetUserResult } from './sql/getUser'
 import getUser from './sql/getUser.sql'
 import { IUpdateGoogleUserResult } from './sql/updateGoogleUser'
 import updateGoogleUser from './sql/updateGoogleUser.sql'
-import { isValidFrontendUrl } from '.'
+import { getFrontendUrl } from '.'
 
 export function setGoogleOAuthStrategies(app: Express) {
   // Google 계정으로 로그인하기
@@ -19,9 +19,7 @@ export function setGoogleOAuthStrategies(app: Express) {
     // 입력값 검사
     const code = req.query.code as string
     const backendUrl = req.headers.host as string
-    const referer = req.headers.referer as string
-    if (!code || !backendUrl || !isValidFrontendUrl(referer))
-      return res.status(400).send('Bad Request')
+    if (!code || !backendUrl) return res.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기
     const googleUserToken = await fetchGoogleUserToken(code, `${req.protocol}://${backendUrl}`)
@@ -30,7 +28,7 @@ export function setGoogleOAuthStrategies(app: Express) {
     const googleUser = await fetchGoogleUser(googleUserToken.access_token)
     if (googleUser.error) return res.status(400).send('Bad Request')
 
-    const frontendUrl = getFrontendUrl(referer)
+    const frontendUrl = getFrontendUrl(req.headers.referer)
 
     // 자유담 사용자 정보 가져오기
     const { rowCount, rows } = await poolQuery<IGetGoogleUserResult>(getGoogleUser, [googleUser.id])
@@ -72,11 +70,9 @@ export function setGoogleOAuthStrategies(app: Express) {
     const code = req.query.code as string
     const backendUrl = req.headers.host as string
     const jwt = req.query.state as string
-    const referer = req.headers.referer as string
-    if (!code || !backendUrl || !jwt || !isValidFrontendUrl(referer))
-      return res.status(400).send('Bad Request')
+    if (!code || !backendUrl || !jwt) return res.status(400).send('Bad Request')
 
-    const frontendUrl = getFrontendUrl(referer)
+    const frontendUrl = getFrontendUrl(req.headers.referer)
 
     // JWT 유효성 검사
     const verifiedJwt = await verifyJWT(jwt)
@@ -154,15 +150,4 @@ async function fetchGoogleUser(accessToken: string) {
     },
   })
   return response.json() as Promise<Record<string, any>>
-}
-
-function getFrontendUrl(referer?: string) {
-  switch (referer) {
-    case 'https://com/':
-    case 'https://googleapis.com/':
-    case undefined:
-      return FRONTEND_URL
-    default:
-      return referer.substring(0, referer?.length - 1)
-  }
 }

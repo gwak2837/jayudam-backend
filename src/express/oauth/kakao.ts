@@ -4,12 +4,7 @@ import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
-import {
-  FRONTEND_URL,
-  KAKAO_ADMIN_KEY,
-  KAKAO_CLIENT_SECRET,
-  KAKAO_REST_API_KEY,
-} from '../../utils/constants'
+import { KAKAO_ADMIN_KEY, KAKAO_CLIENT_SECRET, KAKAO_REST_API_KEY } from '../../utils/constants'
 import { generateJWT, verifyJWT } from '../../utils/jwt'
 import { IGetKakaoUserResult } from './sql/getKakaoUser'
 import getKakaoUser from './sql/getKakaoUser.sql'
@@ -17,7 +12,7 @@ import { IGetUserResult } from './sql/getUser'
 import getUser from './sql/getUser.sql'
 import { IUpdateKakaoUserResult } from './sql/updateKakaoUser'
 import updateKakaoUser from './sql/updateKakaoUser.sql'
-import { encodeSex, isValidFrontendUrl } from '.'
+import { encodeSex, getFrontendUrl } from '.'
 
 const Lunar = LunarJS.Lunar
 
@@ -26,8 +21,8 @@ export function setKakaoOAuthStrategies(app: Express) {
   app.get('/oauth/kakao', async (req, res) => {
     // 입력값 검사
     const code = req.query.code as string
-    const referer = req.headers.referer as string
-    if (!code || !isValidFrontendUrl(referer)) return res.status(400).send('Bad Request')
+
+    if (!code) return res.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기
     const kakaoUserToken = await fetchKakaoUserToken(code as string)
@@ -37,7 +32,7 @@ export function setKakaoOAuthStrategies(app: Express) {
     if (!kakaoUser.id) return res.status(400).send('Bad Request')
 
     const kakaoAccount = kakaoUser.kakao_account
-    const frontendUrl = getFrontendUrl(referer)
+    const frontendUrl = getFrontendUrl(req.headers.referer)
 
     // 자유담 사용자 정보 가져오기
     const { rowCount, rows } = await poolQuery<IGetKakaoUserResult>(getKakaoUser, [kakaoUser.id])
@@ -86,10 +81,9 @@ export function setKakaoOAuthStrategies(app: Express) {
     // 입력값 검사
     const code = req.query.code as string
     const jwt = req.query.state as string
-    const referer = req.headers.referer as string
-    if (!code || !jwt || !isValidFrontendUrl(referer)) return res.status(400).send('Bad Request')
+    if (!code || !jwt) return res.status(400).send('Bad Request')
 
-    const frontendUrl = getFrontendUrl(referer)
+    const frontendUrl = getFrontendUrl(req.headers.referer)
 
     // JWT 유효성 검사
     const verifiedJwt = await verifyJWT(jwt)
@@ -183,17 +177,6 @@ async function fetchKakaoUser(accessToken: string) {
     },
   })
   return response.json() as Promise<Record<string, any>>
-}
-
-function getFrontendUrl(referer?: string) {
-  switch (referer) {
-    case 'https://accounts.kakao.com/':
-    case 'https://kauth.kakao.com/':
-    case undefined:
-      return FRONTEND_URL
-    default:
-      return referer.substring(0, referer?.length - 1)
-  }
 }
 
 export async function unregisterKakaoUser(kakaoUserId: string) {
