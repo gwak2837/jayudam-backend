@@ -4,7 +4,7 @@ import fetch from 'node-fetch'
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../../utils/constants'
-import { generateJWT, verifyJWT } from '../../utils/jwt'
+import { signJWT, verifyJWT } from '../../utils/jwt'
 import { IGetGoogleUserResult } from './sql/getGoogleUser'
 import getGoogleUser from './sql/getGoogleUser.sql'
 import { IGetUserResult } from './sql/getUser'
@@ -57,7 +57,7 @@ export function setGoogleOAuthStrategies(app: Express) {
     // 소셜 로그인 정보가 존재하는 경우
     const nickname = jayudamUser.nickname
     const querystring = new URLSearchParams({
-      jwt: await generateJWT({ userId: jayudamUser.id }),
+      jwt: await signJWT({ userId: jayudamUser.id }),
       ...(nickname && { nickname }),
     })
     return res.redirect(`${frontendUrl}/oauth?${querystring}`)
@@ -108,7 +108,7 @@ export function setGoogleOAuthStrategies(app: Express) {
 
     return res.redirect(
       `${frontendUrl}/oauth?${new URLSearchParams({
-        jwt: await generateJWT({ userId: jayudamUser.id }),
+        jwt: await signJWT({ userId: jayudamUser.id }),
         ...(jayudamUser.nickname && { nickname: jayudamUser.nickname }),
       })}`
     )

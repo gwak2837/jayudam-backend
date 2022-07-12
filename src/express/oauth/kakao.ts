@@ -5,7 +5,7 @@ import fetch from 'node-fetch'
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
 import { KAKAO_ADMIN_KEY, KAKAO_CLIENT_SECRET, KAKAO_REST_API_KEY } from '../../utils/constants'
-import { generateJWT, verifyJWT } from '../../utils/jwt'
+import { signJWT, verifyJWT } from '../../utils/jwt'
 import { IGetKakaoUserResult } from './sql/getKakaoUser'
 import getKakaoUser from './sql/getKakaoUser.sql'
 import { IGetUserResult } from './sql/getUser'
@@ -69,7 +69,7 @@ export function setKakaoOAuthStrategies(app: Express) {
     // 소셜 로그인 정보가 존재하는 경우
     const nickname = jayudamUser.nickname
     const querystring = new URLSearchParams({
-      jwt: await generateJWT({ userId: jayudamUser.id }),
+      jwt: await signJWT({ userId: jayudamUser.id }),
       ...(nickname && { nickname }),
     })
     return res.redirect(`${frontendUrl}/oauth?${querystring}`)
@@ -127,7 +127,7 @@ export function setKakaoOAuthStrategies(app: Express) {
 
     return res.redirect(
       `${frontendUrl}/oauth?${new URLSearchParams({
-        jwt: await generateJWT({ userId: jayudamUser.id }),
+        jwt: await signJWT({ userId: jayudamUser.id }),
         ...(jayudamUser.nickname && { nickname: jayudamUser.nickname }),
       })}`
     )

@@ -3,9 +3,36 @@ type User {
   creationTime: DateTime!
   bio: String
   birthyear: Int
-  imageUrl: URL
+  blockingStartTime: DateTime
+  blockingEndTime: DateTime
+  cherry: NonNegativeInt!
+  imageUrls: [URL!]
+  isVerifiedBirthyear: Boolean!
+  isVerifiedBirthday: Boolean!
+  isVerifiedEmail: Boolean!
+  isVerifiedName: Boolean!
+  isVerifiedPhoneNumber: Boolean!
+  isVerifiedSex: Boolean!
+  locations: [Location!]
   nickname: String
+  settings: Setting
   sex: Sex!
+}
+
+type Location {
+  name: NonEmptyString!
+  count: NonNegativeInt!
+}
+
+type Setting {
+  showBirthyear: Boolean!
+  showName: Boolean!
+  showSTDTestDetails: Boolean!
+  stdTestSince: Date
+  showImmunizationDetails: Boolean!
+  immunizationSince: Date
+  showSexualCrimeDetails: Boolean!
+  sexualCrimeSince: Date
 }
 
 enum Sex {

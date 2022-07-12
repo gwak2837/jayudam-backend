@@ -150,3 +150,4 @@ dist
 
 .env*
 cloud-storage-key.json
+database/data

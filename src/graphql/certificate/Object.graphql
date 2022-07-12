@@ -1,16 +1,9 @@
 type Certificate {
   id: ID!
-  birthDate: String
+  birthDate: Date
   content: String
   effectiveDate: Date
   issueDate: Date
   name: NonEmptyString
-  sex: Sex
-}
-
-enum Sex {
-  UNKNOWN
-  MALE
-  FEMALE
-  OTHER
+  sex: Sex!
 }

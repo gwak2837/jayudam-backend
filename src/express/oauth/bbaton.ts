@@ -3,7 +3,7 @@ import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
 import { BBATON_CLIENT_ID, BBATON_CLIENT_SECRET_KEY, FRONTEND_URL } from '../../utils/constants'
-import { generateJWT } from '../../utils/jwt'
+import { signJWT } from '../../utils/jwt'
 import { IAwakeBBatonUserResult } from './sql/awakeBBatonUser'
 import awakeBBatonUser from './sql/awakeBBatonUser.sql'
 import { IGetBBatonUserResult } from './sql/getBBatonUser'
@@ -47,7 +47,7 @@ export function setBBatonOAuthStrategies(app: Express) {
       ])
 
       const querystring = new URLSearchParams({
-        jwt: await generateJWT({ userId: rows[0].id }),
+        jwt: await signJWT({ userId: rows[0].id }),
       })
       return res.redirect(`${frontendUrl}/oauth?${querystring}`)
     }
@@ -68,7 +68,7 @@ export function setBBatonOAuthStrategies(app: Express) {
 
       const nickname = jayudamUser.nickname ?? ''
       const querystring = new URLSearchParams({
-        jwt: await generateJWT({ userId: jayudamUser.id }),
+        jwt: await signJWT({ userId: jayudamUser.id }),
         nickname,
       })
       return res.redirect(`${frontendUrl}/oauth?${querystring}`)
@@ -77,7 +77,7 @@ export function setBBatonOAuthStrategies(app: Express) {
     // 이미 가입된 경우
     const nickname = jayudamUser.nickname ?? ''
     const querystring = new URLSearchParams({
-      jwt: await generateJWT({ userId: jayudamUser.id }),
+      jwt: await signJWT({ userId: jayudamUser.id }),
       nickname,
     })
     return res.redirect(`${frontendUrl}/oauth?${querystring}`)

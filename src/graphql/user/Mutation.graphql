@@ -1,17 +1,27 @@
 type Mutation {
-  logout: Boolean!
-  updateUser(input: UserModificationInput!): User
+  connectToGoogleOAuth: Boolean
+  connectToKakaoOAuth: Boolean
+  connectToNaverOAuth: Boolean
+  takeAttendance: User
+  disconnectFromGoogleOAuth: Boolean
+  disconnectFromKakaoOAuth: Boolean
+  disconnectFromNaverOAuth: Boolean
+  logout: User
+  updateUser(input: UserUpdate!): User
   unregister: User
   wakeUser: User
 }
 
-input UserModificationInput {
-  nickname: NonEmptyString
-  imageUrl: URL
+input UserUpdate {
+  bio: NonEmptyString
   email: EmailAddress
-  phoneNumber: NonEmptyString
-  sex: Sex
-  ageRange: NonEmptyString
-  birthday: NonEmptyString
-  bio: String
+  imageUrls: [URL!]
+  locations: [LocationInput!]
+  nickname: NonEmptyString
+  settings: CertificateAgreement
+}
+
+input LocationInput {
+  name: NonEmptyString!
+  count: NonNegativeInt!
 }

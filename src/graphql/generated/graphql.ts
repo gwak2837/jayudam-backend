@@ -28,17 +28,25 @@ export type Scalars = {
 
 export type Certificate = {
   __typename?: 'Certificate'
-  birthDate?: Maybe<Scalars['String']>
+  birthDate?: Maybe<Scalars['Date']>
   content?: Maybe<Scalars['String']>
   effectiveDate?: Maybe<Scalars['Date']>
   id: Scalars['ID']
   issueDate?: Maybe<Scalars['Date']>
   name?: Maybe<Scalars['NonEmptyString']>
-  sex?: Maybe<Sex>
+  sex: Sex
 }
 
-export type CertificateAgreementInput = {
-  showName: Scalars['Boolean']
+export type CertificateAgreement = {
+  immunizationSince?: InputMaybe<Scalars['Date']>
+  sexualCrimeSince?: InputMaybe<Scalars['Date']>
+  showBirthyear?: InputMaybe<Scalars['Boolean']>
+  showImmunizationDetails?: InputMaybe<Scalars['Boolean']>
+  showName?: InputMaybe<Scalars['Boolean']>
+  showSTDTestDetails?: InputMaybe<Scalars['Boolean']>
+  showSex?: InputMaybe<Scalars['Boolean']>
+  showSexualCrimeDetails?: InputMaybe<Scalars['Boolean']>
+  stdTestSince?: InputMaybe<Scalars['Date']>
 }
 
 export type CertificateCreationInput = {
@@ -49,12 +57,30 @@ export type CertificateCreationInput = {
   verificationCode: Scalars['NonEmptyString']
 }
 
+export type Location = {
+  __typename?: 'Location'
+  count: Scalars['NonNegativeInt']
+  name: Scalars['NonEmptyString']
+}
+
+export type LocationInput = {
+  count: Scalars['NonNegativeInt']
+  name: Scalars['NonEmptyString']
+}
+
 export type Mutation = {
   __typename?: 'Mutation'
+  connectToGoogleOAuth?: Maybe<Scalars['Boolean']>
+  connectToKakaoOAuth?: Maybe<Scalars['Boolean']>
+  connectToNaverOAuth?: Maybe<Scalars['Boolean']>
   createPost?: Maybe<Post>
   deletePost?: Maybe<Post>
-  logout: Scalars['Boolean']
+  disconnectFromGoogleOAuth?: Maybe<Scalars['Boolean']>
+  disconnectFromKakaoOAuth?: Maybe<Scalars['Boolean']>
+  disconnectFromNaverOAuth?: Maybe<Scalars['Boolean']>
+  logout?: Maybe<User>
   submitCertificateInfo?: Maybe<Scalars['Boolean']>
+  takeAttendance?: Maybe<User>
   unregister?: Maybe<User>
   updatePost?: Maybe<Post>
   updateUser?: Maybe<User>
@@ -78,7 +104,7 @@ export type MutationUpdatePostArgs = {
 }
 
 export type MutationUpdateUserArgs = {
-  input: UserModificationInput
+  input: UserUpdate
 }
 
 /** 기본값: 내림차순 */
@@ -119,6 +145,7 @@ export type PostUpdateInput = {
 export type Query = {
   __typename?: 'Query'
   getCertificateJWT: Scalars['JWT']
+  getMyCertificates?: Maybe<Array<Certificate>>
   isUniqueNickname: Scalars['Boolean']
   me?: Maybe<User>
   post?: Maybe<Post>
@@ -128,7 +155,7 @@ export type Query = {
 }
 
 export type QueryGetCertificateJwtArgs = {
-  input: CertificateAgreementInput
+  input?: InputMaybe<CertificateAgreement>
 }
 
 export type QueryIsUniqueNicknameArgs = {
@@ -147,6 +174,18 @@ export type QueryVerifyCertificateJwtArgs = {
   jwt: Scalars['JWT']
 }
 
+export type Setting = {
+  __typename?: 'Setting'
+  immunizationSince?: Maybe<Scalars['Date']>
+  sexualCrimeSince?: Maybe<Scalars['Date']>
+  showBirthyear: Scalars['Boolean']
+  showImmunizationDetails: Scalars['Boolean']
+  showName: Scalars['Boolean']
+  showSTDTestDetails: Scalars['Boolean']
+  showSexualCrimeDetails: Scalars['Boolean']
+  stdTestSince?: Maybe<Scalars['Date']>
+}
+
 export enum Sex {
   Female = 'FEMALE',
   Male = 'MALE',
@@ -158,22 +197,31 @@ export type User = {
   __typename?: 'User'
   bio?: Maybe<Scalars['String']>
   birthyear?: Maybe<Scalars['Int']>
+  blockingEndTime?: Maybe<Scalars['DateTime']>
+  blockingStartTime?: Maybe<Scalars['DateTime']>
+  cherry: Scalars['NonNegativeInt']
   creationTime: Scalars['DateTime']
   id: Scalars['UUID']
-  imageUrl?: Maybe<Scalars['URL']>
+  imageUrls?: Maybe<Array<Scalars['URL']>>
+  isVerifiedBirthday: Scalars['Boolean']
+  isVerifiedBirthyear: Scalars['Boolean']
+  isVerifiedEmail: Scalars['Boolean']
+  isVerifiedName: Scalars['Boolean']
+  isVerifiedPhoneNumber: Scalars['Boolean']
+  isVerifiedSex: Scalars['Boolean']
+  locations?: Maybe<Array<Location>>
   nickname?: Maybe<Scalars['String']>
+  settings?: Maybe<Setting>
   sex: Sex
 }
 
-export type UserModificationInput = {
-  ageRange?: InputMaybe<Scalars['NonEmptyString']>
-  bio?: InputMaybe<Scalars['String']>
-  birthday?: InputMaybe<Scalars['NonEmptyString']>
+export type UserUpdate = {
+  bio?: InputMaybe<Scalars['NonEmptyString']>
   email?: InputMaybe<Scalars['EmailAddress']>
-  imageUrl?: InputMaybe<Scalars['URL']>
+  imageUrls?: InputMaybe<Array<Scalars['URL']>>
+  locations?: InputMaybe<Array<LocationInput>>
   nickname?: InputMaybe<Scalars['NonEmptyString']>
-  phoneNumber?: InputMaybe<Scalars['NonEmptyString']>
-  sex?: InputMaybe<Sex>
+  settings?: InputMaybe<CertificateAgreement>
 }
 
 export type WithIndex<TObject> = TObject & Record<string, any>
@@ -266,7 +314,7 @@ export type ResolversTypes = ResolversObject<{
   Any: ResolverTypeWrapper<Scalars['Any']>
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>
   Certificate: ResolverTypeWrapper<Certificate>
-  CertificateAgreementInput: CertificateAgreementInput
+  CertificateAgreement: CertificateAgreement
   CertificateCreationInput: CertificateCreationInput
   Date: ResolverTypeWrapper<Scalars['Date']>
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>
@@ -275,6 +323,8 @@ export type ResolversTypes = ResolversObject<{
   Int: ResolverTypeWrapper<Scalars['Int']>
   JWT: ResolverTypeWrapper<Scalars['JWT']>
   Latitude: ResolverTypeWrapper<Scalars['Latitude']>
+  Location: ResolverTypeWrapper<Location>
+  LocationInput: LocationInput
   Longitude: ResolverTypeWrapper<Scalars['Longitude']>
   Mutation: ResolverTypeWrapper<{}>
   NonEmptyString: ResolverTypeWrapper<Scalars['NonEmptyString']>
@@ -286,12 +336,13 @@ export type ResolversTypes = ResolversObject<{
   PostCreationInput: PostCreationInput
   PostUpdateInput: PostUpdateInput
   Query: ResolverTypeWrapper<{}>
+  Setting: ResolverTypeWrapper<Setting>
   Sex: Sex
   String: ResolverTypeWrapper<Scalars['String']>
   URL: ResolverTypeWrapper<Scalars['URL']>
   UUID: ResolverTypeWrapper<Scalars['UUID']>
   User: ResolverTypeWrapper<User>
-  UserModificationInput: UserModificationInput
+  UserUpdate: UserUpdate
 }>
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -299,7 +350,7 @@ export type ResolversParentTypes = ResolversObject<{
   Any: Scalars['Any']
   Boolean: Scalars['Boolean']
   Certificate: Certificate
-  CertificateAgreementInput: CertificateAgreementInput
+  CertificateAgreement: CertificateAgreement
   CertificateCreationInput: CertificateCreationInput
   Date: Scalars['Date']
   DateTime: Scalars['DateTime']
@@ -308,6 +359,8 @@ export type ResolversParentTypes = ResolversObject<{
   Int: Scalars['Int']
   JWT: Scalars['JWT']
   Latitude: Scalars['Latitude']
+  Location: Location
+  LocationInput: LocationInput
   Longitude: Scalars['Longitude']
   Mutation: {}
   NonEmptyString: Scalars['NonEmptyString']
@@ -318,11 +371,12 @@ export type ResolversParentTypes = ResolversObject<{
   PostCreationInput: PostCreationInput
   PostUpdateInput: PostUpdateInput
   Query: {}
+  Setting: Setting
   String: Scalars['String']
   URL: Scalars['URL']
   UUID: Scalars['UUID']
   User: User
-  UserModificationInput: UserModificationInput
+  UserUpdate: UserUpdate
 }>
 
 export interface AnyScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Any'], any> {
@@ -333,13 +387,13 @@ export type CertificateResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Certificate'] = ResolversParentTypes['Certificate']
 > = ResolversObject<{
-  birthDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  birthDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   effectiveDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>
   issueDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   name?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
-  sex?: Resolver<Maybe<ResolversTypes['Sex']>, ParentType, ContextType>
+  sex?: Resolver<ResolversTypes['Sex'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
@@ -366,6 +420,15 @@ export interface LatitudeScalarConfig
   name: 'Latitude'
 }
 
+export type LocationResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']
+> = ResolversObject<{
+  count?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>
+  name?: Resolver<ResolversTypes['NonEmptyString'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
+}>
+
 export interface LongitudeScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes['Longitude'], any> {
   name: 'Longitude'
@@ -375,6 +438,9 @@ export type MutationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
 > = ResolversObject<{
+  connectToGoogleOAuth?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
+  connectToKakaoOAuth?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
+  connectToNaverOAuth?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
   createPost?: Resolver<
     Maybe<ResolversTypes['Post']>,
     ParentType,
@@ -387,13 +453,17 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationDeletePostArgs, 'id'>
   >
-  logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  disconnectFromGoogleOAuth?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
+  disconnectFromKakaoOAuth?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
+  disconnectFromNaverOAuth?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
+  logout?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   submitCertificateInfo?: Resolver<
     Maybe<ResolversTypes['Boolean']>,
     ParentType,
     ContextType,
     RequireFields<MutationSubmitCertificateInfoArgs, 'input'>
   >
+  takeAttendance?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   unregister?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   updatePost?: Resolver<
     Maybe<ResolversTypes['Post']>,
@@ -448,8 +518,9 @@ export type QueryResolvers<
     ResolversTypes['JWT'],
     ParentType,
     ContextType,
-    RequireFields<QueryGetCertificateJwtArgs, 'input'>
+    Partial<QueryGetCertificateJwtArgs>
   >
+  getMyCertificates?: Resolver<Maybe<Array<ResolversTypes['Certificate']>>, ParentType, ContextType>
   isUniqueNickname?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
@@ -478,6 +549,21 @@ export type QueryResolvers<
   >
 }>
 
+export type SettingResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Setting'] = ResolversParentTypes['Setting']
+> = ResolversObject<{
+  immunizationSince?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
+  sexualCrimeSince?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
+  showBirthyear?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  showImmunizationDetails?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  showName?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  showSTDTestDetails?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  showSexualCrimeDetails?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  stdTestSince?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
+}>
+
 export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['URL'], any> {
   name: 'URL'
 }
@@ -492,10 +578,21 @@ export type UserResolvers<
 > = ResolversObject<{
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   birthyear?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
+  blockingEndTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
+  blockingStartTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
+  cherry?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>
   creationTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>
-  imageUrl?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>
+  imageUrls?: Resolver<Maybe<Array<ResolversTypes['URL']>>, ParentType, ContextType>
+  isVerifiedBirthday?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  isVerifiedBirthyear?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  isVerifiedEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  isVerifiedName?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  isVerifiedPhoneNumber?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  isVerifiedSex?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  locations?: Resolver<Maybe<Array<ResolversTypes['Location']>>, ParentType, ContextType>
   nickname?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  settings?: Resolver<Maybe<ResolversTypes['Setting']>, ParentType, ContextType>
   sex?: Resolver<ResolversTypes['Sex'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
@@ -508,6 +605,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   EmailAddress?: GraphQLScalarType
   JWT?: GraphQLScalarType
   Latitude?: GraphQLScalarType
+  Location?: LocationResolvers<ContextType>
   Longitude?: GraphQLScalarType
   Mutation?: MutationResolvers<ContextType>
   NonEmptyString?: GraphQLScalarType
@@ -515,6 +613,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   PositiveInt?: GraphQLScalarType
   Post?: PostResolvers<ContextType>
   Query?: QueryResolvers<ContextType>
+  Setting?: SettingResolvers<ContextType>
   URL?: GraphQLScalarType
   UUID?: GraphQLScalarType
   User?: UserResolvers<ContextType>

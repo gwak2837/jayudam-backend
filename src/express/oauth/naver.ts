@@ -4,7 +4,7 @@ import fetch from 'node-fetch'
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
 import { FRONTEND_URL, NAVER_CLIENT_ID, NAVER_CLIENT_SECRET } from '../../utils/constants'
-import { generateJWT, verifyJWT } from '../../utils/jwt'
+import { signJWT, verifyJWT } from '../../utils/jwt'
 import { IGetNaverUserResult } from './sql/getNaverUser'
 import getNaverUser from './sql/getNaverUser.sql'
 import { IGetUserResult } from './sql/getUser'
@@ -66,7 +66,7 @@ export function setNaverOAuthStrategies(app: Express) {
     const nickname = jayudamUser.nickname
     return res.redirect(
       `${frontendUrl}/oauth?${new URLSearchParams({
-        jwt: await generateJWT({ userId: jayudamUser.id }),
+        jwt: await signJWT({ userId: jayudamUser.id }),
         ...(nickname && { nickname }),
       })}`
     )
@@ -123,7 +123,7 @@ export function setNaverOAuthStrategies(app: Express) {
 
     return res.redirect(
       `${frontendUrl}/oauth?${new URLSearchParams({
-        jwt: await generateJWT({ userId: jayudamUser.id }),
+        jwt: await signJWT({ userId: jayudamUser.id }),
         ...(jayudamUser.nickname && { nickname: jayudamUser.nickname }),
       })}`
     )

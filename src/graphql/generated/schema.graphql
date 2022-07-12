@@ -1,17 +1,25 @@
 scalar Any
 
 type Certificate {
-  birthDate: String
+  birthDate: Date
   content: String
   effectiveDate: Date
   id: ID!
   issueDate: Date
   name: NonEmptyString
-  sex: Sex
+  sex: Sex!
 }
 
-input CertificateAgreementInput {
-  showName: Boolean!
+input CertificateAgreement {
+  immunizationSince: Date
+  sexualCrimeSince: Date
+  showBirthyear: Boolean
+  showImmunizationDetails: Boolean
+  showName: Boolean
+  showSTDTestDetails: Boolean
+  showSex: Boolean
+  showSexualCrimeDetails: Boolean
+  stdTestSince: Date
 }
 
 input CertificateCreationInput {
@@ -32,16 +40,33 @@ scalar JWT
 
 scalar Latitude
 
+type Location {
+  count: NonNegativeInt!
+  name: NonEmptyString!
+}
+
+input LocationInput {
+  count: NonNegativeInt!
+  name: NonEmptyString!
+}
+
 scalar Longitude
 
 type Mutation {
+  connectToGoogleOAuth: Boolean
+  connectToKakaoOAuth: Boolean
+  connectToNaverOAuth: Boolean
   createPost(input: PostCreationInput!): Post
   deletePost(id: ID!): Post
-  logout: Boolean!
+  disconnectFromGoogleOAuth: Boolean
+  disconnectFromKakaoOAuth: Boolean
+  disconnectFromNaverOAuth: Boolean
+  logout: User
   submitCertificateInfo(input: CertificateCreationInput!): Boolean
+  takeAttendance: User
   unregister: User
   updatePost(input: PostUpdateInput!): Post
-  updateUser(input: UserModificationInput!): User
+  updateUser(input: UserUpdate!): User
   wakeUser: User
 }
 
@@ -88,13 +113,25 @@ input PostUpdateInput {
 }
 
 type Query {
-  getCertificateJWT(input: CertificateAgreementInput!): JWT!
+  getCertificateJWT(input: CertificateAgreement): JWT!
+  getMyCertificates: [Certificate!]
   isUniqueNickname(nickname: NonEmptyString!): Boolean!
   me: User
   post(id: ID!): Post
   posts: [Post!]
   userByNickname(nickname: NonEmptyString!): User
   verifyCertificateJWT(jwt: JWT!): Certificate
+}
+
+type Setting {
+  immunizationSince: Date
+  sexualCrimeSince: Date
+  showBirthyear: Boolean!
+  showImmunizationDetails: Boolean!
+  showName: Boolean!
+  showSTDTestDetails: Boolean!
+  showSexualCrimeDetails: Boolean!
+  stdTestSince: Date
 }
 
 enum Sex {
@@ -111,20 +148,29 @@ scalar UUID
 type User {
   bio: String
   birthyear: Int
+  blockingEndTime: DateTime
+  blockingStartTime: DateTime
+  cherry: NonNegativeInt!
   creationTime: DateTime!
   id: UUID!
-  imageUrl: URL
+  imageUrls: [URL!]
+  isVerifiedBirthday: Boolean!
+  isVerifiedBirthyear: Boolean!
+  isVerifiedEmail: Boolean!
+  isVerifiedName: Boolean!
+  isVerifiedPhoneNumber: Boolean!
+  isVerifiedSex: Boolean!
+  locations: [Location!]
   nickname: String
+  settings: Setting
   sex: Sex!
 }
 
-input UserModificationInput {
-  ageRange: NonEmptyString
-  bio: String
-  birthday: NonEmptyString
+input UserUpdate {
+  bio: NonEmptyString
   email: EmailAddress
-  imageUrl: URL
+  imageUrls: [URL!]
+  locations: [LocationInput!]
   nickname: NonEmptyString
-  phoneNumber: NonEmptyString
-  sex: Sex
+  settings: CertificateAgreement
 }

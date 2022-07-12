@@ -1,6 +1,6 @@
 /* @name updateGoogleUser */
 UPDATE "user"
-SET modification_time = CURRENT_TIMESTAMP,
+SET update_time = CURRENT_TIMESTAMP,
   email = COALESCE(email, $2),
   image_urls = COALESCE(image_urls, $3),
   oauth_google = $4

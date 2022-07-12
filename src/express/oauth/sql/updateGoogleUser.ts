@@ -1,25 +1,19 @@
 /** Types generated for queries found in "src/express/oauth/sql/updateGoogleUser.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-/** 'UpdateGoogleUser' parameters type */
-export type IUpdateGoogleUserParams = void;
+/** Query 'UpdateGoogleUser' is invalid, so its result is assigned type 'never' */
+export type IUpdateGoogleUserResult = never;
 
-/** 'UpdateGoogleUser' return type */
-export type IUpdateGoogleUserResult = void;
+/** Query 'UpdateGoogleUser' is invalid, so its parameters are assigned type 'never' */
+export type IUpdateGoogleUserParams = never;
 
-/** 'UpdateGoogleUser' query type */
-export interface IUpdateGoogleUserQuery {
-  params: IUpdateGoogleUserParams;
-  result: IUpdateGoogleUserResult;
-}
-
-const updateGoogleUserIR: any = {"usedParamSet":{},"params":[],"statement":"UPDATE \"user\"\nSET modification_time = CURRENT_TIMESTAMP,\n  email = COALESCE(email, $2),\n  image_urls = COALESCE(image_urls, $3),\n  oauth_google = $4\nWHERE id = $1\n  AND (\n    email IS NULL\n    OR image_urls IS NULL\n  )"};
+const updateGoogleUserIR: any = {"usedParamSet":{},"params":[],"statement":"UPDATE \"user\"\nSET update_time = CURRENT_TIMESTAMP,\n  email = COALESCE(email, $2),\n  image_urls = COALESCE(image_urls, $3),\n  oauth_google = $4\nWHERE id = $1\n  AND (\n    email IS NULL\n    OR image_urls IS NULL\n  )"};
 
 /**
  * Query generated from SQL:
  * ```
  * UPDATE "user"
- * SET modification_time = CURRENT_TIMESTAMP,
+ * SET update_time = CURRENT_TIMESTAMP,
  *   email = COALESCE(email, $2),
  *   image_urls = COALESCE(image_urls, $3),
  *   oauth_google = $4

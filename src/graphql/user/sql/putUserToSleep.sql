@@ -1,6 +1,6 @@
 /* @name putUserToSleep */
 UPDATE "user"
-SET modification_time = CURRENT_TIMESTAMP,
+SET update_time = CURRENT_TIMESTAMP,
   bio = NULL,
   birthyear = NULL,
   birthday = NULL,
