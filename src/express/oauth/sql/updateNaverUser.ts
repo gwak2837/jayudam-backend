@@ -1,13 +1,24 @@
 /** Types generated for queries found in "src/express/oauth/sql/updateNaverUser.sql" */
-import { PreparedQuery } from '@pgtyped/query';
+import { PreparedQuery } from '@pgtyped/query'
 
-/** Query 'UpdateNaverUser' is invalid, so its result is assigned type 'never' */
-export type IUpdateNaverUserResult = never;
+/** 'UpdateNaverUser' parameters type */
+export type IUpdateNaverUserParams = void
 
-/** Query 'UpdateNaverUser' is invalid, so its parameters are assigned type 'never' */
-export type IUpdateNaverUserParams = never;
+/** 'UpdateNaverUser' return type */
+export type IUpdateNaverUserResult = void
 
-const updateNaverUserIR: any = {"usedParamSet":{},"params":[],"statement":"UPDATE \"user\"\nSET update_time = CURRENT_TIMESTAMP,\n  email = COALESCE(email, $2),\n  image_urls = COALESCE(image_urls, $3),\n  oauth_naver = $4\nWHERE id = $1\n  AND (\n    email IS NULL\n    OR image_urls IS NULL\n  )"};
+/** 'UpdateNaverUser' query type */
+export interface IUpdateNaverUserQuery {
+  params: IUpdateNaverUserParams
+  result: IUpdateNaverUserResult
+}
+
+const updateNaverUserIR: any = {
+  usedParamSet: {},
+  params: [],
+  statement:
+    'UPDATE "user"\nSET update_time = CURRENT_TIMESTAMP,\n  email = COALESCE(email, $2),\n  image_urls = COALESCE(image_urls, $3),\n  oauth_naver = $4\nWHERE id = $1\n  AND (\n    email IS NULL\n    OR image_urls IS NULL\n  )',
+}
 
 /**
  * Query generated from SQL:
@@ -24,6 +35,6 @@ const updateNaverUserIR: any = {"usedParamSet":{},"params":[],"statement":"UPDAT
  *   )
  * ```
  */
-export const updateNaverUser = new PreparedQuery<IUpdateNaverUserParams,IUpdateNaverUserResult>(updateNaverUserIR);
-
-
+export const updateNaverUser = new PreparedQuery<IUpdateNaverUserParams, IUpdateNaverUserResult>(
+  updateNaverUserIR
+)

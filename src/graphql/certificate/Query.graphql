@@ -1,12 +1,12 @@
 type Query {
-  getCertificateJWT(input: CertificateAgreement): JWT!
+  getCertificateJWT(input: CertificateAgreementInput): JWT!
   getMyCertificates: [Certificate!]
   verifyCertificateJWT(jwt: JWT!): Certificate
 }
 
 # ___Since 기본값: 전체
 # show___ 기본값: 미동의
-input CertificateAgreement {
+input CertificateAgreementInput {
   showBirthyear: Boolean
   showName: Boolean
   showSex: Boolean

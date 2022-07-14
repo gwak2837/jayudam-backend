@@ -82,6 +82,7 @@ CREATE TABLE "user" (
   birthday char(4),
   blocking_start_time timestamptz,
   blocking_end_time timestamptz,
+  certificate_agreement text,
   cherry int NOT NULL DEFAULT 10 CHECK (cherry >= 0),
   deactivation_time timestamptz,
   email varchar(50) UNIQUE,
@@ -95,7 +96,6 @@ CREATE TABLE "user" (
   is_verified_phone_number boolean NOT NULL DEFAULT FALSE,
   is_verified_sex boolean NOT NULL DEFAULT FALSE,
   last_attendance date,
-  locations text,
   name varchar(50),
   nickname varchar(20) UNIQUE,
   oauth_kakao varchar(100) UNIQUE,
@@ -103,11 +103,16 @@ CREATE TABLE "user" (
   oauth_bbaton varchar(100) NOT NULL UNIQUE,
   oauth_google varchar(100) UNIQUE,
   phone_number varchar(20) UNIQUE,
-  settings text,
   sex int,
   sleeping_time timestamptz,
+  town1_count int NOT NULL DEFAULT 0,
+  town1_name varchar(50),
+  town2_count int NOT NULL DEFAULT 0,
+  town2_name varchar(50)
+  /* CHECK (town1_name != town2_name) */
+,
   -- option
-  personal_data_storing_period int DEFAULT 1
+  personal_data_storing_year int NOT NULL DEFAULT 1
 );
 
 -- 인증서 검증 요청용

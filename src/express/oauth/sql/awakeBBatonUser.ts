@@ -1,11 +1,17 @@
 /** Types generated for queries found in "src/express/oauth/sql/awakeBBatonUser.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-/** Query 'AwakeBBatonUser' is invalid, so its result is assigned type 'never' */
-export type IAwakeBBatonUserResult = never;
+/** 'AwakeBBatonUser' parameters type */
+export type IAwakeBBatonUserParams = void;
 
-/** Query 'AwakeBBatonUser' is invalid, so its parameters are assigned type 'never' */
-export type IAwakeBBatonUserParams = never;
+/** 'AwakeBBatonUser' return type */
+export type IAwakeBBatonUserResult = void;
+
+/** 'AwakeBBatonUser' query type */
+export interface IAwakeBBatonUserQuery {
+  params: IAwakeBBatonUserParams;
+  result: IAwakeBBatonUserResult;
+}
 
 const awakeBBatonUserIR: any = {"usedParamSet":{},"params":[],"statement":"UPDATE \"user\"\nSET update_time = CURRENT_TIMESTAMP,\n  is_verified_sex = TRUE,\n  sex = $2,\n  sleeping_time = NULL\nWHERE id = $1"};
 

@@ -7,7 +7,7 @@ export type IGetNaverUserParams = void;
 /** 'GetNaverUser' return type */
 export interface IGetNaverUserResult {
   birthday: string | null;
-  birthyear: string | null;
+  birthyear: number | null;
   blocking_end_time: Date | null;
   blocking_start_time: Date | null;
   id: string;

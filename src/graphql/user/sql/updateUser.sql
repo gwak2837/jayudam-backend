@@ -1,15 +1,27 @@
 /* @name updateUser */
+/* WIP: need to avoid updating WITH the same value */
 UPDATE "user"
 SET update_time = CURRENT_TIMESTAMP,
-  bio = COALESCE(bio, $2),
-  email = COALESCE(email, $3),
-  image_urls = COALESCE(image_urls, $3),
-  nickname = COALESCE(nickname, $3),
-  oauth_naver = $4
+  bio = COALESCE($2, bio),
+  certificate_agreement = COALESCE($3, certificate_agreement),
+  email = COALESCE($4, email),
+  image_urls = COALESCE($5, image_urls),
+  nickname = COALESCE($6, nickname),
+  town1_name = COALESCE($7, town1_name),
+  town1_count = CASE
+    WHEN $7 IS NULL THEN town1_count
+    ELSE 0
+  END,
+  town2_name = COALESCE($8, town2_name),
+  town2_count = CASE
+    WHEN $8 IS NULL THEN town2_count
+    ELSE 0
+  END
 WHERE id = $1
-  AND (
-    bio IS NULL
-    OR email IS NULL
-    OR image_urls IS NULL
-    OR nickname IS NULL
-  );
+RETURNING bio,
+  certificate_agreement,
+  email,
+  image_urls,
+  nickname,
+  town1_name,
+  town2_name;

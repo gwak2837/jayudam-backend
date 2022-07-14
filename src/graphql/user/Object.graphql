@@ -5,7 +5,9 @@ type User {
   birthyear: Int
   blockingStartTime: DateTime
   blockingEndTime: DateTime
+  certificateAgreement: CertificateAgreement
   cherry: NonNegativeInt!
+  email: EmailAddress
   imageUrls: [URL!]
   isVerifiedBirthyear: Boolean!
   isVerifiedBirthday: Boolean!
@@ -13,18 +15,17 @@ type User {
   isVerifiedName: Boolean!
   isVerifiedPhoneNumber: Boolean!
   isVerifiedSex: Boolean!
-  locations: [Location!]
   nickname: String
-  settings: Setting
   sex: Sex!
+  towns: [Town!]
 }
 
-type Location {
+type Town {
   name: NonEmptyString!
   count: NonNegativeInt!
 }
 
-type Setting {
+type CertificateAgreement {
   showBirthyear: Boolean!
   showName: Boolean!
   showSTDTestDetails: Boolean!

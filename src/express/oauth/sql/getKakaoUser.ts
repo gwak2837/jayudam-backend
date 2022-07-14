@@ -7,7 +7,7 @@ export type IGetKakaoUserParams = void;
 /** 'GetKakaoUser' return type */
 export interface IGetKakaoUserResult {
   birthday: string | null;
-  birthyear: string | null;
+  birthyear: number | null;
   blocking_end_time: Date | null;
   blocking_start_time: Date | null;
   id: string;

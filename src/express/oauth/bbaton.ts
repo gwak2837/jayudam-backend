@@ -60,7 +60,7 @@ export function setBBatonOAuthStrategies(app: Express) {
 
     // 휴먼 계정인 경우
     if (jayudamUser.sleeping_time) {
-      // TODO: 개인정보보호법에 따라 컨테이너로 분리된 DB에서 데이터 가져오는 로직 필요
+      // WIP: 개인정보보호법에 따라 컨테이너로 분리된 DB에서 데이터 가져오는 로직 필요
       await poolQuery<IAwakeBBatonUserResult>(awakeBBatonUser, [
         jayudamUser.id,
         encodeSex(bBatonUser.gender),

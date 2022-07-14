@@ -9,7 +9,7 @@ export type IGetUserParams = void;
 /** 'GetUser' return type */
 export interface IGetUserResult {
   birthday: string | null;
-  birthyear: string | null;
+  birthyear: number | null;
   email: string | null;
   id: string;
   image_urls: stringArray | null;

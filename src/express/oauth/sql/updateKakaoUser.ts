@@ -1,11 +1,17 @@
 /** Types generated for queries found in "src/express/oauth/sql/updateKakaoUser.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-/** Query 'UpdateKakaoUser' is invalid, so its result is assigned type 'never' */
-export type IUpdateKakaoUserResult = never;
+/** 'UpdateKakaoUser' parameters type */
+export type IUpdateKakaoUserParams = void;
 
-/** Query 'UpdateKakaoUser' is invalid, so its parameters are assigned type 'never' */
-export type IUpdateKakaoUserParams = never;
+/** 'UpdateKakaoUser' return type */
+export type IUpdateKakaoUserResult = void;
+
+/** 'UpdateKakaoUser' query type */
+export interface IUpdateKakaoUserQuery {
+  params: IUpdateKakaoUserParams;
+  result: IUpdateKakaoUserResult;
+}
 
 const updateKakaoUserIR: any = {"usedParamSet":{},"params":[],"statement":"UPDATE \"user\"\nSET update_time = CURRENT_TIMESTAMP,\n  email = COALESCE(email, $2),\n  image_urls = COALESCE(image_urls, $3),\n  oauth_kakao = $4\nWHERE id = $1\n  AND (\n    email IS NULL\n    OR image_urls IS NULL\n  )"};
 

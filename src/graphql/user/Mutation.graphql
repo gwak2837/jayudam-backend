@@ -10,18 +10,19 @@ type Mutation {
   updateUser(input: UserUpdate!): User
   unregister: User
   wakeUser: User
+  verifyTown(lat: Latitude!, lon: Longitude!): User
 }
 
 input UserUpdate {
   bio: NonEmptyString
+  certificateAgreement: CertificateAgreementInput
   email: EmailAddress
   imageUrls: [URL!]
-  locations: [LocationInput!]
   nickname: NonEmptyString
-  settings: CertificateAgreement
+  town1Name: NonEmptyString
+  town2Name: NonEmptyString
 }
 
 input LocationInput {
   name: NonEmptyString!
-  count: NonNegativeInt!
 }

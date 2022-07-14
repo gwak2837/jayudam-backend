@@ -10,7 +10,18 @@ type Certificate {
   sex: Sex!
 }
 
-input CertificateAgreement {
+type CertificateAgreement {
+  immunizationSince: Date
+  sexualCrimeSince: Date
+  showBirthyear: Boolean!
+  showImmunizationDetails: Boolean!
+  showName: Boolean!
+  showSTDTestDetails: Boolean!
+  showSexualCrimeDetails: Boolean!
+  stdTestSince: Date
+}
+
+input CertificateAgreementInput {
   immunizationSince: Date
   sexualCrimeSince: Date
   showBirthyear: Boolean
@@ -40,13 +51,7 @@ scalar JWT
 
 scalar Latitude
 
-type Location {
-  count: NonNegativeInt!
-  name: NonEmptyString!
-}
-
 input LocationInput {
-  count: NonNegativeInt!
   name: NonEmptyString!
 }
 
@@ -67,6 +72,7 @@ type Mutation {
   unregister: User
   updatePost(input: PostUpdateInput!): Post
   updateUser(input: UserUpdate!): User
+  verifyTown(lat: Latitude!, lon: Longitude!): User
   wakeUser: User
 }
 
@@ -113,7 +119,7 @@ input PostUpdateInput {
 }
 
 type Query {
-  getCertificateJWT(input: CertificateAgreement): JWT!
+  getCertificateJWT(input: CertificateAgreementInput): JWT!
   getMyCertificates: [Certificate!]
   isUniqueNickname(nickname: NonEmptyString!): Boolean!
   me: User
@@ -123,22 +129,16 @@ type Query {
   verifyCertificateJWT(jwt: JWT!): Certificate
 }
 
-type Setting {
-  immunizationSince: Date
-  sexualCrimeSince: Date
-  showBirthyear: Boolean!
-  showImmunizationDetails: Boolean!
-  showName: Boolean!
-  showSTDTestDetails: Boolean!
-  showSexualCrimeDetails: Boolean!
-  stdTestSince: Date
-}
-
 enum Sex {
   FEMALE
   MALE
   OTHER
   UNKNOWN
+}
+
+type Town {
+  count: NonNegativeInt!
+  name: NonEmptyString!
 }
 
 scalar URL
@@ -150,8 +150,10 @@ type User {
   birthyear: Int
   blockingEndTime: DateTime
   blockingStartTime: DateTime
+  certificateAgreement: CertificateAgreement
   cherry: NonNegativeInt!
   creationTime: DateTime!
+  email: EmailAddress
   id: UUID!
   imageUrls: [URL!]
   isVerifiedBirthday: Boolean!
@@ -160,17 +162,17 @@ type User {
   isVerifiedName: Boolean!
   isVerifiedPhoneNumber: Boolean!
   isVerifiedSex: Boolean!
-  locations: [Location!]
   nickname: String
-  settings: Setting
   sex: Sex!
+  towns: [Town!]
 }
 
 input UserUpdate {
   bio: NonEmptyString
+  certificateAgreement: CertificateAgreementInput
   email: EmailAddress
   imageUrls: [URL!]
-  locations: [LocationInput!]
   nickname: NonEmptyString
-  settings: CertificateAgreement
+  town1Name: NonEmptyString
+  town2Name: NonEmptyString
 }
