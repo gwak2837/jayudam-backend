@@ -1,13 +1,19 @@
 /** Types generated for queries found in "src/graphql/user/sql/putUserToSleep.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-/** Query 'PutUserToSleep' is invalid, so its result is assigned type 'never' */
-export type IPutUserToSleepResult = never;
+/** 'PutUserToSleep' parameters type */
+export type IPutUserToSleepParams = void;
 
-/** Query 'PutUserToSleep' is invalid, so its parameters are assigned type 'never' */
-export type IPutUserToSleepParams = never;
+/** 'PutUserToSleep' return type */
+export type IPutUserToSleepResult = void;
 
-const putUserToSleepIR: any = {"usedParamSet":{},"params":[],"statement":"UPDATE \"user\"\nSET update_time = CURRENT_TIMESTAMP,\n  bio = NULL,\n  birthyear = NULL,\n  birthday = NULL,\n  image_urls = NULL,\n  is_verified_birthyear = FALSE,\n  is_verified_birthday = FALSE,\n  is_verified_email = FALSE,\n  is_verified_name = FALSE,\n  is_verified_phone_number = FALSE,\n  is_verified_sex = FALSE,\n  locations = NULL,\n  locations_verification_count = NULL,\n  name = NULL,\n  sex = NULL,\n  sleeping_time = CURRENT_TIMESTAMP\nWHERE id = $1"};
+/** 'PutUserToSleep' query type */
+export interface IPutUserToSleepQuery {
+  params: IPutUserToSleepParams;
+  result: IPutUserToSleepResult;
+}
+
+const putUserToSleepIR: any = {"usedParamSet":{},"params":[],"statement":"UPDATE \"user\"\nSET update_time = CURRENT_TIMESTAMP,\n  bio = NULL,\n  birthyear = NULL,\n  birthday = NULL,\n  image_urls = NULL,\n  is_verified_birthyear = FALSE,\n  is_verified_birthday = FALSE,\n  is_verified_email = FALSE,\n  is_verified_name = FALSE,\n  is_verified_phone_number = FALSE,\n  is_verified_sex = FALSE,\n  name = NULL,\n  sex = NULL,\n  sleeping_time = CURRENT_TIMESTAMP,\n  town1_count = 0,\n  town1_name = NULL,\n  town2_count = 0,\n  town2_name = NULL\nWHERE id = $1"};
 
 /**
  * Query generated from SQL:
@@ -24,11 +30,13 @@ const putUserToSleepIR: any = {"usedParamSet":{},"params":[],"statement":"UPDATE
  *   is_verified_name = FALSE,
  *   is_verified_phone_number = FALSE,
  *   is_verified_sex = FALSE,
- *   locations = NULL,
- *   locations_verification_count = NULL,
  *   name = NULL,
  *   sex = NULL,
- *   sleeping_time = CURRENT_TIMESTAMP
+ *   sleeping_time = CURRENT_TIMESTAMP,
+ *   town1_count = 0,
+ *   town1_name = NULL,
+ *   town2_count = 0,
+ *   town2_name = NULL
  * WHERE id = $1
  * ```
  */

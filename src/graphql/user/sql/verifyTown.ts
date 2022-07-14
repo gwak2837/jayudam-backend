@@ -6,9 +6,9 @@ export type IVerifyTownParams = void;
 
 /** 'VerifyTown' return type */
 export interface IVerifyTownResult {
-  town1_count: number | null;
+  town1_count: number;
   town1_name: string | null;
-  town2_count: number | null;
+  town2_count: number;
   town2_name: string | null;
 }
 

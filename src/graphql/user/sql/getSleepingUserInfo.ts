@@ -1,13 +1,38 @@
 /** Types generated for queries found in "src/graphql/user/sql/getSleepingUserInfo.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-/** Query 'GetSleepingUserInfo' is invalid, so its result is assigned type 'never' */
-export type IGetSleepingUserInfoResult = never;
+export type stringArray = (string)[];
 
-/** Query 'GetSleepingUserInfo' is invalid, so its parameters are assigned type 'never' */
-export type IGetSleepingUserInfoParams = never;
+/** 'GetSleepingUserInfo' parameters type */
+export type IGetSleepingUserInfoParams = void;
 
-const getSleepingUserInfoIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT bio,\n  birthyear,\n  birthday,\n  image_urls,\n  is_verified_birthyear,\n  is_verified_birthday,\n  is_verified_email,\n  is_verified_name,\n  is_verified_phone_number,\n  is_verified_sex,\n  locations,\n  locations_verification_count,\n  name,\n  sex\nFROM \"user\"\nWHERE id = $1"};
+/** 'GetSleepingUserInfo' return type */
+export interface IGetSleepingUserInfoResult {
+  bio: string | null;
+  birthday: string | null;
+  birthyear: number | null;
+  image_urls: stringArray | null;
+  is_verified_birthday: boolean;
+  is_verified_birthyear: boolean;
+  is_verified_email: boolean;
+  is_verified_name: boolean;
+  is_verified_phone_number: boolean;
+  is_verified_sex: boolean;
+  name: string | null;
+  sex: number | null;
+  town1_count: number;
+  town1_name: string | null;
+  town2_count: number;
+  town2_name: string | null;
+}
+
+/** 'GetSleepingUserInfo' query type */
+export interface IGetSleepingUserInfoQuery {
+  params: IGetSleepingUserInfoParams;
+  result: IGetSleepingUserInfoResult;
+}
+
+const getSleepingUserInfoIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT bio,\n  birthyear,\n  birthday,\n  image_urls,\n  is_verified_birthyear,\n  is_verified_birthday,\n  is_verified_email,\n  is_verified_name,\n  is_verified_phone_number,\n  is_verified_sex,\n  name,\n  sex,\n  town1_count,\n  town1_name,\n  town2_count,\n  town2_name\nFROM \"user\"\nWHERE id = $1"};
 
 /**
  * Query generated from SQL:
@@ -22,10 +47,12 @@ const getSleepingUserInfoIR: any = {"usedParamSet":{},"params":[],"statement":"S
  *   is_verified_name,
  *   is_verified_phone_number,
  *   is_verified_sex,
- *   locations,
- *   locations_verification_count,
  *   name,
- *   sex
+ *   sex,
+ *   town1_count,
+ *   town1_name,
+ *   town2_count,
+ *   town2_name
  * FROM "user"
  * WHERE id = $1
  * ```
