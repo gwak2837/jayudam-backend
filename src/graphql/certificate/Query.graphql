@@ -4,7 +4,7 @@ type Query {
   verifyCertificateJWT(jwt: JWT!): Certificate
 }
 
-# ___Since 기본값: 전체
+# ___Since 기본값: 전체기간
 # show___ 기본값: 미동의
 input CertificateAgreementInput {
   showBirthyear: Boolean

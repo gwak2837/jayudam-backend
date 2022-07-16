@@ -44,6 +44,7 @@ export function getFrontendUrl(referer?: string) {
       return referer.substring(0, referer.length - 1)
     case 'https://accounts.bbaton.com/':
     case 'https://bauth.bbaton.com/':
+    case 'http://bauth.bbaton.com/':
     case 'https://accounts.kakao.com/':
     case 'https://kauth.kakao.com/':
     case 'https://naver.com/':

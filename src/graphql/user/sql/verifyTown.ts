@@ -18,13 +18,14 @@ export interface IVerifyTownQuery {
   result: IVerifyTownResult;
 }
 
-const verifyTownIR: any = {"usedParamSet":{},"params":[],"statement":"UPDATE \"user\"\nSET town1_count = CASE\n    WHEN $2 = town1_name THEN town1_count + 1\n    ELSE town1_count\n  END,\n  town2_count = CASE\n    WHEN $2 = town2_name THEN town2_count + 1\n    ELSE town2_count\n  END\nWHERE id = $1\nRETURNING town1_count,\n  town1_name,\n  town2_count,\n  town2_name"};
+const verifyTownIR: any = {"usedParamSet":{},"params":[],"statement":"UPDATE \"user\"\nSET update_time = CURRENT_TIMESTAMP,\n  town1_count = CASE\n    WHEN $2 = town1_name THEN town1_count + 1\n    ELSE town1_count\n  END,\n  town2_count = CASE\n    WHEN $2 = town2_name THEN town2_count + 1\n    ELSE town2_count\n  END\nWHERE id = $1\nRETURNING town1_count,\n  town1_name,\n  town2_count,\n  town2_name"};
 
 /**
  * Query generated from SQL:
  * ```
  * UPDATE "user"
- * SET town1_count = CASE
+ * SET update_time = CURRENT_TIMESTAMP,
+ *   town1_count = CASE
  *     WHEN $2 = town1_name THEN town1_count + 1
  *     ELSE town1_count
  *   END,

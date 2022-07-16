@@ -69,10 +69,6 @@ export type CertificateCreationInput = {
   verificationCode: Scalars['NonEmptyString']
 }
 
-export type LocationInput = {
-  name: Scalars['NonEmptyString']
-}
-
 export type Mutation = {
   __typename?: 'Mutation'
   connectToGoogleOAuth?: Maybe<Scalars['Boolean']>
@@ -185,6 +181,27 @@ export type QueryVerifyCertificateJwtArgs = {
   jwt: Scalars['JWT']
 }
 
+export type ServiceAgreement = {
+  __typename?: 'ServiceAgreement'
+  adAgreement?: Maybe<Scalars['Boolean']>
+  adAgreementTime?: Maybe<Scalars['DateTime']>
+  locationAgreement?: Maybe<Scalars['Boolean']>
+  locationAgreementTime?: Maybe<Scalars['DateTime']>
+  personalDataStoringYear?: Maybe<Scalars['NonNegativeInt']>
+  privacyAgreement?: Maybe<Scalars['Boolean']>
+  privacyAgreementTime?: Maybe<Scalars['DateTime']>
+  termsAgreement?: Maybe<Scalars['Boolean']>
+  termsAgreementTime?: Maybe<Scalars['DateTime']>
+}
+
+export type ServiceAgreementInput = {
+  adAgreement?: InputMaybe<Scalars['Boolean']>
+  locationAgreement?: InputMaybe<Scalars['Boolean']>
+  personalDataStoringYear?: InputMaybe<Scalars['NonNegativeInt']>
+  privacyAgreement?: InputMaybe<Scalars['Boolean']>
+  termsAgreement?: InputMaybe<Scalars['Boolean']>
+}
+
 export enum Sex {
   Female = 'FEMALE',
   Male = 'MALE',
@@ -217,6 +234,7 @@ export type User = {
   isVerifiedPhoneNumber: Scalars['Boolean']
   isVerifiedSex: Scalars['Boolean']
   nickname?: Maybe<Scalars['String']>
+  serviceAgreement?: Maybe<ServiceAgreement>
   sex: Sex
   towns?: Maybe<Array<Town>>
 }
@@ -227,6 +245,7 @@ export type UserUpdate = {
   email?: InputMaybe<Scalars['EmailAddress']>
   imageUrls?: InputMaybe<Array<Scalars['URL']>>
   nickname?: InputMaybe<Scalars['NonEmptyString']>
+  serviceAgreement?: InputMaybe<ServiceAgreementInput>
   town1Name?: InputMaybe<Scalars['NonEmptyString']>
   town2Name?: InputMaybe<Scalars['NonEmptyString']>
 }
@@ -331,7 +350,6 @@ export type ResolversTypes = ResolversObject<{
   Int: ResolverTypeWrapper<Scalars['Int']>
   JWT: ResolverTypeWrapper<Scalars['JWT']>
   Latitude: ResolverTypeWrapper<Scalars['Latitude']>
-  LocationInput: LocationInput
   Longitude: ResolverTypeWrapper<Scalars['Longitude']>
   Mutation: ResolverTypeWrapper<{}>
   NonEmptyString: ResolverTypeWrapper<Scalars['NonEmptyString']>
@@ -343,6 +361,8 @@ export type ResolversTypes = ResolversObject<{
   PostCreationInput: PostCreationInput
   PostUpdateInput: PostUpdateInput
   Query: ResolverTypeWrapper<{}>
+  ServiceAgreement: ResolverTypeWrapper<ServiceAgreement>
+  ServiceAgreementInput: ServiceAgreementInput
   Sex: Sex
   String: ResolverTypeWrapper<Scalars['String']>
   Town: ResolverTypeWrapper<Town>
@@ -367,7 +387,6 @@ export type ResolversParentTypes = ResolversObject<{
   Int: Scalars['Int']
   JWT: Scalars['JWT']
   Latitude: Scalars['Latitude']
-  LocationInput: LocationInput
   Longitude: Scalars['Longitude']
   Mutation: {}
   NonEmptyString: Scalars['NonEmptyString']
@@ -378,6 +397,8 @@ export type ResolversParentTypes = ResolversObject<{
   PostCreationInput: PostCreationInput
   PostUpdateInput: PostUpdateInput
   Query: {}
+  ServiceAgreement: ServiceAgreement
+  ServiceAgreementInput: ServiceAgreementInput
   String: Scalars['String']
   Town: Town
   URL: Scalars['URL']
@@ -568,6 +589,26 @@ export type QueryResolvers<
   >
 }>
 
+export type ServiceAgreementResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['ServiceAgreement'] = ResolversParentTypes['ServiceAgreement']
+> = ResolversObject<{
+  adAgreement?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
+  adAgreementTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
+  locationAgreement?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
+  locationAgreementTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
+  personalDataStoringYear?: Resolver<
+    Maybe<ResolversTypes['NonNegativeInt']>,
+    ParentType,
+    ContextType
+  >
+  privacyAgreement?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
+  privacyAgreementTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
+  termsAgreement?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
+  termsAgreementTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
+}>
+
 export type TownResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Town'] = ResolversParentTypes['Town']
@@ -610,6 +651,7 @@ export type UserResolvers<
   isVerifiedPhoneNumber?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   isVerifiedSex?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   nickname?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  serviceAgreement?: Resolver<Maybe<ResolversTypes['ServiceAgreement']>, ParentType, ContextType>
   sex?: Resolver<ResolversTypes['Sex'], ParentType, ContextType>
   towns?: Resolver<Maybe<Array<ResolversTypes['Town']>>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
@@ -631,6 +673,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   PositiveInt?: GraphQLScalarType
   Post?: PostResolvers<ContextType>
   Query?: QueryResolvers<ContextType>
+  ServiceAgreement?: ServiceAgreementResolvers<ContextType>
   Town?: TownResolvers<ContextType>
   URL?: GraphQLScalarType
   UUID?: GraphQLScalarType

@@ -51,10 +51,6 @@ scalar JWT
 
 scalar Latitude
 
-input LocationInput {
-  name: NonEmptyString!
-}
-
 scalar Longitude
 
 type Mutation {
@@ -129,6 +125,26 @@ type Query {
   verifyCertificateJWT(jwt: JWT!): Certificate
 }
 
+type ServiceAgreement {
+  adAgreement: Boolean
+  adAgreementTime: DateTime
+  locationAgreement: Boolean
+  locationAgreementTime: DateTime
+  personalDataStoringYear: NonNegativeInt
+  privacyAgreement: Boolean
+  privacyAgreementTime: DateTime
+  termsAgreement: Boolean
+  termsAgreementTime: DateTime
+}
+
+input ServiceAgreementInput {
+  adAgreement: Boolean
+  locationAgreement: Boolean
+  personalDataStoringYear: NonNegativeInt
+  privacyAgreement: Boolean
+  termsAgreement: Boolean
+}
+
 enum Sex {
   FEMALE
   MALE
@@ -163,6 +179,7 @@ type User {
   isVerifiedPhoneNumber: Boolean!
   isVerifiedSex: Boolean!
   nickname: String
+  serviceAgreement: ServiceAgreement
   sex: Sex!
   towns: [Town!]
 }
@@ -173,6 +190,7 @@ input UserUpdate {
   email: EmailAddress
   imageUrls: [URL!]
   nickname: NonEmptyString
+  serviceAgreement: ServiceAgreementInput
   town1Name: NonEmptyString
   town2Name: NonEmptyString
 }

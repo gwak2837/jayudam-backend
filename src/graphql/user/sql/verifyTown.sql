@@ -1,6 +1,7 @@
 /* @name verifyTown */
 UPDATE "user"
-SET town1_count = CASE
+SET update_time = CURRENT_TIMESTAMP,
+  town1_count = CASE
     WHEN $2 = town1_name THEN town1_count + 1
     ELSE town1_count
   END,

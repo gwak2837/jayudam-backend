@@ -20,13 +20,13 @@ SET creation_time = NULL,
   last_attendance = NULL,
   name = NULL,
   nickname = NULL,
+  personal_data_storing_year = 1,
   phone_number = NULL,
   sex = NULL,
   sleeping_time = NULL,
   town1_count = 0,
   town1_name = NULL,
   town2_count = 0,
-  town2_name = NULL,
-  personal_data_storing_year = 1
+  town2_name = NULL
 WHERE id = $1
 RETURNING blocking_start_time;

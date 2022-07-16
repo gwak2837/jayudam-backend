@@ -102,7 +102,9 @@ CREATE TABLE "user" (
   oauth_naver varchar(100) UNIQUE,
   oauth_bbaton varchar(100) NOT NULL UNIQUE,
   oauth_google varchar(100) UNIQUE,
+  personal_data_storing_year int NOT NULL DEFAULT 1,
   phone_number varchar(20) UNIQUE,
+  service_agreement text,
   sex int,
   sleeping_time timestamptz,
   town1_count int NOT NULL DEFAULT 0,
@@ -110,9 +112,6 @@ CREATE TABLE "user" (
   town2_count int NOT NULL DEFAULT 0,
   town2_name varchar(50)
   /* CHECK (town1_name != town2_name) */
-,
-  -- option
-  personal_data_storing_year int NOT NULL DEFAULT 1
 );
 
 -- 인증서 검증 요청용

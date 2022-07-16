@@ -16,13 +16,9 @@ type User {
   isVerifiedPhoneNumber: Boolean!
   isVerifiedSex: Boolean!
   nickname: String
+  serviceAgreement: ServiceAgreement
   sex: Sex!
   towns: [Town!]
-}
-
-type Town {
-  name: NonEmptyString!
-  count: NonNegativeInt!
 }
 
 type CertificateAgreement {
@@ -34,6 +30,23 @@ type CertificateAgreement {
   immunizationSince: Date
   showSexualCrimeDetails: Boolean!
   sexualCrimeSince: Date
+}
+
+type ServiceAgreement {
+  termsAgreement: Boolean
+  termsAgreementTime: DateTime
+  privacyAgreement: Boolean
+  privacyAgreementTime: DateTime
+  locationAgreement: Boolean
+  locationAgreementTime: DateTime
+  adAgreement: Boolean
+  adAgreementTime: DateTime
+  personalDataStoringYear: NonNegativeInt
+}
+
+type Town {
+  name: NonEmptyString!
+  count: NonNegativeInt!
 }
 
 enum Sex {
