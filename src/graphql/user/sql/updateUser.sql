@@ -3,7 +3,7 @@
 UPDATE "user"
 SET update_time = CURRENT_TIMESTAMP,
   bio = COALESCE($2, bio),
-  certificate_agreement = COALESCE($3, certificate_agreement),
+  cert_agreement = COALESCE($3, cert_agreement),
   email = COALESCE($4, email),
   image_urls = COALESCE($5, image_urls),
   nickname = COALESCE($6, nickname),
@@ -20,7 +20,7 @@ SET update_time = CURRENT_TIMESTAMP,
   END
 WHERE id = $1
 RETURNING bio,
-  certificate_agreement,
+  cert_agreement,
   email,
   image_urls,
   nickname,

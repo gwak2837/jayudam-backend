@@ -20,6 +20,8 @@ export const Mutation: MutationResolvers<ApolloContext> = {
   logout: async (_, __, { userId }) => {
     if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
 
+    // redis logouttime 설정
+
     return {
       id: userId,
     } as User
@@ -70,7 +72,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
     const { rows } = await poolQuery<IUpdateUserResult>(updateUser, [
       userId,
       input.bio,
-      JSON.stringify(input.certificateAgreement),
+      JSON.stringify(input.certAgreement),
       input.email,
       input.imageUrls?.map((imageUrl) => imageUrl.href),
       input.nickname,
@@ -88,10 +90,8 @@ export const Mutation: MutationResolvers<ApolloContext> = {
     return {
       id: userId,
       ...(input.bio && { bio: rows[0].bio }),
-      ...(input.certificateAgreement && {
-        certificateAgreement: rows[0].certificate_agreement
-          ? JSON.parse(rows[0].certificate_agreement)
-          : null,
+      ...(input.certAgreement && {
+        certAgreement: rows[0].cert_agreement ? JSON.parse(rows[0].cert_agreement) : null,
       }),
       ...(input.email && { email: rows[0].email }),
       ...(input.imageUrls && { imageUrls: rows[0].image_urls }),
@@ -107,7 +107,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
   verifyTown: async (_, { lat, lon }, { userId }) => {
     if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
 
-    const { documents } = await getLegalTownName(lat, lon)
+    const { documents } = await getLegalTown(lat, lon)
     if (!documents) throw new UserInputError('해당 주소를 찾을 수 없습니다')
 
     const legalTown = documents.find((document) => document.region_type === 'B')
@@ -128,7 +128,12 @@ export const Mutation: MutationResolvers<ApolloContext> = {
   },
 }
 
-async function getLegalTownName(lat: any, lon: any) {
+type KakaoLegalTownResult = {
+  meta: Record<string, any>
+  documents: Record<string, any>[]
+}
+
+async function getLegalTown(lat: any, lon: any) {
   const querystring = new URLSearchParams({
     x: lon,
     y: lat,
@@ -141,10 +146,7 @@ async function getLegalTownName(lat: any, lon: any) {
       },
     }
   )
-  return response.json() as Promise<{
-    meta: Record<string, any>
-    documents: Record<string, any>[]
-  }>
+  return response.json() as Promise<KakaoLegalTownResult>
 }
 
 const nicknameRegex = /^[\w!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?\uAC00-\uD79D]+$/u

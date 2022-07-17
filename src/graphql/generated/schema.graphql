@@ -1,6 +1,6 @@
 scalar Any
 
-type Certificate {
+type Cert {
   birthDate: Date
   content: String
   effectiveDate: Date
@@ -8,23 +8,25 @@ type Certificate {
   issueDate: Date
   name: NonEmptyString
   sex: Sex!
+  type: CertType!
 }
 
-type CertificateAgreement {
+type CertAgreement {
   immunizationSince: Date
   sexualCrimeSince: Date
-  showBirthyear: Boolean!
+  showBirthdate: Boolean!
   showImmunizationDetails: Boolean!
   showName: Boolean!
   showSTDTestDetails: Boolean!
+  showSex: Boolean!
   showSexualCrimeDetails: Boolean!
   stdTestSince: Date
 }
 
-input CertificateAgreementInput {
+input CertAgreementInput {
   immunizationSince: Date
   sexualCrimeSince: Date
-  showBirthyear: Boolean
+  showBirthdate: Boolean
   showImmunizationDetails: Boolean
   showName: Boolean
   showSTDTestDetails: Boolean
@@ -33,12 +35,18 @@ input CertificateAgreementInput {
   stdTestSince: Date
 }
 
-input CertificateCreationInput {
+input CertCreation {
   birthDate: DateTime!
   issueDate: DateTime!
   name: NonEmptyString!
   sex: Sex!
   verificationCode: NonEmptyString!
+}
+
+enum CertType {
+  IMMUNIZATION
+  SEXUAL_CRIME
+  STD_TEST
 }
 
 scalar Date
@@ -63,11 +71,14 @@ type Mutation {
   disconnectFromKakaoOAuth: Boolean
   disconnectFromNaverOAuth: Boolean
   logout: User
-  submitCertificateInfo(input: CertificateCreationInput!): Boolean
+  submitCertInfo(input: CertCreation!): Boolean
   takeAttendance: User
   unregister: User
+  updateCertAgreementAndGetCertJWT(input: CertAgreementInput!): JWT!
+  updateMyCertAgreement(input: CertAgreementInput): CertAgreement
   updatePost(input: PostUpdateInput!): Post
   updateUser(input: UserUpdate!): User
+  verifyCertJWT(jwt: JWT!): [Cert!]
   verifyTown(lat: Latitude!, lon: Longitude!): User
   wakeUser: User
 }
@@ -115,25 +126,25 @@ input PostUpdateInput {
 }
 
 type Query {
-  getCertificateJWT(input: CertificateAgreementInput): JWT!
-  getMyCertificates: [Certificate!]
   isUniqueNickname(nickname: NonEmptyString!): Boolean!
   me: User
+  myCertAgreement: CertAgreement
+  myCerts: [Cert!]
+  myNickname: User
   post(id: ID!): Post
   posts: [Post!]
   userByNickname(nickname: NonEmptyString!): User
-  verifyCertificateJWT(jwt: JWT!): Certificate
 }
 
 type ServiceAgreement {
-  adAgreement: Boolean
+  adAgreement: Boolean!
   adAgreementTime: DateTime
-  locationAgreement: Boolean
+  locationAgreement: Boolean!
   locationAgreementTime: DateTime
-  personalDataStoringYear: NonNegativeInt
-  privacyAgreement: Boolean
+  personalDataStoringYear: NonNegativeInt!
+  privacyAgreement: Boolean!
   privacyAgreementTime: DateTime
-  termsAgreement: Boolean
+  termsAgreement: Boolean!
   termsAgreementTime: DateTime
 }
 
@@ -166,7 +177,7 @@ type User {
   birthyear: Int
   blockingEndTime: DateTime
   blockingStartTime: DateTime
-  certificateAgreement: CertificateAgreement
+  certAgreement: CertAgreement
   cherry: NonNegativeInt!
   creationTime: DateTime!
   email: EmailAddress
@@ -186,7 +197,7 @@ type User {
 
 input UserUpdate {
   bio: NonEmptyString
-  certificateAgreement: CertificateAgreementInput
+  certAgreement: CertAgreementInput
   email: EmailAddress
   imageUrls: [URL!]
   nickname: NonEmptyString

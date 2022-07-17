@@ -1,4 +1,4 @@
-/* @name getCertificates */
+/* @name getCerts */
 SELECT id,
   birth_date,
   content,
@@ -7,7 +7,6 @@ SELECT id,
   name,
   sex,
   "type"
-FROM certificate
+FROM cert
 WHERE user_id = $1
-  AND "type" = ANY ($2)
-  AND effective_date > $3;
+  AND "type" = ANY ($2);

@@ -26,8 +26,8 @@ export type Scalars = {
   UUID: any
 }
 
-export type Certificate = {
-  __typename?: 'Certificate'
+export type Cert = {
+  __typename?: 'Cert'
   birthDate?: Maybe<Scalars['Date']>
   content?: Maybe<Scalars['String']>
   effectiveDate?: Maybe<Scalars['Date']>
@@ -35,24 +35,26 @@ export type Certificate = {
   issueDate?: Maybe<Scalars['Date']>
   name?: Maybe<Scalars['NonEmptyString']>
   sex: Sex
+  type: CertType
 }
 
-export type CertificateAgreement = {
-  __typename?: 'CertificateAgreement'
+export type CertAgreement = {
+  __typename?: 'CertAgreement'
   immunizationSince?: Maybe<Scalars['Date']>
   sexualCrimeSince?: Maybe<Scalars['Date']>
-  showBirthyear: Scalars['Boolean']
+  showBirthdate: Scalars['Boolean']
   showImmunizationDetails: Scalars['Boolean']
   showName: Scalars['Boolean']
   showSTDTestDetails: Scalars['Boolean']
+  showSex: Scalars['Boolean']
   showSexualCrimeDetails: Scalars['Boolean']
   stdTestSince?: Maybe<Scalars['Date']>
 }
 
-export type CertificateAgreementInput = {
+export type CertAgreementInput = {
   immunizationSince?: InputMaybe<Scalars['Date']>
   sexualCrimeSince?: InputMaybe<Scalars['Date']>
-  showBirthyear?: InputMaybe<Scalars['Boolean']>
+  showBirthdate?: InputMaybe<Scalars['Boolean']>
   showImmunizationDetails?: InputMaybe<Scalars['Boolean']>
   showName?: InputMaybe<Scalars['Boolean']>
   showSTDTestDetails?: InputMaybe<Scalars['Boolean']>
@@ -61,12 +63,18 @@ export type CertificateAgreementInput = {
   stdTestSince?: InputMaybe<Scalars['Date']>
 }
 
-export type CertificateCreationInput = {
+export type CertCreation = {
   birthDate: Scalars['DateTime']
   issueDate: Scalars['DateTime']
   name: Scalars['NonEmptyString']
   sex: Sex
   verificationCode: Scalars['NonEmptyString']
+}
+
+export enum CertType {
+  Immunization = 'IMMUNIZATION',
+  SexualCrime = 'SEXUAL_CRIME',
+  StdTest = 'STD_TEST',
 }
 
 export type Mutation = {
@@ -80,11 +88,14 @@ export type Mutation = {
   disconnectFromKakaoOAuth?: Maybe<Scalars['Boolean']>
   disconnectFromNaverOAuth?: Maybe<Scalars['Boolean']>
   logout?: Maybe<User>
-  submitCertificateInfo?: Maybe<Scalars['Boolean']>
+  submitCertInfo?: Maybe<Scalars['Boolean']>
   takeAttendance?: Maybe<User>
   unregister?: Maybe<User>
+  updateCertAgreementAndGetCertJWT: Scalars['JWT']
+  updateMyCertAgreement?: Maybe<CertAgreement>
   updatePost?: Maybe<Post>
   updateUser?: Maybe<User>
+  verifyCertJWT?: Maybe<Array<Cert>>
   verifyTown?: Maybe<User>
   wakeUser?: Maybe<User>
 }
@@ -97,8 +108,16 @@ export type MutationDeletePostArgs = {
   id: Scalars['ID']
 }
 
-export type MutationSubmitCertificateInfoArgs = {
-  input: CertificateCreationInput
+export type MutationSubmitCertInfoArgs = {
+  input: CertCreation
+}
+
+export type MutationUpdateCertAgreementAndGetCertJwtArgs = {
+  input: CertAgreementInput
+}
+
+export type MutationUpdateMyCertAgreementArgs = {
+  input?: InputMaybe<CertAgreementInput>
 }
 
 export type MutationUpdatePostArgs = {
@@ -107,6 +126,10 @@ export type MutationUpdatePostArgs = {
 
 export type MutationUpdateUserArgs = {
   input: UserUpdate
+}
+
+export type MutationVerifyCertJwtArgs = {
+  jwt: Scalars['JWT']
 }
 
 export type MutationVerifyTownArgs = {
@@ -151,18 +174,14 @@ export type PostUpdateInput = {
 
 export type Query = {
   __typename?: 'Query'
-  getCertificateJWT: Scalars['JWT']
-  getMyCertificates?: Maybe<Array<Certificate>>
   isUniqueNickname: Scalars['Boolean']
   me?: Maybe<User>
+  myCertAgreement?: Maybe<CertAgreement>
+  myCerts?: Maybe<Array<Cert>>
+  myNickname?: Maybe<User>
   post?: Maybe<Post>
   posts?: Maybe<Array<Post>>
   userByNickname?: Maybe<User>
-  verifyCertificateJWT?: Maybe<Certificate>
-}
-
-export type QueryGetCertificateJwtArgs = {
-  input?: InputMaybe<CertificateAgreementInput>
 }
 
 export type QueryIsUniqueNicknameArgs = {
@@ -177,20 +196,16 @@ export type QueryUserByNicknameArgs = {
   nickname: Scalars['NonEmptyString']
 }
 
-export type QueryVerifyCertificateJwtArgs = {
-  jwt: Scalars['JWT']
-}
-
 export type ServiceAgreement = {
   __typename?: 'ServiceAgreement'
-  adAgreement?: Maybe<Scalars['Boolean']>
+  adAgreement: Scalars['Boolean']
   adAgreementTime?: Maybe<Scalars['DateTime']>
-  locationAgreement?: Maybe<Scalars['Boolean']>
+  locationAgreement: Scalars['Boolean']
   locationAgreementTime?: Maybe<Scalars['DateTime']>
-  personalDataStoringYear?: Maybe<Scalars['NonNegativeInt']>
-  privacyAgreement?: Maybe<Scalars['Boolean']>
+  personalDataStoringYear: Scalars['NonNegativeInt']
+  privacyAgreement: Scalars['Boolean']
   privacyAgreementTime?: Maybe<Scalars['DateTime']>
-  termsAgreement?: Maybe<Scalars['Boolean']>
+  termsAgreement: Scalars['Boolean']
   termsAgreementTime?: Maybe<Scalars['DateTime']>
 }
 
@@ -221,7 +236,7 @@ export type User = {
   birthyear?: Maybe<Scalars['Int']>
   blockingEndTime?: Maybe<Scalars['DateTime']>
   blockingStartTime?: Maybe<Scalars['DateTime']>
-  certificateAgreement?: Maybe<CertificateAgreement>
+  certAgreement?: Maybe<CertAgreement>
   cherry: Scalars['NonNegativeInt']
   creationTime: Scalars['DateTime']
   email?: Maybe<Scalars['EmailAddress']>
@@ -241,7 +256,7 @@ export type User = {
 
 export type UserUpdate = {
   bio?: InputMaybe<Scalars['NonEmptyString']>
-  certificateAgreement?: InputMaybe<CertificateAgreementInput>
+  certAgreement?: InputMaybe<CertAgreementInput>
   email?: InputMaybe<Scalars['EmailAddress']>
   imageUrls?: InputMaybe<Array<Scalars['URL']>>
   nickname?: InputMaybe<Scalars['NonEmptyString']>
@@ -339,10 +354,11 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = ResolversObject<{
   Any: ResolverTypeWrapper<Scalars['Any']>
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>
-  Certificate: ResolverTypeWrapper<Certificate>
-  CertificateAgreement: ResolverTypeWrapper<CertificateAgreement>
-  CertificateAgreementInput: CertificateAgreementInput
-  CertificateCreationInput: CertificateCreationInput
+  Cert: ResolverTypeWrapper<Cert>
+  CertAgreement: ResolverTypeWrapper<CertAgreement>
+  CertAgreementInput: CertAgreementInput
+  CertCreation: CertCreation
+  CertType: CertType
   Date: ResolverTypeWrapper<Scalars['Date']>
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>
   EmailAddress: ResolverTypeWrapper<Scalars['EmailAddress']>
@@ -376,10 +392,10 @@ export type ResolversTypes = ResolversObject<{
 export type ResolversParentTypes = ResolversObject<{
   Any: Scalars['Any']
   Boolean: Scalars['Boolean']
-  Certificate: Certificate
-  CertificateAgreement: CertificateAgreement
-  CertificateAgreementInput: CertificateAgreementInput
-  CertificateCreationInput: CertificateCreationInput
+  Cert: Cert
+  CertAgreement: CertAgreement
+  CertAgreementInput: CertAgreementInput
+  CertCreation: CertCreation
   Date: Scalars['Date']
   DateTime: Scalars['DateTime']
   EmailAddress: Scalars['EmailAddress']
@@ -411,9 +427,9 @@ export interface AnyScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes[
   name: 'Any'
 }
 
-export type CertificateResolvers<
+export type CertResolvers<
   ContextType = any,
-  ParentType extends ResolversParentTypes['Certificate'] = ResolversParentTypes['Certificate']
+  ParentType extends ResolversParentTypes['Cert'] = ResolversParentTypes['Cert']
 > = ResolversObject<{
   birthDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
@@ -422,19 +438,21 @@ export type CertificateResolvers<
   issueDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   name?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
   sex?: Resolver<ResolversTypes['Sex'], ParentType, ContextType>
+  type?: Resolver<ResolversTypes['CertType'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
-export type CertificateAgreementResolvers<
+export type CertAgreementResolvers<
   ContextType = any,
-  ParentType extends ResolversParentTypes['CertificateAgreement'] = ResolversParentTypes['CertificateAgreement']
+  ParentType extends ResolversParentTypes['CertAgreement'] = ResolversParentTypes['CertAgreement']
 > = ResolversObject<{
   immunizationSince?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   sexualCrimeSince?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
-  showBirthyear?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  showBirthdate?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   showImmunizationDetails?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   showName?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   showSTDTestDetails?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  showSex?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   showSexualCrimeDetails?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   stdTestSince?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
@@ -491,14 +509,26 @@ export type MutationResolvers<
   disconnectFromKakaoOAuth?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
   disconnectFromNaverOAuth?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
   logout?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
-  submitCertificateInfo?: Resolver<
+  submitCertInfo?: Resolver<
     Maybe<ResolversTypes['Boolean']>,
     ParentType,
     ContextType,
-    RequireFields<MutationSubmitCertificateInfoArgs, 'input'>
+    RequireFields<MutationSubmitCertInfoArgs, 'input'>
   >
   takeAttendance?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   unregister?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
+  updateCertAgreementAndGetCertJWT?: Resolver<
+    ResolversTypes['JWT'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateCertAgreementAndGetCertJwtArgs, 'input'>
+  >
+  updateMyCertAgreement?: Resolver<
+    Maybe<ResolversTypes['CertAgreement']>,
+    ParentType,
+    ContextType,
+    Partial<MutationUpdateMyCertAgreementArgs>
+  >
   updatePost?: Resolver<
     Maybe<ResolversTypes['Post']>,
     ParentType,
@@ -510,6 +540,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationUpdateUserArgs, 'input'>
+  >
+  verifyCertJWT?: Resolver<
+    Maybe<Array<ResolversTypes['Cert']>>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationVerifyCertJwtArgs, 'jwt'>
   >
   verifyTown?: Resolver<
     Maybe<ResolversTypes['User']>,
@@ -554,13 +590,6 @@ export type QueryResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
 > = ResolversObject<{
-  getCertificateJWT?: Resolver<
-    ResolversTypes['JWT'],
-    ParentType,
-    ContextType,
-    Partial<QueryGetCertificateJwtArgs>
-  >
-  getMyCertificates?: Resolver<Maybe<Array<ResolversTypes['Certificate']>>, ParentType, ContextType>
   isUniqueNickname?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
@@ -568,6 +597,9 @@ export type QueryResolvers<
     RequireFields<QueryIsUniqueNicknameArgs, 'nickname'>
   >
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
+  myCertAgreement?: Resolver<Maybe<ResolversTypes['CertAgreement']>, ParentType, ContextType>
+  myCerts?: Resolver<Maybe<Array<ResolversTypes['Cert']>>, ParentType, ContextType>
+  myNickname?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   post?: Resolver<
     Maybe<ResolversTypes['Post']>,
     ParentType,
@@ -581,30 +613,20 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryUserByNicknameArgs, 'nickname'>
   >
-  verifyCertificateJWT?: Resolver<
-    Maybe<ResolversTypes['Certificate']>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryVerifyCertificateJwtArgs, 'jwt'>
-  >
 }>
 
 export type ServiceAgreementResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['ServiceAgreement'] = ResolversParentTypes['ServiceAgreement']
 > = ResolversObject<{
-  adAgreement?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
+  adAgreement?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   adAgreementTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
-  locationAgreement?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
+  locationAgreement?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   locationAgreementTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
-  personalDataStoringYear?: Resolver<
-    Maybe<ResolversTypes['NonNegativeInt']>,
-    ParentType,
-    ContextType
-  >
-  privacyAgreement?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
+  personalDataStoringYear?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>
+  privacyAgreement?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   privacyAgreementTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
-  termsAgreement?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
+  termsAgreement?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   termsAgreementTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
@@ -634,11 +656,7 @@ export type UserResolvers<
   birthyear?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
   blockingEndTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   blockingStartTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
-  certificateAgreement?: Resolver<
-    Maybe<ResolversTypes['CertificateAgreement']>,
-    ParentType,
-    ContextType
-  >
+  certAgreement?: Resolver<Maybe<ResolversTypes['CertAgreement']>, ParentType, ContextType>
   cherry?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>
   creationTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
   email?: Resolver<Maybe<ResolversTypes['EmailAddress']>, ParentType, ContextType>
@@ -659,8 +677,8 @@ export type UserResolvers<
 
 export type Resolvers<ContextType = any> = ResolversObject<{
   Any?: GraphQLScalarType
-  Certificate?: CertificateResolvers<ContextType>
-  CertificateAgreement?: CertificateAgreementResolvers<ContextType>
+  Cert?: CertResolvers<ContextType>
+  CertAgreement?: CertAgreementResolvers<ContextType>
   Date?: GraphQLScalarType
   DateTime?: GraphQLScalarType
   EmailAddress?: GraphQLScalarType

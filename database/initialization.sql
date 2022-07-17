@@ -82,7 +82,7 @@ CREATE TABLE "user" (
   birthday char(4),
   blocking_start_time timestamptz,
   blocking_end_time timestamptz,
-  certificate_agreement text,
+  cert_agreement text,
   cherry int NOT NULL DEFAULT 10 CHECK (cherry >= 0),
   deactivation_time timestamptz,
   email varchar(50) UNIQUE,
@@ -115,7 +115,7 @@ CREATE TABLE "user" (
 );
 
 -- 인증서 검증 요청용
-CREATE TABLE certificate_pending (
+CREATE TABLE cert_pending (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   birth_date date NOT NULL,
@@ -129,7 +129,7 @@ CREATE TABLE certificate_pending (
 );
 
 -- type: 0=성병, 1=성병예방접종, 2=성범죄
-CREATE TABLE certificate (
+CREATE TABLE cert (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   birth_date date NOT NULL,

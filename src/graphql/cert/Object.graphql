@@ -1,4 +1,4 @@
-type Certificate {
+type Cert {
   id: ID!
   birthDate: Date
   content: String
@@ -6,4 +6,11 @@ type Certificate {
   issueDate: Date
   name: NonEmptyString
   sex: Sex!
+  type: CertType!
+}
+
+enum CertType {
+  STD_TEST
+  IMMUNIZATION
+  SEXUAL_CRIME
 }

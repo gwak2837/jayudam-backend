@@ -5,7 +5,7 @@ type User {
   birthyear: Int
   blockingStartTime: DateTime
   blockingEndTime: DateTime
-  certificateAgreement: CertificateAgreement
+  certAgreement: CertAgreement
   cherry: NonNegativeInt!
   email: EmailAddress
   imageUrls: [URL!]
@@ -21,9 +21,10 @@ type User {
   towns: [Town!]
 }
 
-type CertificateAgreement {
-  showBirthyear: Boolean!
+type CertAgreement {
+  showBirthdate: Boolean!
   showName: Boolean!
+  showSex: Boolean!
   showSTDTestDetails: Boolean!
   stdTestSince: Date
   showImmunizationDetails: Boolean!
@@ -33,15 +34,15 @@ type CertificateAgreement {
 }
 
 type ServiceAgreement {
-  termsAgreement: Boolean
+  termsAgreement: Boolean!
   termsAgreementTime: DateTime
-  privacyAgreement: Boolean
+  privacyAgreement: Boolean!
   privacyAgreementTime: DateTime
-  locationAgreement: Boolean
+  locationAgreement: Boolean!
   locationAgreementTime: DateTime
-  adAgreement: Boolean
+  adAgreement: Boolean!
   adAgreementTime: DateTime
-  personalDataStoringYear: NonNegativeInt
+  personalDataStoringYear: NonNegativeInt!
 }
 
 type Town {

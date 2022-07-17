@@ -7,6 +7,7 @@ type Mutation {
   disconnectFromKakaoOAuth: Boolean
   disconnectFromNaverOAuth: Boolean
   logout: User
+  updateMyCertAgreement(input: CertAgreementInput): CertAgreement
   updateUser(input: UserUpdate!): User
   unregister: User
   wakeUser: User
@@ -15,7 +16,7 @@ type Mutation {
 
 input UserUpdate {
   bio: NonEmptyString
-  certificateAgreement: CertificateAgreementInput
+  certAgreement: CertAgreementInput
   email: EmailAddress
   imageUrls: [URL!]
   nickname: NonEmptyString

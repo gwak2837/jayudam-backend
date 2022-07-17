@@ -1,4 +1,4 @@
-/** Types generated for queries found in "src/graphql/certificate/sql/useCherry.sql" */
+/** Types generated for queries found in "src/graphql/cert/sql/useCherry.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
 /** 'UseCherry' parameters type */
