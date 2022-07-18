@@ -1,26 +1,11 @@
 /** Types generated for queries found in "src/graphql/cert/sql/getCertsByDate.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-/** 'GetCerts' parameters type */
-export type IGetCertsParams = void;
+/** Query 'GetCerts' is invalid, so its result is assigned type 'never' */
+export type IGetCertsResult = never;
 
-/** 'GetCerts' return type */
-export interface IGetCertsResult {
-  birth_date: Date;
-  content: string;
-  effective_date: Date;
-  id: string;
-  issue_date: Date;
-  name: string;
-  sex: number;
-  type: number;
-}
-
-/** 'GetCerts' query type */
-export interface IGetCertsQuery {
-  params: IGetCertsParams;
-  result: IGetCertsResult;
-}
+/** Query 'GetCerts' is invalid, so its parameters are assigned type 'never' */
+export type IGetCertsParams = never;
 
 const getCertsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  birth_date,\n  content,\n  effective_date,\n  issue_date,\n  name,\n  sex,\n  \"type\"\nFROM cert\nWHERE user_id = $1\n  AND \"type\" = ANY ($2)\n  AND effective_date > $3"};
 

@@ -118,7 +118,7 @@ CREATE TABLE "user" (
 CREATE TABLE cert_pending (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  birth_date date NOT NULL,
+  birthdate date NOT NULL,
   issue_date date NOT NULL,
   name varchar(50) NOT NULL,
   sex int NOT NULL,
@@ -128,11 +128,11 @@ CREATE TABLE cert_pending (
   SET NULL
 );
 
--- type: 0=성병, 1=성병예방접종, 2=성범죄
+-- type: 0=임상병리검사, 1=성병검사, 2=성병예방접종, 3=성범죄
 CREATE TABLE cert (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  birth_date date NOT NULL,
+  birthdate date NOT NULL,
   content text NOT NULL,
   effective_date date NOT NULL,
   issue_date date NOT NULL,

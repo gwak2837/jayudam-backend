@@ -32,17 +32,28 @@ do_not_print=$(PGOPTIONS='--client-min-messages=warning' psql -f database/initia
 # 테이블 생성 순서와 동일하게
 public_tables=(
   public.user
+  public.cert_pending
+  public.cert
+  public.hashtag
   public.notification
+  public.post
+  public.hashtag_x_user
+  public.hashtag_x_post
+  public.post_x_user
 )
 
 # GENERATED ALWAYS AS IDENTITY 컬럼이 있는 테이블
 sequence_tables=(
+  cert_pending
+  cert
+  hashtag
   notification
+  post
 )
 
 # 테이블 생성 순서와 동일하게
 deleted_tables=(
-  deleted.user
+  # deleted.user
 )
 
 for public_table in "${public_tables[@]}"; do

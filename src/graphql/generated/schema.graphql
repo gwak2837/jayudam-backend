@@ -1,13 +1,13 @@
 scalar Any
 
 type Cert {
-  birthDate: Date
+  birthdate: Date
   content: String
   effectiveDate: Date
   id: ID!
   issueDate: Date
   name: NonEmptyString
-  sex: Sex!
+  sex: Sex
   type: CertType!
 }
 
@@ -36,7 +36,7 @@ input CertAgreementInput {
 }
 
 input CertCreation {
-  birthDate: DateTime!
+  birthdate: DateTime!
   issueDate: DateTime!
   name: NonEmptyString!
   sex: Sex!

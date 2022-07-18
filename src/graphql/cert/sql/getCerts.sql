@@ -1,6 +1,6 @@
 /* @name getCerts */
 SELECT id,
-  birth_date,
+  birthdate,
   content,
   effective_date,
   issue_date,

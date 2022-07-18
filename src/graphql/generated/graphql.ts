@@ -28,13 +28,13 @@ export type Scalars = {
 
 export type Cert = {
   __typename?: 'Cert'
-  birthDate?: Maybe<Scalars['Date']>
+  birthdate?: Maybe<Scalars['Date']>
   content?: Maybe<Scalars['String']>
   effectiveDate?: Maybe<Scalars['Date']>
   id: Scalars['ID']
   issueDate?: Maybe<Scalars['Date']>
   name?: Maybe<Scalars['NonEmptyString']>
-  sex: Sex
+  sex?: Maybe<Sex>
   type: CertType
 }
 
@@ -64,7 +64,7 @@ export type CertAgreementInput = {
 }
 
 export type CertCreation = {
-  birthDate: Scalars['DateTime']
+  birthdate: Scalars['DateTime']
   issueDate: Scalars['DateTime']
   name: Scalars['NonEmptyString']
   sex: Sex
@@ -431,13 +431,13 @@ export type CertResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Cert'] = ResolversParentTypes['Cert']
 > = ResolversObject<{
-  birthDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
+  birthdate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   effectiveDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>
   issueDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   name?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
-  sex?: Resolver<ResolversTypes['Sex'], ParentType, ContextType>
+  sex?: Resolver<Maybe<ResolversTypes['Sex']>, ParentType, ContextType>
   type?: Resolver<ResolversTypes['CertType'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>

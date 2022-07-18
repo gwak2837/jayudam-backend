@@ -1,11 +1,11 @@
 type Cert {
   id: ID!
-  birthDate: Date
+  birthdate: Date
   content: String
   effectiveDate: Date
   issueDate: Date
   name: NonEmptyString
-  sex: Sex!
+  sex: Sex
   type: CertType!
 }
 

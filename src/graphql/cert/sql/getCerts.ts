@@ -6,7 +6,7 @@ export type IGetCertsParams = void;
 
 /** 'GetCerts' return type */
 export interface IGetCertsResult {
-  birth_date: Date;
+  birthdate: Date;
   content: string;
   effective_date: Date;
   id: string;
@@ -22,13 +22,13 @@ export interface IGetCertsQuery {
   result: IGetCertsResult;
 }
 
-const getCertsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  birth_date,\n  content,\n  effective_date,\n  issue_date,\n  name,\n  sex,\n  \"type\"\nFROM cert\nWHERE user_id = $1\n  AND \"type\" = ANY ($2)"};
+const getCertsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  birthdate,\n  content,\n  effective_date,\n  issue_date,\n  name,\n  sex,\n  \"type\"\nFROM cert\nWHERE user_id = $1\n  AND \"type\" = ANY ($2)"};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT id,
- *   birth_date,
+ *   birthdate,
  *   content,
  *   effective_date,
  *   issue_date,

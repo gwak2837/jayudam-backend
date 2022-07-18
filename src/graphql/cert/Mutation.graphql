@@ -5,7 +5,7 @@ type Mutation {
 }
 
 input CertCreation {
-  birthDate: DateTime!
+  birthdate: DateTime!
   issueDate: DateTime!
   name: NonEmptyString!
   sex: Sex!
