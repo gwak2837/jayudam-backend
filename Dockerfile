@@ -1,5 +1,5 @@
 # Install all packages and transpile TypeScript into JavaScript
-FROM node:18 AS builder
+FROM node:18.5 AS builder
 
 ENV NODE_ENV=production
 
