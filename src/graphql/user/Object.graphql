@@ -7,6 +7,7 @@ type User {
   blockingEndTime: DateTime
   certAgreement: CertAgreement
   cherry: NonNegativeInt!
+  grade: Grade
   email: EmailAddress
   imageUrls: [URL!]
   isVerifiedBirthyear: Boolean!
@@ -15,11 +16,11 @@ type User {
   isVerifiedName: Boolean!
   isVerifiedPhoneNumber: Boolean!
   isVerifiedSex: Boolean!
-  logoutTime: DateTime!
+  logoutTime: DateTime
   nickname: String
-  oauthProviders: [OAuthProvider]
+  oAuthProviders: [OAuthProvider!]
   serviceAgreement: ServiceAgreement
-  sex: Sex!
+  sex: Sex
   towns: [Town!]
 }
 
@@ -48,8 +49,8 @@ type ServiceAgreement {
 }
 
 type Town {
-  name: NonEmptyString!
   count: NonNegativeInt!
+  name: NonEmptyString
 }
 
 enum Sex {
@@ -63,4 +64,10 @@ enum OAuthProvider {
   KAKAO
   NAVER
   GOOGLE
+}
+
+enum Grade {
+  FREE
+  PRO
+  ENTERPRISE
 }

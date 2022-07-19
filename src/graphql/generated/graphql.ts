@@ -77,6 +77,12 @@ export enum CertType {
   StdTest = 'STD_TEST',
 }
 
+export enum Grade {
+  Enterprise = 'ENTERPRISE',
+  Free = 'FREE',
+  Pro = 'PRO',
+}
+
 export type Mutation = {
   __typename?: 'Mutation'
   createPost?: Maybe<Post>
@@ -178,13 +184,12 @@ export type PostUpdateInput = {
 export type Query = {
   __typename?: 'Query'
   isUniqueNickname: Scalars['Boolean']
-  me?: Maybe<User>
   myCertAgreement?: Maybe<CertAgreement>
   myCerts?: Maybe<Array<Cert>>
   myNickname?: Maybe<User>
   post?: Maybe<Post>
   posts?: Maybe<Array<Post>>
-  userByNickname?: Maybe<User>
+  user?: Maybe<User>
 }
 
 export type QueryIsUniqueNicknameArgs = {
@@ -195,8 +200,8 @@ export type QueryPostArgs = {
   id: Scalars['ID']
 }
 
-export type QueryUserByNicknameArgs = {
-  nickname: Scalars['NonEmptyString']
+export type QueryUserArgs = {
+  nickname?: InputMaybe<Scalars['NonEmptyString']>
 }
 
 export type ServiceAgreement = {
@@ -230,7 +235,7 @@ export enum Sex {
 export type Town = {
   __typename?: 'Town'
   count: Scalars['NonNegativeInt']
-  name: Scalars['NonEmptyString']
+  name?: Maybe<Scalars['NonEmptyString']>
 }
 
 export type User = {
@@ -243,6 +248,7 @@ export type User = {
   cherry: Scalars['NonNegativeInt']
   creationTime: Scalars['DateTime']
   email?: Maybe<Scalars['EmailAddress']>
+  grade?: Maybe<Grade>
   id: Scalars['UUID']
   imageUrls?: Maybe<Array<Scalars['URL']>>
   isVerifiedBirthday: Scalars['Boolean']
@@ -251,11 +257,11 @@ export type User = {
   isVerifiedName: Scalars['Boolean']
   isVerifiedPhoneNumber: Scalars['Boolean']
   isVerifiedSex: Scalars['Boolean']
-  logoutTime: Scalars['DateTime']
+  logoutTime?: Maybe<Scalars['DateTime']>
   nickname?: Maybe<Scalars['String']>
-  oauthProviders?: Maybe<Array<Maybe<OAuthProvider>>>
+  oAuthProviders?: Maybe<Array<OAuthProvider>>
   serviceAgreement?: Maybe<ServiceAgreement>
-  sex: Sex
+  sex?: Maybe<Sex>
   towns?: Maybe<Array<Town>>
 }
 
@@ -367,6 +373,7 @@ export type ResolversTypes = ResolversObject<{
   Date: ResolverTypeWrapper<Scalars['Date']>
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>
   EmailAddress: ResolverTypeWrapper<Scalars['EmailAddress']>
+  Grade: Grade
   ID: ResolverTypeWrapper<Scalars['ID']>
   Int: ResolverTypeWrapper<Scalars['Int']>
   JWT: ResolverTypeWrapper<Scalars['JWT']>
@@ -599,7 +606,6 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryIsUniqueNicknameArgs, 'nickname'>
   >
-  me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   myCertAgreement?: Resolver<Maybe<ResolversTypes['CertAgreement']>, ParentType, ContextType>
   myCerts?: Resolver<Maybe<Array<ResolversTypes['Cert']>>, ParentType, ContextType>
   myNickname?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
@@ -610,12 +616,7 @@ export type QueryResolvers<
     RequireFields<QueryPostArgs, 'id'>
   >
   posts?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType>
-  userByNickname?: Resolver<
-    Maybe<ResolversTypes['User']>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryUserByNicknameArgs, 'nickname'>
-  >
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<QueryUserArgs>>
 }>
 
 export type ServiceAgreementResolvers<
@@ -639,7 +640,7 @@ export type TownResolvers<
   ParentType extends ResolversParentTypes['Town'] = ResolversParentTypes['Town']
 > = ResolversObject<{
   count?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>
-  name?: Resolver<ResolversTypes['NonEmptyString'], ParentType, ContextType>
+  name?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
@@ -663,6 +664,7 @@ export type UserResolvers<
   cherry?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>
   creationTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
   email?: Resolver<Maybe<ResolversTypes['EmailAddress']>, ParentType, ContextType>
+  grade?: Resolver<Maybe<ResolversTypes['Grade']>, ParentType, ContextType>
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>
   imageUrls?: Resolver<Maybe<Array<ResolversTypes['URL']>>, ParentType, ContextType>
   isVerifiedBirthday?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
@@ -671,15 +673,11 @@ export type UserResolvers<
   isVerifiedName?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   isVerifiedPhoneNumber?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   isVerifiedSex?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
-  logoutTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
+  logoutTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   nickname?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  oauthProviders?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes['OAuthProvider']>>>,
-    ParentType,
-    ContextType
-  >
+  oAuthProviders?: Resolver<Maybe<Array<ResolversTypes['OAuthProvider']>>, ParentType, ContextType>
   serviceAgreement?: Resolver<Maybe<ResolversTypes['ServiceAgreement']>, ParentType, ContextType>
-  sex?: Resolver<ResolversTypes['Sex'], ParentType, ContextType>
+  sex?: Resolver<Maybe<ResolversTypes['Sex']>, ParentType, ContextType>
   towns?: Resolver<Maybe<Array<ResolversTypes['Town']>>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>

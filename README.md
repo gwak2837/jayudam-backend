@@ -171,9 +171,11 @@ REDIS_HOST=REDIS_주소
 REDIS_DOCKER_VOLUME_NAME=REDIS_도커_볼륨_이름
 
 # generate certificates
+# https://github.com/redis/redis/blob/unstable/utils/gen-test-certs.sh
 ./redis/utils/gen-test-certs.sh $REDIS_HOST
 
 echo "
+user default off
 user $REDIS_USER on >$REDIS_PASSWORD allkeys allchannels allcommands
 " > users.acl
 
@@ -205,6 +207,20 @@ sudo docker run \
   --appendonly yes --appendfsync no \
   --requirepass $REDIS_PASSWORD \
   --aclfile /data/users.acl
+```
+
+그리고 아래와 같은 명령어로 Redis 서버에 접속할 수 있습니다. `client.crt`, `client.key`, `ca.crt` 파일은 서버에서 가져옵니다.
+
+```bash
+redis-cli \
+  -h $REDIS_HOST \
+  -p 포트번호 \
+  --user $REDIS_USER \
+  --askpass \
+  --tls \
+  --cert ./client.crt \
+  --key ./client.key \
+  --cacert ./ca.crt
 ```
 
 ### Create environment variables

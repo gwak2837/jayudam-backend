@@ -55,6 +55,12 @@ scalar DateTime
 
 scalar EmailAddress
 
+enum Grade {
+  ENTERPRISE
+  FREE
+  PRO
+}
+
 scalar JWT
 
 scalar Latitude
@@ -130,13 +136,12 @@ input PostUpdateInput {
 
 type Query {
   isUniqueNickname(nickname: NonEmptyString!): Boolean!
-  me: User
   myCertAgreement: CertAgreement
   myCerts: [Cert!]
   myNickname: User
   post(id: ID!): Post
   posts: [Post!]
-  userByNickname(nickname: NonEmptyString!): User
+  user(nickname: NonEmptyString): User
 }
 
 type ServiceAgreement {
@@ -168,7 +173,7 @@ enum Sex {
 
 type Town {
   count: NonNegativeInt!
-  name: NonEmptyString!
+  name: NonEmptyString
 }
 
 scalar URL
@@ -184,6 +189,7 @@ type User {
   cherry: NonNegativeInt!
   creationTime: DateTime!
   email: EmailAddress
+  grade: Grade
   id: UUID!
   imageUrls: [URL!]
   isVerifiedBirthday: Boolean!
@@ -192,11 +198,11 @@ type User {
   isVerifiedName: Boolean!
   isVerifiedPhoneNumber: Boolean!
   isVerifiedSex: Boolean!
-  logoutTime: DateTime!
+  logoutTime: DateTime
   nickname: String
-  oauthProviders: [OAuthProvider]
+  oAuthProviders: [OAuthProvider!]
   serviceAgreement: ServiceAgreement
-  sex: Sex!
+  sex: Sex
   towns: [Town!]
 }
 

@@ -1,9 +1,7 @@
-/* @name me */
-SELECT id,
-  bio,
+/* @name userByNickname */
+SELECT bio,
   blocking_start_time,
   blocking_end_time,
-  cherry,
   grade,
   image_urls,
   is_verified_sex,
@@ -14,4 +12,4 @@ SELECT id,
   town2_count,
   town2_name
 FROM "user"
-WHERE id = $1;
+WHERE nickname = $1;

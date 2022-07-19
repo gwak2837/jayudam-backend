@@ -98,10 +98,10 @@ CREATE TABLE "user" (
   last_attendance date,
   name varchar(50),
   nickname varchar(20) UNIQUE,
-  oauth_kakao varchar(100) UNIQUE,
-  oauth_naver varchar(100) UNIQUE,
   oauth_bbaton varchar(100) NOT NULL UNIQUE,
   oauth_google varchar(100) UNIQUE,
+  oauth_kakao varchar(100) UNIQUE,
+  oauth_naver varchar(100) UNIQUE,
   personal_data_storing_year int NOT NULL DEFAULT 1,
   phone_number varchar(20) UNIQUE,
   service_agreement text,
@@ -172,6 +172,15 @@ CREATE TABLE post (
   image_urls text [],
   --
   parent_post_id bigint REFERENCES post ON DELETE
+  SET NULL,
+    user_id uuid REFERENCES "user" ON DELETE
+  SET NULL
+);
+
+CREATE TABLE verification_history (
+  id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  creation_time timestamptz DEFAULT CURRENT_TIMESTAMP,
+  cert_id bigint REFERENCES cert ON DELETE
   SET NULL,
     user_id uuid REFERENCES "user" ON DELETE
   SET NULL
