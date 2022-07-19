@@ -91,7 +91,7 @@ export type Mutation = {
   submitCertInfo?: Maybe<Scalars['Boolean']>
   takeAttendance?: Maybe<User>
   unregister?: Maybe<User>
-  updateCertAgreementAndGetCertJWT: Scalars['JWT']
+  updateCertAgreement: Scalars['JWT']
   updateMyCertAgreement?: Maybe<CertAgreement>
   updatePost?: Maybe<Post>
   updateUser?: Maybe<User>
@@ -112,7 +112,7 @@ export type MutationSubmitCertInfoArgs = {
   input: CertCreation
 }
 
-export type MutationUpdateCertAgreementAndGetCertJwtArgs = {
+export type MutationUpdateCertAgreementArgs = {
   input: CertAgreementInput
 }
 
@@ -517,11 +517,11 @@ export type MutationResolvers<
   >
   takeAttendance?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   unregister?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
-  updateCertAgreementAndGetCertJWT?: Resolver<
+  updateCertAgreement?: Resolver<
     ResolversTypes['JWT'],
     ParentType,
     ContextType,
-    RequireFields<MutationUpdateCertAgreementAndGetCertJwtArgs, 'input'>
+    RequireFields<MutationUpdateCertAgreementArgs, 'input'>
   >
   updateMyCertAgreement?: Resolver<
     Maybe<ResolversTypes['CertAgreement']>,

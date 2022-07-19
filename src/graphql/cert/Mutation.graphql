@@ -1,6 +1,6 @@
 type Mutation {
   submitCertInfo(input: CertCreation!): Boolean
-  updateCertAgreementAndGetCertJWT(input: CertAgreementInput!): JWT!
+  updateCertAgreement(input: CertAgreementInput!): JWT!
   verifyCertJWT(jwt: JWT!): [Cert!]
 }
 

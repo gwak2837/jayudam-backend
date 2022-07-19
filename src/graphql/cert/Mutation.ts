@@ -3,7 +3,7 @@ import { AuthenticationError, ForbiddenError, UserInputError } from 'apollo-serv
 import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
 import { signJWT, verifyJWT } from '../../utils/jwt'
-import { Cert, MutationResolvers } from '../generated/graphql'
+import { MutationResolvers } from '../generated/graphql'
 import { CertType } from './Object'
 import { IGetCertsResult } from './sql/getCerts'
 import getCerts from './sql/getCerts.sql'
@@ -13,7 +13,7 @@ import updateCertAgreement from './sql/updateCertAgreement.sql'
 import useCherry from './sql/useCherry.sql'
 
 export const Mutation: MutationResolvers<ApolloContext> = {
-  updateCertAgreementAndGetCertJWT: async (_, { input }, { userId }) => {
+  updateCertAgreement: async (_, { input }, { userId }) => {
     if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
 
     const {
@@ -43,7 +43,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       }),
     ])
 
-    return await signJWT({ qrcode: true, userId, ...input }, '30d')
+    return await signJWT({ qrcode: true, userId, ...input }, '1d')
   },
 
   verifyCertJWT: async (_, { jwt }, { userId }) => {
@@ -62,18 +62,6 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       sexualCrimeSince,
       userId: targetUserId,
     } = await verifyJWT(jwt)
-    console.log(
-      qrcode,
-      showBirthdate,
-      showName,
-      showSex,
-      showSTDTestDetails,
-      stdTestSince,
-      showImmunizationDetails,
-      immunizationSince,
-      showSexualCrimeDetails,
-      sexualCrimeSince
-    )
     if (!qrcode) throw new UserInputError('잘못된 JWT입니다')
 
     await poolQuery<IGetCertsResult>(useCherry, [userId]).catch(() => {
@@ -96,7 +84,6 @@ export const Mutation: MutationResolvers<ApolloContext> = {
         : [targetUserId, certType]
     )
 
-    // filter 날짜
     return (
       rows
         .filter((cert) => {
