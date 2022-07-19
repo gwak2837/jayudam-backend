@@ -23,6 +23,7 @@ export function setBBatonOAuthStrategies(app: Express) {
 
     // OAuth 사용자 정보 가져오기
     const bBatonUserToken = await fetchBBatonUserToken(code, `${req.protocol}://${backendUrl}`)
+    console.log('👀 - `${req.protocol}://${backendUrl}`', `${req.protocol}://${backendUrl}`)
     if (bBatonUserToken.error) return res.status(400).send('Bad Request2')
 
     const bBatonUser = await fetchBBatonUser(bBatonUserToken.access_token)

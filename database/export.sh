@@ -1,6 +1,6 @@
 #!/bin/sh
 if [[ $1 == "prod" ]]; then
-  ENV_FILE_PATH=.env.local
+  ENV_FILE_PATH=.env
   FOLDER=prod
 elif [[ $1 == "dev" ]]; then
   ENV_FILE_PATH=.env.development
