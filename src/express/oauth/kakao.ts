@@ -75,7 +75,6 @@ export function setKakaoOAuthStrategies(app: Express) {
     return res.redirect(`${frontendUrl}/oauth?${querystring}`)
   })
 
-  // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=fa17772ea56b216e0fd949141f5ed5e2&redirect_uri=http://localhost:4000/oauth/kakao/register&state=jwt
   // Kakao 계정 연결하기
   app.get('/oauth/kakao/register', async (req, res) => {
     // 입력값 검사
@@ -115,8 +114,10 @@ export function setKakaoOAuthStrategies(app: Express) {
       (jayudamUser.birthyear && jayudamUser.birthyear !== kakaoUser.birthyear) ||
       (jayudamUser.birthday && jayudamUser.birthday !== kakaoUserBirthday) ||
       (jayudamUser.phone_number && jayudamUser.phone_number !== kakaoUser.phone_number)
-    )
+    ) {
+      unregisterKakaoUser(kakaoUser2.id)
       return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=kakao`)
+    }
 
     await poolQuery<IUpdateKakaoUserResult>(updateKakaoUser, [
       jayudamUser.id,
@@ -194,6 +195,8 @@ export async function unregisterKakaoUser(kakaoUserId: string) {
 }
 
 function getKakaoSolarBirthday(kakaoUser: any) {
+  if (!kakaoUser.birthday) return null
+
   if (kakaoUser.birthday_type === 'SOLAR') return kakaoUser.birthday
 
   const solarFromLunar = Lunar.fromYmd(

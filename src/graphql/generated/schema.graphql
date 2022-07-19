@@ -62,9 +62,6 @@ scalar Latitude
 scalar Longitude
 
 type Mutation {
-  connectToGoogleOAuth: Boolean
-  connectToKakaoOAuth: Boolean
-  connectToNaverOAuth: Boolean
   createPost(input: PostCreationInput!): Post
   deletePost(id: ID!): Post
   disconnectFromGoogleOAuth: Boolean
@@ -86,6 +83,12 @@ type Mutation {
 scalar NonEmptyString
 
 scalar NonNegativeInt
+
+enum OAuthProvider {
+  GOOGLE
+  KAKAO
+  NAVER
+}
 
 """
 기본값: 내림차순
@@ -189,7 +192,9 @@ type User {
   isVerifiedName: Boolean!
   isVerifiedPhoneNumber: Boolean!
   isVerifiedSex: Boolean!
+  logoutTime: DateTime!
   nickname: String
+  oauthProviders: [OAuthProvider]
   serviceAgreement: ServiceAgreement
   sex: Sex!
   towns: [Town!]

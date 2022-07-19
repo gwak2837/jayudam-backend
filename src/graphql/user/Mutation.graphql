@@ -1,12 +1,9 @@
 type Mutation {
-  connectToGoogleOAuth: Boolean
-  connectToKakaoOAuth: Boolean
-  connectToNaverOAuth: Boolean
-  takeAttendance: User
   disconnectFromGoogleOAuth: Boolean
   disconnectFromKakaoOAuth: Boolean
   disconnectFromNaverOAuth: Boolean
   logout: User
+  takeAttendance: User
   updateMyCertAgreement(input: CertAgreementInput): CertAgreement
   updateUser(input: UserUpdate!): User
   unregister: User

@@ -79,9 +79,6 @@ export enum CertType {
 
 export type Mutation = {
   __typename?: 'Mutation'
-  connectToGoogleOAuth?: Maybe<Scalars['Boolean']>
-  connectToKakaoOAuth?: Maybe<Scalars['Boolean']>
-  connectToNaverOAuth?: Maybe<Scalars['Boolean']>
   createPost?: Maybe<Post>
   deletePost?: Maybe<Post>
   disconnectFromGoogleOAuth?: Maybe<Scalars['Boolean']>
@@ -135,6 +132,12 @@ export type MutationVerifyCertJwtArgs = {
 export type MutationVerifyTownArgs = {
   lat: Scalars['Latitude']
   lon: Scalars['Longitude']
+}
+
+export enum OAuthProvider {
+  Google = 'GOOGLE',
+  Kakao = 'KAKAO',
+  Naver = 'NAVER',
 }
 
 /** 기본값: 내림차순 */
@@ -248,7 +251,9 @@ export type User = {
   isVerifiedName: Scalars['Boolean']
   isVerifiedPhoneNumber: Scalars['Boolean']
   isVerifiedSex: Scalars['Boolean']
+  logoutTime: Scalars['DateTime']
   nickname?: Maybe<Scalars['String']>
+  oauthProviders?: Maybe<Array<Maybe<OAuthProvider>>>
   serviceAgreement?: Maybe<ServiceAgreement>
   sex: Sex
   towns?: Maybe<Array<Town>>
@@ -370,6 +375,7 @@ export type ResolversTypes = ResolversObject<{
   Mutation: ResolverTypeWrapper<{}>
   NonEmptyString: ResolverTypeWrapper<Scalars['NonEmptyString']>
   NonNegativeInt: ResolverTypeWrapper<Scalars['NonNegativeInt']>
+  OAuthProvider: OAuthProvider
   OrderDirection: OrderDirection
   Pagination: Pagination
   PositiveInt: ResolverTypeWrapper<Scalars['PositiveInt']>
@@ -490,9 +496,6 @@ export type MutationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
 > = ResolversObject<{
-  connectToGoogleOAuth?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
-  connectToKakaoOAuth?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
-  connectToNaverOAuth?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
   createPost?: Resolver<
     Maybe<ResolversTypes['Post']>,
     ParentType,
@@ -668,7 +671,13 @@ export type UserResolvers<
   isVerifiedName?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   isVerifiedPhoneNumber?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   isVerifiedSex?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  logoutTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
   nickname?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  oauthProviders?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['OAuthProvider']>>>,
+    ParentType,
+    ContextType
+  >
   serviceAgreement?: Resolver<Maybe<ResolversTypes['ServiceAgreement']>, ParentType, ContextType>
   sex?: Resolver<ResolversTypes['Sex'], ParentType, ContextType>
   towns?: Resolver<Maybe<Array<ResolversTypes['Town']>>, ParentType, ContextType>

@@ -38,11 +38,11 @@ export async function startApolloServer() {
       if (!jwt) return {}
 
       const verifiedJwt = await verifyJWT(jwt)
-      if (!verifiedJwt.iat) throw new AuthenticationError('다시 로그인 해주세요.')
+      if (!verifiedJwt.iat) throw new AuthenticationError('다시 로그인 해주세요')
 
       const logoutTime = await redisClient.get(`${verifiedJwt.userId}:logoutTime`)
-      if (Number(logoutTime) > Number(verifiedJwt.iat))
-        throw new AuthenticationError('다시 로그인 해주세요.')
+      if (Number(logoutTime) > Number(verifiedJwt.iat) * 1000)
+        throw new AuthenticationError('다시 로그인 해주세요')
 
       return { userId: verifiedJwt.userId }
     },

@@ -63,7 +63,6 @@ export function setGoogleOAuthStrategies(app: Express) {
     return res.redirect(`${frontendUrl}/oauth?${querystring}`)
   })
 
-  // https://accounts.google.com/o/oauth2/v2/auth?client_id=289678734309-fd454q2i8b65ud4fjsm6tq7r7vab3d1v.apps.googleusercontent.com&redirect_uri=http://localhost:4000/oauth/google/register&response_type=code&scope=email+profile+openid&state=jwt
   // Google 계정 연결하기
   app.get('/oauth/google/register', async (req, res) => {
     // 입력값 검사

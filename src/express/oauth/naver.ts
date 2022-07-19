@@ -72,7 +72,6 @@ export function setNaverOAuthStrategies(app: Express) {
     )
   })
 
-  // https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=FPQoCRnHgbAWgjWYtlLb&redirect_uri=http://localhost:4000/oauth/naver/register&state=jwt
   // Naver 계정 연결하기
   app.get('/oauth/google/register', async (req, res) => {
     // 입력값 검사

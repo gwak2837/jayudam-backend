@@ -1,7 +1,8 @@
-import { AuthenticationError, UserInputError } from 'apollo-server-express'
+import { ApolloError, AuthenticationError, UserInputError } from 'apollo-server-express'
 
 import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
+import { redisClient } from '../../database/redis'
 import { unregisterKakaoUser } from '../../express/oauth/kakao'
 import { KAKAO_REST_API_KEY } from '../../utils/constants'
 import { MutationResolvers, User } from '../generated/graphql'
@@ -20,10 +21,13 @@ export const Mutation: MutationResolvers<ApolloContext> = {
   logout: async (_, __, { userId }) => {
     if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
 
-    // redis logouttime 설정
+    const logoutTime = Date.now()
+    const result = await redisClient.set(`${userId}:logoutTime`, logoutTime)
+    if (result !== 'OK') throw new ApolloError('Redis error')
 
     return {
       id: userId,
+      logoutTime: new Date(logoutTime),
     } as User
   },
 

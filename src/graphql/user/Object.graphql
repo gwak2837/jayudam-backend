@@ -15,7 +15,9 @@ type User {
   isVerifiedName: Boolean!
   isVerifiedPhoneNumber: Boolean!
   isVerifiedSex: Boolean!
+  logoutTime: DateTime!
   nickname: String
+  oauthProviders: [OAuthProvider]
   serviceAgreement: ServiceAgreement
   sex: Sex!
   towns: [Town!]
@@ -55,4 +57,10 @@ enum Sex {
   MALE
   FEMALE
   OTHER
+}
+
+enum OAuthProvider {
+  KAKAO
+  NAVER
+  GOOGLE
 }
