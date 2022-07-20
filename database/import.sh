@@ -37,6 +37,7 @@ public_tables=(
   public.hashtag
   public.notification
   public.post
+  public.verification_history
   public.hashtag_x_user
   public.hashtag_x_post
   public.post_x_user
@@ -49,6 +50,7 @@ sequence_tables=(
   hashtag
   notification
   post
+  verification_history
 )
 
 # 테이블 생성 순서와 동일하게

@@ -43,15 +43,15 @@ export const Query: QueryResolvers<ApolloContext> = {
     } = JSON.parse(rows[0].cert_agreement)
 
     return {
-      showBirthdate,
-      showName,
-      showSex,
-      showSTDTestDetails,
-      stdTestSince,
-      showImmunizationDetails,
-      immunizationSince,
-      showSexualCrimeDetails,
-      sexualCrimeSince,
+      showBirthdate: showBirthdate ?? false,
+      showName: showName ?? false,
+      showSex: showSex ?? false,
+      showSTDTestDetails: showSTDTestDetails ?? false,
+      ...(showSTDTestDetails && stdTestSince && { stdTestSince }),
+      showImmunizationDetails: showImmunizationDetails ?? false,
+      ...(showImmunizationDetails && immunizationSince && { immunizationSince }),
+      showSexualCrimeDetails: showSexualCrimeDetails ?? false,
+      ...(showSexualCrimeDetails && sexualCrimeSince && { sexualCrimeSince }),
     }
   },
 

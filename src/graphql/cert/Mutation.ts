@@ -28,22 +28,29 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       sexualCrimeSince,
     } = input
 
+    const certAgreement = {
+      ...(showBirthdate && { showBirthdate }),
+      ...(showName && { showName }),
+      ...(showSex && { showSex }),
+      ...(showSTDTestDetails && { showSTDTestDetails }),
+      ...(showSTDTestDetails &&
+        stdTestSince && { stdTestSince: stdTestSince.toISOString().substring(0, 10) }),
+      ...(showImmunizationDetails && { showImmunizationDetails }),
+      ...(showImmunizationDetails &&
+        immunizationSince && {
+          immunizationSince: immunizationSince.toISOString().substring(0, 10),
+        }),
+      ...(showSexualCrimeDetails && { showSexualCrimeDetails }),
+      ...(showSexualCrimeDetails &&
+        sexualCrimeSince && { sexualCrimeSince: sexualCrimeSince.toISOString().substring(0, 10) }),
+    }
+
     await poolQuery<IUpdateCertAgreementResult>(updateCertAgreement, [
       userId,
-      JSON.stringify({
-        showBirthdate: showBirthdate ?? false,
-        showName: showName ?? false,
-        showSex: showSex ?? false,
-        showSTDTestDetails: showSTDTestDetails ?? false,
-        stdTestSince,
-        showImmunizationDetails: showImmunizationDetails ?? false,
-        immunizationSince,
-        showSexualCrimeDetails: showSexualCrimeDetails ?? false,
-        sexualCrimeSince,
-      }),
+      Object.keys(certAgreement).length === 0 ? null : JSON.stringify(certAgreement),
     ])
 
-    return await signJWT({ qrcode: true, userId, ...input }, '1d')
+    return await signJWT({ qrcode: true, userId, ...certAgreement }, '1d')
   },
 
   verifyCertJWT: async (_, { jwt }, { userId }) => {
@@ -51,6 +58,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
 
     const {
       qrcode,
+      userId: targetUserId,
       showBirthdate,
       showName,
       showSex,
@@ -60,7 +68,6 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       immunizationSince,
       showSexualCrimeDetails,
       sexualCrimeSince,
-      userId: targetUserId,
     } = await verifyJWT(jwt)
     if (!qrcode) throw new UserInputError('잘못된 JWT입니다')
 
