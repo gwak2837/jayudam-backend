@@ -140,6 +140,7 @@ type Query {
   myCertAgreement: CertAgreement
   myCerts: [Cert!]
   myNickname: User
+  myVerificationHistories: [VerificationHistory!]
   post(id: ID!): Post
   posts: [Post!]
   user(nickname: NonEmptyString): User
@@ -216,4 +217,10 @@ input UserUpdate {
   serviceAgreement: ServiceAgreementInput
   town1Name: NonEmptyString
   town2Name: NonEmptyString
+}
+
+type VerificationHistory {
+  content: NonEmptyString!
+  creationTime: DateTime!
+  id: Int!
 }

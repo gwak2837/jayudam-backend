@@ -1,4 +1,4 @@
-/* @name getCerts */
+/* @name certs */
 SELECT id,
   birthdate,
   content,

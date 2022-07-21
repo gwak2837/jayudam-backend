@@ -4,10 +4,13 @@ import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
 import { signJWT, verifyJWT } from '../../utils/jwt'
 import { MutationResolvers } from '../generated/graphql'
-import { IGetCertsResult } from './sql/getCerts'
-import getCerts from './sql/getCerts.sql'
+import { ICertsResult } from './sql/certs'
+import certs from './sql/certs.sql'
+import { ICreateVerificationHistoriesResult } from './sql/createVerificationHistories'
+import createVerificationHistories from './sql/createVerificationHistories.sql'
 import { IUpdateCertAgreementResult } from './sql/updateCertAgreement'
 import updateCertAgreement from './sql/updateCertAgreement.sql'
+import { IUseCherryResult } from './sql/useCherry'
 import useCherry from './sql/useCherry.sql'
 
 export const Mutation: MutationResolvers<ApolloContext> = {
@@ -69,7 +72,19 @@ export const Mutation: MutationResolvers<ApolloContext> = {
     } = await verifyJWT(jwt)
     if (!qrcode) throw new UserInputError('잘못된 JWT입니다')
 
-    await poolQuery<IGetCertsResult>(useCherry, [userId]).catch(() => {
+    if (
+      !showBirthdate &&
+      !showName &&
+      !showSex &&
+      !showSTDTestDetails &&
+      !showImmunizationDetails &&
+      !showSexualCrimeDetails
+    )
+      throw new UserInputError('하나 이상의 정보 제공 동의가 필요합니다')
+
+    // if (userId === targetUserId) throw new UserInputError('본인의 QR code 입니다')
+
+    await poolQuery<IUseCherryResult>(useCherry, [userId]).catch(() => {
       throw new ForbiddenError('체리를 사용할 수 없습니다')
     })
 
@@ -78,7 +93,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
     if (showImmunizationDetails) certType.push(2)
     if (showSexualCrimeDetails) certType.push(3)
 
-    const { rows } = await poolQuery<IGetCertsResult>(getCerts, [
+    const { rowCount, rows } = await poolQuery<ICertsResult>(certs, [
       targetUserId,
       certType,
       stdTestSince ?? '1900-01-01',
@@ -86,7 +101,9 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       sexualCrimeSince ?? '1900-01-01',
     ])
 
-    return rows.map((cert) => ({
+    if (rowCount === 0) return null
+
+    const results = rows.map((cert) => ({
       id: cert.id,
       ...(showBirthdate && { birthdate: cert.birthdate }),
       content: cert.content,
@@ -96,5 +113,12 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       ...(showSex && { sex: cert.sex }),
       type: cert.type,
     }))
+
+    await poolQuery<ICreateVerificationHistoriesResult>(createVerificationHistories, [
+      JSON.stringify(results),
+      userId,
+    ])
+
+    return results
   },
 }

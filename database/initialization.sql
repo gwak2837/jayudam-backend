@@ -175,18 +175,9 @@ CREATE TABLE post (
 
 CREATE TABLE verification_history (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  creation_time timestamptz DEFAULT CURRENT_TIMESTAMP,
-  cert_id bigint REFERENCES cert ON DELETE
-  SET NULL,
-    user_id uuid REFERENCES "user" ON DELETE
-  SET NULL
-);
-
-CREATE TABLE hashtag_x_user (
-  hashtag_id bigint REFERENCES hashtag ON DELETE CASCADE,
-  user_id uuid REFERENCES "user" ON DELETE CASCADE,
-  --
-  PRIMARY KEY (hashtag_id, user_id)
+  creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  content text NOT NULL,
+  user_id uuid REFERENCES "user" ON DELETE CASCADE
 );
 
 CREATE TABLE hashtag_x_post (
@@ -194,6 +185,13 @@ CREATE TABLE hashtag_x_post (
   post_id bigint REFERENCES post ON DELETE CASCADE,
   --
   PRIMARY KEY (hashtag_id, post_id)
+);
+
+CREATE TABLE hashtag_x_user (
+  hashtag_id bigint REFERENCES hashtag ON DELETE CASCADE,
+  user_id uuid REFERENCES "user" ON DELETE CASCADE,
+  --
+  PRIMARY KEY (hashtag_id, user_id)
 );
 
 -- like

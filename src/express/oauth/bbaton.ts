@@ -2,7 +2,7 @@ import { Express } from 'express'
 import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
-import { BBATON_CLIENT_ID, BBATON_CLIENT_SECRET_KEY, FRONTEND_URL } from '../../utils/constants'
+import { BBATON_CLIENT_ID, BBATON_CLIENT_SECRET_KEY } from '../../utils/constants'
 import { signJWT } from '../../utils/jwt'
 import { IAwakeBBatonUserResult } from './sql/awakeBBatonUser'
 import awakeBBatonUser from './sql/awakeBBatonUser.sql'

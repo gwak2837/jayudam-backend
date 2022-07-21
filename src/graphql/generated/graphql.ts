@@ -188,6 +188,7 @@ export type Query = {
   myCertAgreement?: Maybe<CertAgreement>
   myCerts?: Maybe<Array<Cert>>
   myNickname?: Maybe<User>
+  myVerificationHistories?: Maybe<Array<VerificationHistory>>
   post?: Maybe<Post>
   posts?: Maybe<Array<Post>>
   user?: Maybe<User>
@@ -275,6 +276,13 @@ export type UserUpdate = {
   serviceAgreement?: InputMaybe<ServiceAgreementInput>
   town1Name?: InputMaybe<Scalars['NonEmptyString']>
   town2Name?: InputMaybe<Scalars['NonEmptyString']>
+}
+
+export type VerificationHistory = {
+  __typename?: 'VerificationHistory'
+  content: Scalars['NonEmptyString']
+  creationTime: Scalars['DateTime']
+  id: Scalars['Int']
 }
 
 export type WithIndex<TObject> = TObject & Record<string, any>
@@ -400,6 +408,7 @@ export type ResolversTypes = ResolversObject<{
   UUID: ResolverTypeWrapper<Scalars['UUID']>
   User: ResolverTypeWrapper<User>
   UserUpdate: UserUpdate
+  VerificationHistory: ResolverTypeWrapper<VerificationHistory>
 }>
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -435,6 +444,7 @@ export type ResolversParentTypes = ResolversObject<{
   UUID: Scalars['UUID']
   User: User
   UserUpdate: UserUpdate
+  VerificationHistory: VerificationHistory
 }>
 
 export interface AnyScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Any'], any> {
@@ -610,6 +620,11 @@ export type QueryResolvers<
   myCertAgreement?: Resolver<Maybe<ResolversTypes['CertAgreement']>, ParentType, ContextType>
   myCerts?: Resolver<Maybe<Array<ResolversTypes['Cert']>>, ParentType, ContextType>
   myNickname?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
+  myVerificationHistories?: Resolver<
+    Maybe<Array<ResolversTypes['VerificationHistory']>>,
+    ParentType,
+    ContextType
+  >
   post?: Resolver<
     Maybe<ResolversTypes['Post']>,
     ParentType,
@@ -683,6 +698,16 @@ export type UserResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
+export type VerificationHistoryResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['VerificationHistory'] = ResolversParentTypes['VerificationHistory']
+> = ResolversObject<{
+  content?: Resolver<ResolversTypes['NonEmptyString'], ParentType, ContextType>
+  creationTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
+}>
+
 export type Resolvers<ContextType = any> = ResolversObject<{
   Any?: GraphQLScalarType
   Cert?: CertResolvers<ContextType>
@@ -704,4 +729,5 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   URL?: GraphQLScalarType
   UUID?: GraphQLScalarType
   User?: UserResolvers<ContextType>
+  VerificationHistory?: VerificationHistoryResolvers<ContextType>
 }>
