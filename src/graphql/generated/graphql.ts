@@ -72,6 +72,7 @@ export type CertCreation = {
 }
 
 export enum CertType {
+  ClinicalLaboratoryTest = 'CLINICAL_LABORATORY_TEST',
   Immunization = 'IMMUNIZATION',
   SexualCrime = 'SEXUAL_CRIME',
   StdTest = 'STD_TEST',

@@ -44,6 +44,7 @@ input CertCreation {
 }
 
 enum CertType {
+  CLINICAL_LABORATORY_TEST
   IMMUNIZATION
   SEXUAL_CRIME
   STD_TEST

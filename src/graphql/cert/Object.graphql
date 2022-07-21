@@ -10,6 +10,7 @@ type Cert {
 }
 
 enum CertType {
+  CLINICAL_LABORATORY_TEST
   STD_TEST
   IMMUNIZATION
   SEXUAL_CRIME

@@ -4,10 +4,8 @@ import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
 import { signJWT, verifyJWT } from '../../utils/jwt'
 import { MutationResolvers } from '../generated/graphql'
-import { CertType } from './Object'
 import { IGetCertsResult } from './sql/getCerts'
 import getCerts from './sql/getCerts.sql'
-import getCertsByDate from './sql/getCertsByDate.sql'
 import { IUpdateCertAgreementResult } from './sql/updateCertAgreement'
 import updateCertAgreement from './sql/updateCertAgreement.sql'
 import useCherry from './sql/useCherry.sql'
@@ -80,42 +78,23 @@ export const Mutation: MutationResolvers<ApolloContext> = {
     if (showImmunizationDetails) certType.push(2)
     if (showSexualCrimeDetails) certType.push(3)
 
-    const minimumEffectiveDate = new Date(
-      Math.min(stdTestSince, immunizationSince, sexualCrimeSince)
-    )
+    const { rows } = await poolQuery<IGetCertsResult>(getCerts, [
+      targetUserId,
+      certType,
+      stdTestSince ?? '1900-01-01',
+      immunizationSince ?? '1900-01-01',
+      sexualCrimeSince ?? '1900-01-01',
+    ])
 
-    const { rows } = await poolQuery<IGetCertsResult>(
-      stdTestSince && immunizationSince && sexualCrimeSince ? getCertsByDate : getCerts,
-      stdTestSince && immunizationSince && sexualCrimeSince
-        ? [targetUserId, certType, minimumEffectiveDate]
-        : [targetUserId, certType]
-    )
-
-    return (
-      rows
-        .filter((cert) => {
-          if (cert.type === CertType.STD_TEST) {
-            if (stdTestSince) return cert.effective_date > stdTestSince
-            else return true
-          } else if (cert.type === CertType.IMMUNIZATION) {
-            if (immunizationSince) return cert.effective_date > immunizationSince
-            else return true
-          } else if (cert.type === CertType.SEXUAL_CRIME) {
-            if (sexualCrimeSince) return cert.effective_date > sexualCrimeSince
-            else return true
-          } else return true
-        })
-        // 생일, 성별, 이름 가리기
-        .map((cert) => ({
-          id: cert.id,
-          ...(showBirthdate && { birthdate: cert.birthdate }),
-          content: cert.content,
-          effectiveDate: cert.effective_date,
-          issueDate: cert.issue_date,
-          ...(showName && { name: cert.name }),
-          ...(showSex && { sex: cert.sex }),
-          type: cert.type,
-        }))
-    )
+    return rows.map((cert) => ({
+      id: cert.id,
+      ...(showBirthdate && { birthdate: cert.birthdate }),
+      content: cert.content,
+      effectiveDate: cert.effective_date,
+      issueDate: cert.issue_date,
+      ...(showName && { name: cert.name }),
+      ...(showSex && { sex: cert.sex }),
+      type: cert.type,
+    }))
   },
 }

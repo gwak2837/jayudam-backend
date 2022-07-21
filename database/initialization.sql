@@ -70,9 +70,6 @@ END;
 
 $$ language plpgsql;
 
--- grade: 0=무료, 1=프로, 2=엔터프라이즈
--- sex: 0=미확인, 1=남성, 2=여성
--- 삭제 시 DELETE 사용하지 말고 oauth를 제외한 필드만 NULL로 초기화
 CREATE TABLE "user" (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   creation_time timestamptz DEFAULT CURRENT_TIMESTAMP,
@@ -128,7 +125,6 @@ CREATE TABLE cert_pending (
   SET NULL
 );
 
--- type: 0=임상병리검사, 1=성병검사, 2=성병예방접종, 3=성범죄
 CREATE TABLE cert (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
