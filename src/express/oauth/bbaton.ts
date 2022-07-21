@@ -22,7 +22,11 @@ export function setBBatonOAuthStrategies(app: Express) {
     if (!code || !backendUrl) return res.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기
-    const bBatonUserToken = await fetchBBatonUserToken(code, `${req.protocol}://${backendUrl}`)
+    // const bBatonUserToken = await fetchBBatonUserToken(code, `${req.protocol}://${backendUrl}`)
+    const bBatonUserToken = await fetchBBatonUserToken(
+      code,
+      backendUrl === 'localhost:4000' ? 'http://localhost:4000' : `https://${backendUrl}`
+    )
     if (bBatonUserToken.error) return res.status(400).send('Bad Request2')
 
     const bBatonUser = await fetchBBatonUser(bBatonUserToken.access_token)
