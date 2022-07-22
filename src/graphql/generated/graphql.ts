@@ -28,13 +28,12 @@ export type Scalars = {
 
 export type Cert = {
   __typename?: 'Cert'
-  birthdate?: Maybe<Scalars['Date']>
   content?: Maybe<Scalars['String']>
   effectiveDate?: Maybe<Scalars['Date']>
   id: Scalars['ID']
   issueDate?: Maybe<Scalars['Date']>
-  name?: Maybe<Scalars['NonEmptyString']>
-  sex?: Maybe<Sex>
+  location?: Maybe<Scalars['String']>
+  name?: Maybe<Scalars['String']>
   type: CertType
 }
 
@@ -84,7 +83,7 @@ export type Certs = {
   creationTime: Scalars['DateTime']
   id: Scalars['ID']
   immunizationCerts?: Maybe<Array<Cert>>
-  name?: Maybe<Scalars['NonEmptyString']>
+  name?: Maybe<Scalars['String']>
   sex?: Maybe<Sex>
   sexualCrimeCerts?: Maybe<Array<Cert>>
   stdTestCerts?: Maybe<Array<Cert>>
@@ -251,7 +250,7 @@ export enum Sex {
 export type Town = {
   __typename?: 'Town'
   count: Scalars['NonNegativeInt']
-  name?: Maybe<Scalars['NonEmptyString']>
+  name?: Maybe<Scalars['String']>
 }
 
 export type User = {
@@ -471,13 +470,12 @@ export type CertResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Cert'] = ResolversParentTypes['Cert']
 > = ResolversObject<{
-  birthdate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   effectiveDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>
   issueDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
-  name?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
-  sex?: Resolver<Maybe<ResolversTypes['Sex']>, ParentType, ContextType>
+  location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   type?: Resolver<ResolversTypes['CertType'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
@@ -506,7 +504,7 @@ export type CertsResolvers<
   creationTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>
   immunizationCerts?: Resolver<Maybe<Array<ResolversTypes['Cert']>>, ParentType, ContextType>
-  name?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   sex?: Resolver<Maybe<ResolversTypes['Sex']>, ParentType, ContextType>
   sexualCrimeCerts?: Resolver<Maybe<Array<ResolversTypes['Cert']>>, ParentType, ContextType>
   stdTestCerts?: Resolver<Maybe<Array<ResolversTypes['Cert']>>, ParentType, ContextType>
@@ -689,7 +687,7 @@ export type TownResolvers<
   ParentType extends ResolversParentTypes['Town'] = ResolversParentTypes['Town']
 > = ResolversObject<{
   count?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>
-  name?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 

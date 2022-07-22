@@ -1,13 +1,12 @@
 scalar Any
 
 type Cert {
-  birthdate: Date
   content: String
   effectiveDate: Date
   id: ID!
   issueDate: Date
-  name: NonEmptyString
-  sex: Sex
+  location: String
+  name: String
   type: CertType!
 }
 
@@ -55,7 +54,7 @@ type Certs {
   creationTime: DateTime!
   id: ID!
   immunizationCerts: [Cert!]
-  name: NonEmptyString
+  name: String
   sex: Sex
   sexualCrimeCerts: [Cert!]
   stdTestCerts: [Cert!]
@@ -188,7 +187,7 @@ enum Sex {
 
 type Town {
   count: NonNegativeInt!
-  name: NonEmptyString
+  name: String
 }
 
 scalar URL

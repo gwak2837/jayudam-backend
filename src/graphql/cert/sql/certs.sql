@@ -1,9 +1,11 @@
 /* @name certs */
 SELECT id,
   birthdate,
+  cert_name,
   content,
   effective_date,
   issue_date,
+  location,
   name,
   sex,
   "type"
@@ -20,4 +22,5 @@ WHERE user_id = $1
     AND effective_date > $4
     OR "type" = 3
     AND effective_date > $5
-  );
+  )
+ORDER BY effective_date DESC;

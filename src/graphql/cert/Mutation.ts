@@ -108,6 +108,8 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       content: cert.content,
       effectiveDate: cert.effective_date,
       issueDate: cert.issue_date,
+      location: cert.location,
+      name: cert.cert_name,
       type: cert.type,
     }))
 

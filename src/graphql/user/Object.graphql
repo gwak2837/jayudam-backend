@@ -50,7 +50,7 @@ type ServiceAgreement {
 
 type Town {
   count: NonNegativeInt!
-  name: NonEmptyString
+  name: String
 }
 
 enum Sex {

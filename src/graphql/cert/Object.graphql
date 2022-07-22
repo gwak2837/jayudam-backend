@@ -1,11 +1,10 @@
 type Cert {
   id: ID!
-  birthdate: Date
   content: String
   effectiveDate: Date
   issueDate: Date
-  name: NonEmptyString
-  sex: Sex
+  location: String
+  name: String
   type: CertType!
 }
 
@@ -13,7 +12,7 @@ type Certs {
   id: ID!
   creationTime: DateTime!
   birthdate: Date
-  name: NonEmptyString
+  name: String
   sex: Sex
   stdTestCerts: [Cert!]
   immunizationCerts: [Cert!]
