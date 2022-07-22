@@ -50,6 +50,17 @@ enum CertType {
   STD_TEST
 }
 
+type Certs {
+  birthdate: Date
+  creationTime: DateTime!
+  id: ID!
+  immunizationCerts: [Cert!]
+  name: NonEmptyString
+  sex: Sex
+  sexualCrimeCerts: [Cert!]
+  stdTestCerts: [Cert!]
+}
+
 scalar Date
 
 scalar DateTime
@@ -75,14 +86,14 @@ type Mutation {
   disconnectFromKakaoOAuth: Boolean
   disconnectFromNaverOAuth: Boolean
   logout: User
-  submitCertInfo(input: CertCreation!): Boolean
+  submitCert(input: CertCreation!): Cert
   takeAttendance: User
   unregister: User
   updateCertAgreement(input: CertAgreementInput!): JWT!
   updateMyCertAgreement(input: CertAgreementInput): CertAgreement
   updatePost(input: PostUpdateInput!): Post
   updateUser(input: UserUpdate!): User
-  verifyCertJWT(jwt: JWT!): [Cert!]
+  verifyCertJWT(jwt: JWT!): Certs
   verifyTown(lat: Latitude!, lon: Longitude!): User
   wakeUser: User
 }
@@ -136,14 +147,16 @@ input PostUpdateInput {
 }
 
 type Query {
+  certs: Certs
   isUniqueNickname(nickname: NonEmptyString!): Boolean!
   myCertAgreement: CertAgreement
-  myCerts: [Cert!]
   myNickname: User
   myVerificationHistories: [VerificationHistory!]
+  pendingCerts: [Cert!]
   post(id: ID!): Post
   posts: [Post!]
   user(nickname: NonEmptyString): User
+  verificationHistories: [Certs!]
 }
 
 type ServiceAgreement {

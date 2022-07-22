@@ -28,6 +28,8 @@ export const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET as string
 export const BBATON_CLIENT_ID = process.env.BBATON_CLIENT_ID as string
 export const BBATON_CLIENT_SECRET_KEY = process.env.BBATON_CLIENT_SECRET_KEY as string
 
+export const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN as string
+
 if (!PORT) throw new Error('`PORT` 환경 변수를 설정해주세요.')
 if (!FRONTEND_URL) throw new Error('`FRONTEND_URL` 환경 변수를 설정해주세요.')
 
@@ -59,3 +61,5 @@ if (!NAVER_CLIENT_SECRET) throw new Error('`NAVER_CLIENT_SECRET` 환경 변수�
 if (!BBATON_CLIENT_ID) throw new Error('`BBATON_CLIENT_ID` 환경 변수를 설정해주세요.')
 if (!BBATON_CLIENT_SECRET_KEY)
   throw new Error('`BBATON_CLIENT_SECRET_KEY` 환경 변수를 설정해주세요.')
+
+if (!TELEGRAM_BOT_TOKEN) throw new Error('`TELEGRAM_BOT_TOKEN` 환경 변수를 설정해주세요.')

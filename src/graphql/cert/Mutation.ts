@@ -3,17 +3,23 @@ import { AuthenticationError, ForbiddenError, UserInputError } from 'apollo-serv
 import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
 import { signJWT, verifyJWT } from '../../utils/jwt'
-import { MutationResolvers } from '../generated/graphql'
+import { Cert, MutationResolvers } from '../generated/graphql'
 import { ICertsResult } from './sql/certs'
 import certs from './sql/certs.sql'
-import { ICreateVerificationHistoriesResult } from './sql/createVerificationHistories'
-import createVerificationHistories from './sql/createVerificationHistories.sql'
+import { ICreateVerificationHistoryResult } from './sql/createVerificationHistory'
+import createVerificationHistory from './sql/createVerificationHistory.sql'
 import { IUpdateCertAgreementResult } from './sql/updateCertAgreement'
 import updateCertAgreement from './sql/updateCertAgreement.sql'
 import { IUseCherryResult } from './sql/useCherry'
 import useCherry from './sql/useCherry.sql'
 
 export const Mutation: MutationResolvers<ApolloContext> = {
+  submitCert: async (_, { input }, { userId }) => {
+    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+
+    return {} as Cert
+  },
+
   updateCertAgreement: async (_, { input }, { userId }) => {
     if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
 
@@ -84,10 +90,6 @@ export const Mutation: MutationResolvers<ApolloContext> = {
 
     // if (userId === targetUserId) throw new UserInputError('본인의 QR code 입니다')
 
-    await poolQuery<IUseCherryResult>(useCherry, [userId]).catch(() => {
-      throw new ForbiddenError('체리를 사용할 수 없습니다')
-    })
-
     const certType = []
     if (showSTDTestDetails) certType.push(0, 1)
     if (showImmunizationDetails) certType.push(2)
@@ -101,24 +103,50 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       sexualCrimeSince ?? '1900-01-01',
     ])
 
-    if (rowCount === 0) return null
-
-    const results = rows.map((cert) => ({
+    const allCerts = rows.map((cert) => ({
       id: cert.id,
-      ...(showBirthdate && { birthdate: cert.birthdate }),
       content: cert.content,
       effectiveDate: cert.effective_date,
       issueDate: cert.issue_date,
-      ...(showName && { name: cert.name }),
-      ...(showSex && { sex: cert.sex }),
       type: cert.type,
     }))
 
-    await poolQuery<ICreateVerificationHistoriesResult>(createVerificationHistories, [
-      JSON.stringify(results),
-      userId,
-    ])
+    const results = {
+      ...(showBirthdate && { birthdate: rows[0].birthdate }),
+      ...(showName && { name: rows[0].name }),
+      ...(showSex && { sex: rows[0].sex }),
+      ...(showSTDTestDetails && {
+        stdTestCerts: allCerts.filter((cert) => cert.type === 0 || cert.type === 1),
+      }),
+      ...(immunizationSince && { immunizationCerts: allCerts.filter((cert) => cert.type === 2) }),
+      ...(sexualCrimeSince && { sexualCrimeCerts: allCerts.filter((cert) => cert.type === 3) }),
+    }
 
-    return results
+    const { rows: rows2 } = await poolQuery<ICreateVerificationHistoryResult>(
+      createVerificationHistory,
+      [JSON.stringify(results), userId]
+    )
+
+    if (rowCount === 0)
+      return {
+        id: rows2[0].id,
+        creationTime: rows2[0].creation_time,
+        ...(showBirthdate && { birthdate: null }),
+        ...(showName && { name: null }),
+        ...(showSex && { sex: null }),
+        ...(showSTDTestDetails && { stdTestCerts: [] }),
+        ...(immunizationSince && { immunizationCerts: [] }),
+        ...(sexualCrimeSince && { sexualCrimeCerts: [] }),
+      }
+
+    await poolQuery<IUseCherryResult>(useCherry, [userId]).catch(() => {
+      throw new ForbiddenError('체리를 사용할 수 없습니다')
+    })
+
+    return {
+      id: rows2[0].id,
+      creationTime: rows2[0].creation_time,
+      ...results,
+    }
   },
 }

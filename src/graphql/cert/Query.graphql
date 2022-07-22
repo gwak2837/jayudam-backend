@@ -1,3 +1,5 @@
 type Query {
-  myCerts: [Cert!]
+  certs: Certs
+  pendingCerts: [Cert!]
+  verificationHistories: [Certs!]
 }

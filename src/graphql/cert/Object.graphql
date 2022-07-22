@@ -9,6 +9,17 @@ type Cert {
   type: CertType!
 }
 
+type Certs {
+  id: ID!
+  creationTime: DateTime!
+  birthdate: Date
+  name: NonEmptyString
+  sex: Sex
+  stdTestCerts: [Cert!]
+  immunizationCerts: [Cert!]
+  sexualCrimeCerts: [Cert!]
+}
+
 enum CertType {
   CLINICAL_LABORATORY_TEST
   STD_TEST
