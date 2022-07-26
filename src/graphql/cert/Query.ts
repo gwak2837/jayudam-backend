@@ -19,9 +19,9 @@ export const Query: QueryResolvers<ApolloContext> = {
         showBirthdate: true,
         showName: true,
         showSex: true,
-        showSTDTestDetails: true,
-        showImmunizationDetails: true,
-        showSexualCrimeDetails: true,
+        showSTDTest: true,
+        showImmunization: true,
+        showSexualCrime: true,
       },
       '30s'
     )

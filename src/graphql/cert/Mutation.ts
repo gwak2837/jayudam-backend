@@ -28,11 +28,11 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       showBirthdate,
       showName,
       showSex,
-      showSTDTestDetails,
+      showSTDTest,
       stdTestSince,
-      showImmunizationDetails,
+      showImmunization,
       immunizationSince,
-      showSexualCrimeDetails,
+      showSexualCrime,
       sexualCrimeSince,
     } = input
 
@@ -43,15 +43,15 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       ...(showBirthdate && { showBirthdate }),
       ...(showName && { showName }),
       ...(showSex && { showSex }),
-      ...(showSTDTestDetails && { showSTDTestDetails }),
-      ...(showSTDTestDetails && stdTestSince && { stdTestSince }),
-      ...(showImmunizationDetails && { showImmunizationDetails }),
-      ...(showImmunizationDetails &&
+      ...(showSTDTest && { showSTDTest }),
+      ...(showSTDTest && stdTestSince && { stdTestSince }),
+      ...(showImmunization && { showImmunization }),
+      ...(showImmunization &&
         immunizationSince && {
           immunizationSince,
         }),
-      ...(showSexualCrimeDetails && { showSexualCrimeDetails }),
-      ...(showSexualCrimeDetails && sexualCrimeSince && { sexualCrimeSince }),
+      ...(showSexualCrime && { showSexualCrime }),
+      ...(showSexualCrime && sexualCrimeSince && { sexualCrimeSince }),
     }
 
     await poolQuery<IUpdateCertAgreementResult>(updateCertAgreement, [
@@ -72,11 +72,11 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       showBirthdate,
       showName,
       showSex,
-      showSTDTestDetails,
+      showSTDTest,
       stdTestSince,
-      showImmunizationDetails,
+      showImmunization,
       immunizationSince,
-      showSexualCrimeDetails,
+      showSexualCrime,
       sexualCrimeSince,
     } = await verifyJWT(jwt)
     if (!qrcode) throw new UserInputError('잘못된 JWT입니다')
@@ -85,18 +85,19 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       !showBirthdate &&
       !showName &&
       !showSex &&
-      !showSTDTestDetails &&
-      !showImmunizationDetails &&
-      !showSexualCrimeDetails
+      !showSTDTest &&
+      !showImmunization &&
+      !showSexualCrime
     )
       throw new UserInputError('하나 이상의 정보 제공 동의가 필요합니다')
 
     // if (userId === targetUserId) throw new UserInputError('본인의 QR code 입니다')
 
     const certType = []
-    if (showSTDTestDetails) certType.push(0, 1)
-    if (showImmunizationDetails) certType.push(2)
-    if (showSexualCrimeDetails) certType.push(3)
+    if (showSTDTest) certType.push(0, 1)
+    if (showImmunization) certType.push(2)
+    if (showSexualCrime) certType.push(3)
+    console.log('👀 - certType', certType)
 
     const { rowCount, rows } = await poolQuery<ICertsResult>(certs, [
       targetUserId,
@@ -120,11 +121,15 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       ...(showBirthdate && { birthdate: rows[0].birthdate }),
       ...(showName && { name: rows[0].name }),
       ...(showSex && { sex: rows[0].sex }),
-      ...(showSTDTestDetails && {
+      ...(showSTDTest && {
         stdTestCerts: allCerts.filter((cert) => cert.type === 0 || cert.type === 1),
       }),
-      ...(immunizationSince && { immunizationCerts: allCerts.filter((cert) => cert.type === 2) }),
-      ...(sexualCrimeSince && { sexualCrimeCerts: allCerts.filter((cert) => cert.type === 3) }),
+      ...(showImmunization && {
+        immunizationCerts: allCerts.filter((cert) => cert.type === 2),
+      }),
+      ...(showSexualCrime && {
+        sexualCrimeCerts: allCerts.filter((cert) => cert.type === 3),
+      }),
     }
 
     if (forTest) {
@@ -147,7 +152,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
         ...(showBirthdate && { birthdate: null }),
         ...(showName && { name: null }),
         ...(showSex && { sex: null }),
-        ...(showSTDTestDetails && { stdTestCerts: [] }),
+        ...(showSTDTest && { stdTestCerts: [] }),
         ...(immunizationSince && { immunizationCerts: [] }),
         ...(sexualCrimeSince && { sexualCrimeCerts: [] }),
       }

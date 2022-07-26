@@ -1,13 +1,3 @@
-type Cert {
-  id: ID!
-  content: String
-  effectiveDate: DateTime
-  issueDate: DateTime
-  location: String
-  name: String
-  type: CertType!
-}
-
 type Certs {
   id: ID!
   creationTime: DateTime!
@@ -17,6 +7,16 @@ type Certs {
   stdTestCerts: [Cert!]
   immunizationCerts: [Cert!]
   sexualCrimeCerts: [Cert!]
+}
+
+type Cert {
+  id: ID!
+  content: String
+  effectiveDate: DateTime
+  issueDate: DateTime
+  location: String
+  name: String
+  type: CertType!
 }
 
 enum CertType {

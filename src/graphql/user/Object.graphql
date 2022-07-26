@@ -28,11 +28,11 @@ type CertAgreement {
   showBirthdate: Boolean!
   showName: Boolean!
   showSex: Boolean!
-  showSTDTestDetails: Boolean!
+  showSTDTest: Boolean!
   stdTestSince: DateTime
-  showImmunizationDetails: Boolean!
+  showImmunization: Boolean!
   immunizationSince: DateTime
-  showSexualCrimeDetails: Boolean!
+  showSexualCrime: Boolean!
   sexualCrimeSince: DateTime
 }
 

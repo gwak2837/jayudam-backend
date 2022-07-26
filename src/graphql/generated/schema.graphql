@@ -14,11 +14,11 @@ type CertAgreement {
   immunizationSince: DateTime
   sexualCrimeSince: DateTime
   showBirthdate: Boolean!
-  showImmunizationDetails: Boolean!
+  showImmunization: Boolean!
   showName: Boolean!
-  showSTDTestDetails: Boolean!
+  showSTDTest: Boolean!
   showSex: Boolean!
-  showSexualCrimeDetails: Boolean!
+  showSexualCrime: Boolean!
   stdTestSince: DateTime
 }
 
@@ -26,11 +26,11 @@ input CertAgreementInput {
   immunizationSince: DateTime
   sexualCrimeSince: DateTime
   showBirthdate: Boolean
-  showImmunizationDetails: Boolean
+  showImmunization: Boolean
   showName: Boolean
-  showSTDTestDetails: Boolean
+  showSTDTest: Boolean
   showSex: Boolean
-  showSexualCrimeDetails: Boolean
+  showSexualCrime: Boolean
   stdTestSince: DateTime
 }
 
@@ -144,10 +144,10 @@ input PostUpdateInput {
 }
 
 type Query {
+  auth: User
   certs: Certs
   isUniqueNickname(nickname: NonEmptyString!): Boolean!
   myCertAgreement: CertAgreement
-  myNickname: User
   myVerificationHistories: [VerificationHistory!]
   pendingCerts: [Cert!]
   post(id: ID!): Post

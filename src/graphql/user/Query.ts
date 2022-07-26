@@ -3,7 +3,7 @@ import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 import { NotFoundError } from '../../apollo/errors'
 import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
-import { CertAgreement, QueryResolvers, Sex, User } from '../generated/graphql'
+import { QueryResolvers, User } from '../generated/graphql'
 import { IGetMyCertAgreementResult } from './sql/getMyCertAgreement'
 import getMyCertAgreement from './sql/getMyCertAgreement.sql'
 import { IIsUniqueNicknameResult } from './sql/isUniqueNickname'
@@ -16,6 +16,17 @@ import { IUserByNicknameResult } from './sql/userByNickname'
 import userByNickname from './sql/userByNickname.sql'
 
 export const Query: QueryResolvers<ApolloContext> = {
+  auth: async (_, __, { userId }) => {
+    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+
+    const { rows } = await poolQuery<IMyNicknameResult>(myNickname, [userId])
+
+    return {
+      id: rows[0].id,
+      nickname: rows[0].nickname,
+    } as User
+  },
+
   myCertAgreement: async (_, __, { userId }) => {
     if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
 
@@ -25,20 +36,20 @@ export const Query: QueryResolvers<ApolloContext> = {
         showBirthdate: false,
         showName: false,
         showSex: false,
-        showSTDTestDetails: false,
-        showImmunizationDetails: false,
-        showSexualCrimeDetails: false,
+        showSTDTest: false,
+        showImmunization: false,
+        showSexualCrime: false,
       }
 
     const {
       showBirthdate,
       showName,
       showSex,
-      showSTDTestDetails,
+      showSTDTest,
       stdTestSince,
-      showImmunizationDetails,
+      showImmunization,
       immunizationSince,
-      showSexualCrimeDetails,
+      showSexualCrime,
       sexualCrimeSince,
     } = JSON.parse(rows[0].cert_agreement)
 
@@ -46,12 +57,12 @@ export const Query: QueryResolvers<ApolloContext> = {
       showBirthdate: showBirthdate ?? false,
       showName: showName ?? false,
       showSex: showSex ?? false,
-      showSTDTestDetails: showSTDTestDetails ?? false,
-      ...(showSTDTestDetails && stdTestSince && { stdTestSince }),
-      showImmunizationDetails: showImmunizationDetails ?? false,
-      ...(showImmunizationDetails && immunizationSince && { immunizationSince }),
-      showSexualCrimeDetails: showSexualCrimeDetails ?? false,
-      ...(showSexualCrimeDetails && sexualCrimeSince && { sexualCrimeSince }),
+      showSTDTest: showSTDTest ?? false,
+      ...(showSTDTest && stdTestSince && { stdTestSince }),
+      showImmunization: showImmunization ?? false,
+      ...(showImmunization && immunizationSince && { immunizationSince }),
+      showSexualCrime: showSexualCrime ?? false,
+      ...(showSexualCrime && sexualCrimeSince && { sexualCrimeSince }),
     }
   },
 
@@ -59,17 +70,6 @@ export const Query: QueryResolvers<ApolloContext> = {
     const { rowCount } = await poolQuery<IIsUniqueNicknameResult>(isUniqueNickname, [nickname])
 
     return rowCount === 0
-  },
-
-  myNickname: async (_, __, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
-
-    const { rows } = await poolQuery<IMyNicknameResult>(myNickname, [userId])
-
-    return {
-      id: rows[0].id,
-      nickname: rows[0].nickname,
-    } as User
   },
 
   user: async (_, { nickname }, { userId }) => {

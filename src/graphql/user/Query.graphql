@@ -1,6 +1,6 @@
 type Query {
+  auth: User
   isUniqueNickname(nickname: NonEmptyString!): Boolean!
   myCertAgreement: CertAgreement
-  myNickname: User
   user(nickname: NonEmptyString): User
 }

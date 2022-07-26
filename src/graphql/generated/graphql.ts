@@ -41,11 +41,11 @@ export type CertAgreement = {
   immunizationSince?: Maybe<Scalars['DateTime']>
   sexualCrimeSince?: Maybe<Scalars['DateTime']>
   showBirthdate: Scalars['Boolean']
-  showImmunizationDetails: Scalars['Boolean']
+  showImmunization: Scalars['Boolean']
   showName: Scalars['Boolean']
-  showSTDTestDetails: Scalars['Boolean']
+  showSTDTest: Scalars['Boolean']
   showSex: Scalars['Boolean']
-  showSexualCrimeDetails: Scalars['Boolean']
+  showSexualCrime: Scalars['Boolean']
   stdTestSince?: Maybe<Scalars['DateTime']>
 }
 
@@ -53,11 +53,11 @@ export type CertAgreementInput = {
   immunizationSince?: InputMaybe<Scalars['DateTime']>
   sexualCrimeSince?: InputMaybe<Scalars['DateTime']>
   showBirthdate?: InputMaybe<Scalars['Boolean']>
-  showImmunizationDetails?: InputMaybe<Scalars['Boolean']>
+  showImmunization?: InputMaybe<Scalars['Boolean']>
   showName?: InputMaybe<Scalars['Boolean']>
-  showSTDTestDetails?: InputMaybe<Scalars['Boolean']>
+  showSTDTest?: InputMaybe<Scalars['Boolean']>
   showSex?: InputMaybe<Scalars['Boolean']>
-  showSexualCrimeDetails?: InputMaybe<Scalars['Boolean']>
+  showSexualCrime?: InputMaybe<Scalars['Boolean']>
   stdTestSince?: InputMaybe<Scalars['DateTime']>
 }
 
@@ -194,10 +194,10 @@ export type PostUpdateInput = {
 
 export type Query = {
   __typename?: 'Query'
+  auth?: Maybe<User>
   certs?: Maybe<Certs>
   isUniqueNickname: Scalars['Boolean']
   myCertAgreement?: Maybe<CertAgreement>
-  myNickname?: Maybe<User>
   myVerificationHistories?: Maybe<Array<VerificationHistory>>
   pendingCerts?: Maybe<Array<Cert>>
   post?: Maybe<Post>
@@ -474,7 +474,7 @@ export type CertResolvers<
   issueDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  type?: Resolver<ResolversTypes['CertType'], ParentType, ContextType>
+  showImmunizationrsTypes['CertType'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
@@ -485,11 +485,11 @@ export type CertAgreementResolvers<
   immunizationSince?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   sexualCrimeSince?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   showBirthdate?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
-  showImmunizationDetails?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  showImmunization?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   showName?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
-  showSTDTestDetails?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  showSTDTest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   showSex?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
-  showSexualCrimeDetails?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  showSexualCrime?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   stdTestSince?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
@@ -634,6 +634,7 @@ export type QueryResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
 > = ResolversObject<{
+  auth?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   certs?: Resolver<Maybe<ResolversTypes['Certs']>, ParentType, ContextType>
   isUniqueNickname?: Resolver<
     ResolversTypes['Boolean'],
@@ -642,7 +643,6 @@ export type QueryResolvers<
     RequireFields<QueryIsUniqueNicknameArgs, 'nickname'>
   >
   myCertAgreement?: Resolver<Maybe<ResolversTypes['CertAgreement']>, ParentType, ContextType>
-  myNickname?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   myVerificationHistories?: Resolver<
     Maybe<Array<ResolversTypes['VerificationHistory']>>,
     ParentType,
