@@ -1,6 +1,5 @@
 import { GraphQLScalarType, Kind } from 'graphql'
 import {
-  DateResolver,
   DateTimeResolver,
   EmailAddressResolver,
   JWTResolver,
@@ -13,7 +12,6 @@ import {
   UUIDResolver,
 } from 'graphql-scalars'
 
-export const Date = DateResolver
 export const DateTime = DateTimeResolver
 export const EmailAddress = EmailAddressResolver
 export const JWT = JWTResolver

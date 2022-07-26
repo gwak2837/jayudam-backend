@@ -1,5 +1,6 @@
 type Query {
   certs: Certs
   pendingCerts: [Cert!]
+  sampleCertJWT: JWT!
   verificationHistories: [Certs!]
 }

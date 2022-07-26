@@ -1,8 +1,8 @@
 type Cert {
   id: ID!
   content: String
-  effectiveDate: Date
-  issueDate: Date
+  effectiveDate: DateTime
+  issueDate: DateTime
   location: String
   name: String
   type: CertType!
@@ -11,7 +11,7 @@ type Cert {
 type Certs {
   id: ID!
   creationTime: DateTime!
-  birthdate: Date
+  birthdate: DateTime
   name: String
   sex: Sex
   stdTestCerts: [Cert!]

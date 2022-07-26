@@ -2,6 +2,7 @@ import { AuthenticationError, ForbiddenError, UserInputError } from 'apollo-serv
 
 import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
+import { defaultDate, tomorrow } from '../../utils'
 import { signJWT, verifyJWT } from '../../utils/jwt'
 import { Cert, MutationResolvers } from '../generated/graphql'
 import { ICertsResult } from './sql/certs'
@@ -35,21 +36,22 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       sexualCrimeSince,
     } = input
 
+    if (stdTestSince > tomorrow || immunizationSince > tomorrow || sexualCrimeSince > tomorrow)
+      throw new UserInputError('날짜를 미래로 지정할 수 없습니다')
+
     const certAgreement = {
       ...(showBirthdate && { showBirthdate }),
       ...(showName && { showName }),
       ...(showSex && { showSex }),
       ...(showSTDTestDetails && { showSTDTestDetails }),
-      ...(showSTDTestDetails &&
-        stdTestSince && { stdTestSince: stdTestSince.toISOString().substring(0, 10) }),
+      ...(showSTDTestDetails && stdTestSince && { stdTestSince }),
       ...(showImmunizationDetails && { showImmunizationDetails }),
       ...(showImmunizationDetails &&
         immunizationSince && {
-          immunizationSince: immunizationSince.toISOString().substring(0, 10),
+          immunizationSince,
         }),
       ...(showSexualCrimeDetails && { showSexualCrimeDetails }),
-      ...(showSexualCrimeDetails &&
-        sexualCrimeSince && { sexualCrimeSince: sexualCrimeSince.toISOString().substring(0, 10) }),
+      ...(showSexualCrimeDetails && sexualCrimeSince && { sexualCrimeSince }),
     }
 
     await poolQuery<IUpdateCertAgreementResult>(updateCertAgreement, [
@@ -65,6 +67,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
 
     const {
       qrcode,
+      forTest,
       userId: targetUserId,
       showBirthdate,
       showName,
@@ -98,9 +101,9 @@ export const Mutation: MutationResolvers<ApolloContext> = {
     const { rowCount, rows } = await poolQuery<ICertsResult>(certs, [
       targetUserId,
       certType,
-      stdTestSince ?? '1900-01-01',
-      immunizationSince ?? '1900-01-01',
-      sexualCrimeSince ?? '1900-01-01',
+      stdTestSince ?? defaultDate,
+      immunizationSince ?? defaultDate,
+      sexualCrimeSince ?? defaultDate,
     ])
 
     const allCerts = rows.map((cert) => ({
@@ -122,6 +125,14 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       }),
       ...(immunizationSince && { immunizationCerts: allCerts.filter((cert) => cert.type === 2) }),
       ...(sexualCrimeSince && { sexualCrimeCerts: allCerts.filter((cert) => cert.type === 3) }),
+    }
+
+    if (forTest) {
+      return {
+        id: 0,
+        creationTime: new Date(0),
+        ...results,
+      }
     }
 
     const { rows: rows2 } = await poolQuery<ICreateVerificationHistoryResult>(

@@ -2,36 +2,36 @@ scalar Any
 
 type Cert {
   content: String
-  effectiveDate: Date
+  effectiveDate: DateTime
   id: ID!
-  issueDate: Date
+  issueDate: DateTime
   location: String
   name: String
   type: CertType!
 }
 
 type CertAgreement {
-  immunizationSince: Date
-  sexualCrimeSince: Date
+  immunizationSince: DateTime
+  sexualCrimeSince: DateTime
   showBirthdate: Boolean!
   showImmunizationDetails: Boolean!
   showName: Boolean!
   showSTDTestDetails: Boolean!
   showSex: Boolean!
   showSexualCrimeDetails: Boolean!
-  stdTestSince: Date
+  stdTestSince: DateTime
 }
 
 input CertAgreementInput {
-  immunizationSince: Date
-  sexualCrimeSince: Date
+  immunizationSince: DateTime
+  sexualCrimeSince: DateTime
   showBirthdate: Boolean
   showImmunizationDetails: Boolean
   showName: Boolean
   showSTDTestDetails: Boolean
   showSex: Boolean
   showSexualCrimeDetails: Boolean
-  stdTestSince: Date
+  stdTestSince: DateTime
 }
 
 input CertCreation {
@@ -50,7 +50,7 @@ enum CertType {
 }
 
 type Certs {
-  birthdate: Date
+  birthdate: DateTime
   creationTime: DateTime!
   id: ID!
   immunizationCerts: [Cert!]
@@ -59,8 +59,6 @@ type Certs {
   sexualCrimeCerts: [Cert!]
   stdTestCerts: [Cert!]
 }
-
-scalar Date
 
 scalar DateTime
 
@@ -154,6 +152,7 @@ type Query {
   pendingCerts: [Cert!]
   post(id: ID!): Post
   posts: [Post!]
+  sampleCertJWT: JWT!
   user(nickname: NonEmptyString): User
   verificationHistories: [Certs!]
 }

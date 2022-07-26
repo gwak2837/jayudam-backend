@@ -13,7 +13,6 @@ export type Scalars = {
   Int: number
   Float: number
   Any: any
-  Date: any
   DateTime: any
   EmailAddress: any
   JWT: any
@@ -29,9 +28,9 @@ export type Scalars = {
 export type Cert = {
   __typename?: 'Cert'
   content?: Maybe<Scalars['String']>
-  effectiveDate?: Maybe<Scalars['Date']>
+  effectiveDate?: Maybe<Scalars['DateTime']>
   id: Scalars['ID']
-  issueDate?: Maybe<Scalars['Date']>
+  issueDate?: Maybe<Scalars['DateTime']>
   location?: Maybe<Scalars['String']>
   name?: Maybe<Scalars['String']>
   type: CertType
@@ -39,27 +38,27 @@ export type Cert = {
 
 export type CertAgreement = {
   __typename?: 'CertAgreement'
-  immunizationSince?: Maybe<Scalars['Date']>
-  sexualCrimeSince?: Maybe<Scalars['Date']>
+  immunizationSince?: Maybe<Scalars['DateTime']>
+  sexualCrimeSince?: Maybe<Scalars['DateTime']>
   showBirthdate: Scalars['Boolean']
   showImmunizationDetails: Scalars['Boolean']
   showName: Scalars['Boolean']
   showSTDTestDetails: Scalars['Boolean']
   showSex: Scalars['Boolean']
   showSexualCrimeDetails: Scalars['Boolean']
-  stdTestSince?: Maybe<Scalars['Date']>
+  stdTestSince?: Maybe<Scalars['DateTime']>
 }
 
 export type CertAgreementInput = {
-  immunizationSince?: InputMaybe<Scalars['Date']>
-  sexualCrimeSince?: InputMaybe<Scalars['Date']>
+  immunizationSince?: InputMaybe<Scalars['DateTime']>
+  sexualCrimeSince?: InputMaybe<Scalars['DateTime']>
   showBirthdate?: InputMaybe<Scalars['Boolean']>
   showImmunizationDetails?: InputMaybe<Scalars['Boolean']>
   showName?: InputMaybe<Scalars['Boolean']>
   showSTDTestDetails?: InputMaybe<Scalars['Boolean']>
   showSex?: InputMaybe<Scalars['Boolean']>
   showSexualCrimeDetails?: InputMaybe<Scalars['Boolean']>
-  stdTestSince?: InputMaybe<Scalars['Date']>
+  stdTestSince?: InputMaybe<Scalars['DateTime']>
 }
 
 export type CertCreation = {
@@ -79,7 +78,7 @@ export enum CertType {
 
 export type Certs = {
   __typename?: 'Certs'
-  birthdate?: Maybe<Scalars['Date']>
+  birthdate?: Maybe<Scalars['DateTime']>
   creationTime: Scalars['DateTime']
   id: Scalars['ID']
   immunizationCerts?: Maybe<Array<Cert>>
@@ -203,6 +202,7 @@ export type Query = {
   pendingCerts?: Maybe<Array<Cert>>
   post?: Maybe<Post>
   posts?: Maybe<Array<Post>>
+  sampleCertJWT: Scalars['JWT']
   user?: Maybe<User>
   verificationHistories?: Maybe<Array<Certs>>
 }
@@ -393,7 +393,6 @@ export type ResolversTypes = ResolversObject<{
   CertCreation: CertCreation
   CertType: CertType
   Certs: ResolverTypeWrapper<Certs>
-  Date: ResolverTypeWrapper<Scalars['Date']>
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>
   EmailAddress: ResolverTypeWrapper<Scalars['EmailAddress']>
   Grade: Grade
@@ -434,7 +433,6 @@ export type ResolversParentTypes = ResolversObject<{
   CertAgreementInput: CertAgreementInput
   CertCreation: CertCreation
   Certs: Certs
-  Date: Scalars['Date']
   DateTime: Scalars['DateTime']
   EmailAddress: Scalars['EmailAddress']
   ID: Scalars['ID']
@@ -471,9 +469,9 @@ export type CertResolvers<
   ParentType extends ResolversParentTypes['Cert'] = ResolversParentTypes['Cert']
 > = ResolversObject<{
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  effectiveDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
+  effectiveDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>
-  issueDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
+  issueDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   type?: Resolver<ResolversTypes['CertType'], ParentType, ContextType>
@@ -484,15 +482,15 @@ export type CertAgreementResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['CertAgreement'] = ResolversParentTypes['CertAgreement']
 > = ResolversObject<{
-  immunizationSince?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
-  sexualCrimeSince?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
+  immunizationSince?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
+  sexualCrimeSince?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   showBirthdate?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   showImmunizationDetails?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   showName?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   showSTDTestDetails?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   showSex?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   showSexualCrimeDetails?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
-  stdTestSince?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
+  stdTestSince?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
@@ -500,7 +498,7 @@ export type CertsResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Certs'] = ResolversParentTypes['Certs']
 > = ResolversObject<{
-  birthdate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
+  birthdate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   creationTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>
   immunizationCerts?: Resolver<Maybe<Array<ResolversTypes['Cert']>>, ParentType, ContextType>
@@ -510,10 +508,6 @@ export type CertsResolvers<
   stdTestCerts?: Resolver<Maybe<Array<ResolversTypes['Cert']>>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
-
-export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
-  name: 'Date'
-}
 
 export interface DateTimeScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
@@ -662,6 +656,7 @@ export type QueryResolvers<
     RequireFields<QueryPostArgs, 'id'>
   >
   posts?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType>
+  sampleCertJWT?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<QueryUserArgs>>
   verificationHistories?: Resolver<Maybe<Array<ResolversTypes['Certs']>>, ParentType, ContextType>
 }>
@@ -744,7 +739,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Cert?: CertResolvers<ContextType>
   CertAgreement?: CertAgreementResolvers<ContextType>
   Certs?: CertsResolvers<ContextType>
-  Date?: GraphQLScalarType
   DateTime?: GraphQLScalarType
   EmailAddress?: GraphQLScalarType
   JWT?: GraphQLScalarType

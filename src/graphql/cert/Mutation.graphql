@@ -19,9 +19,9 @@ input CertAgreementInput {
   showName: Boolean
   showSex: Boolean
   showSTDTestDetails: Boolean
-  stdTestSince: Date
+  stdTestSince: DateTime
   showImmunizationDetails: Boolean
-  immunizationSince: Date
+  immunizationSince: DateTime
   showSexualCrimeDetails: Boolean
-  sexualCrimeSince: Date
+  sexualCrimeSince: DateTime
 }
