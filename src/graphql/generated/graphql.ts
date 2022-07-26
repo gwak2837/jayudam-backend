@@ -474,7 +474,7 @@ export type CertResolvers<
   issueDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  showImmunizationrsTypes['CertType'], ParentType, ContextType>
+  type?: Resolver<ResolversTypes['CertType'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
