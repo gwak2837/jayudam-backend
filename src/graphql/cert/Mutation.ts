@@ -97,7 +97,6 @@ export const Mutation: MutationResolvers<ApolloContext> = {
     if (showSTDTest) certType.push(0, 1)
     if (showImmunization) certType.push(2)
     if (showSexualCrime) certType.push(3)
-    console.log('👀 - certType', certType)
 
     const { rowCount, rows } = await poolQuery<ICertsResult>(certs, [
       targetUserId,
@@ -134,7 +133,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
 
     if (forTest) {
       return {
-        id: 0,
+        id: -1,
         creationTime: new Date(0),
         ...results,
       }
@@ -149,12 +148,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       return {
         id: rows2[0].id,
         creationTime: rows2[0].creation_time,
-        ...(showBirthdate && { birthdate: null }),
-        ...(showName && { name: null }),
-        ...(showSex && { sex: null }),
-        ...(showSTDTest && { stdTestCerts: [] }),
-        ...(immunizationSince && { immunizationCerts: [] }),
-        ...(sexualCrimeSince && { sexualCrimeCerts: [] }),
+        ...results,
       }
 
     await poolQuery<IUseCherryResult>(useCherry, [userId]).catch(() => {
