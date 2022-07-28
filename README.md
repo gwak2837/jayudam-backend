@@ -49,6 +49,12 @@ POSTGRES_PASSWORD=DB계정암호
 POSTGRES_DB=DB이름
 POSTGRES_DOCKER_VOLUME_NAME=DB도커볼륨이름
 
+POSTGRES_HOST=140.238.10.130
+POSTGRES_USER=jayudam_admin
+POSTGRES_PASSWORD=POSjayudam159!
+POSTGRES_DB=jayudam
+POSTGRES_DOCKER_VOLUME_NAME=jayudam-postgres
+
 # https://www.postgresql.org/docs/14/ssl-tcp.html
 openssl req -new -nodes -text -out root.csr \
   -keyout root.key -subj "/CN=$POSTGRES_USER"
@@ -110,13 +116,13 @@ sudo docker run \
   -p 5432:5432 \
   --restart=on-failure \
   --shm-size=256MB \
-  --volume $POSTGRES_DOCKER_VOLUME_NAME:/var/lib/postgresql/data \
+  --volume $POSTGRES_DOCKER_VOLUME_NAME:/var/lib/postgresql \
   postgres:14-alpine \
   -c ssl=on \
-  -c ssl_ca_file=/var/lib/postgresql/data/root.crt \
-  -c ssl_cert_file=/var/lib/postgresql/data/server.crt \
-  -c ssl_key_file=/var/lib/postgresql/data/server.key \
-  -c hba_file=/var/lib/postgresql/data/pg_hba.conf
+  -c ssl_ca_file=/var/lib/postgresql/root.crt \
+  -c ssl_cert_file=/var/lib/postgresql/server.crt \
+  -c ssl_key_file=/var/lib/postgresql/server.key \
+  -c hba_file=/var/lib/postgresql/pg_hba.conf
 ```
 
 위 명령어를 실행하면 아래와 같은 파일이 생성됩니다.
@@ -162,6 +168,8 @@ Redis 서버를 실행합니다.
 git clone https://github.com/redis/redis.git
 vi ./redis/utils/gen-test-certs.sh
 ```
+
+인증서의 CN을 수정해줍니다.
 
 ```bash
 # set variables
