@@ -4,31 +4,25 @@ import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
-import {
-  frontendUrl,
-  kakaoAdminKey,
-  kakaoClientSecret,
-  kakaoRestApiKey,
-} from '../../utils/constants'
-import { generateJWT, verifyJWT } from '../../utils/jwt'
+import { KAKAO_ADMIN_KEY, KAKAO_CLIENT_SECRET, KAKAO_REST_API_KEY } from '../../utils/constants'
+import { signJWT, verifyJWT } from '../../utils/jwt'
 import { IGetKakaoUserResult } from './sql/getKakaoUser'
 import getKakaoUser from './sql/getKakaoUser.sql'
 import { IGetUserResult } from './sql/getUser'
 import getUser from './sql/getUser.sql'
 import { IUpdateKakaoUserResult } from './sql/updateKakaoUser'
 import updateKakaoUser from './sql/updateKakaoUser.sql'
-import { encodeSex, isValidFrontendUrl } from '.'
+import { encodeSex, getFrontendUrl } from '.'
 
 const Lunar = LunarJS.Lunar
 
 export function setKakaoOAuthStrategies(app: Express) {
-  // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=fa17772ea56b216e0fd949141f5ed5e2&redirect_uri=http://localhost:4000/oauth/kakao&state=jwt
   // Kakao 계정으로 로그인하기
   app.get('/oauth/kakao', async (req, res) => {
     // 입력값 검사
     const code = req.query.code as string
-    const referer = req.headers.referer as string
-    if (!code || !isValidFrontendUrl(referer)) return res.status(400).send('Bad Request')
+
+    if (!code) return res.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기
     const kakaoUserToken = await fetchKakaoUserToken(code as string)
@@ -38,15 +32,17 @@ export function setKakaoOAuthStrategies(app: Express) {
     if (!kakaoUser.id) return res.status(400).send('Bad Request')
 
     const kakaoAccount = kakaoUser.kakao_account
-    const frontendUrl = getFrontendUrl(referer)
+    const frontendUrl = getFrontendUrl(req.headers.referer)
 
     // 자유담 사용자 정보 가져오기
     const { rowCount, rows } = await poolQuery<IGetKakaoUserResult>(getKakaoUser, [kakaoUser.id])
     const jayudamUser = rows[0]
 
     // 소셜 로그인 정보가 없는 경우
-    if (rowCount === 0)
+    if (rowCount === 0) {
+      unregisterKakaoUser(kakaoUser.id)
       return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=false&oauth=kakao`)
+    }
 
     // 정지된 계정인 경우
     if (jayudamUser.blocking_start_time)
@@ -73,26 +69,20 @@ export function setKakaoOAuthStrategies(app: Express) {
     // 소셜 로그인 정보가 존재하는 경우
     const nickname = jayudamUser.nickname
     const querystring = new URLSearchParams({
-      jwt: await generateJWT({ userId: jayudamUser.id }),
+      jwt: await signJWT({ userId: jayudamUser.id }),
       ...(nickname && { nickname }),
     })
     return res.redirect(`${frontendUrl}/oauth?${querystring}`)
   })
 
-  // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=fa17772ea56b216e0fd949141f5ed5e2&redirect_uri=http://localhost:4000/oauth/kakao/register
   // Kakao 계정 연결하기
-  // 필수 수집: 카카오 식별 번호, 성별, 출생년도, 출생월일, 이름, 전화번호
-  // 선택 수집: 닉네임, 프로필 사진, 이메일
   app.get('/oauth/kakao/register', async (req, res) => {
     // 입력값 검사
     const code = req.query.code as string
-    const backendUrl = req.headers.host as string
     const jwt = req.query.state as string
-    const referer = req.headers.referer as string
-    if (!code || !backendUrl || !jwt || !isValidFrontendUrl(referer))
-      return res.status(400).send('Bad Request')
+    if (!code || !jwt) return res.status(400).send('Bad Request')
 
-    const frontendUrl = getFrontendUrl(referer)
+    const frontendUrl = getFrontendUrl(req.headers.referer)
 
     // JWT 유효성 검사
     const verifiedJwt = await verifyJWT(jwt)
@@ -114,7 +104,7 @@ export function setKakaoOAuthStrategies(app: Express) {
     const kakaoUserBirthday = getKakaoSolarBirthday(kakaoUser)
 
     // 이미 OAuth 연결되어 있으면
-    if (jayudamUser.kakao_oauth)
+    if (jayudamUser.oauth_kakao)
       return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=true&oauth=kakao`)
 
     // OAuth 사용자 정보와 자유담 사용자 정보 비교
@@ -124,8 +114,10 @@ export function setKakaoOAuthStrategies(app: Express) {
       (jayudamUser.birthyear && jayudamUser.birthyear !== kakaoUser.birthyear) ||
       (jayudamUser.birthday && jayudamUser.birthday !== kakaoUserBirthday) ||
       (jayudamUser.phone_number && jayudamUser.phone_number !== kakaoUser.phone_number)
-    )
+    ) {
+      unregisterKakaoUser(kakaoUser2.id)
       return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=kakao`)
+    }
 
     await poolQuery<IUpdateKakaoUserResult>(updateKakaoUser, [
       jayudamUser.id,
@@ -136,14 +128,14 @@ export function setKakaoOAuthStrategies(app: Express) {
 
     return res.redirect(
       `${frontendUrl}/oauth?${new URLSearchParams({
-        jwt: await generateJWT({ userId: jayudamUser.id }),
+        jwt: await signJWT({ userId: jayudamUser.id }),
         ...(jayudamUser.nickname && { nickname: jayudamUser.nickname }),
       })}`
     )
   })
 
   app.get('/oauth/kakao/unregister', async (req, res) => {
-    if (req.headers.Authorization !== kakaoAdminKey) {
+    if (req.headers.Authorization !== KAKAO_ADMIN_KEY) {
       return res.status(400).send('400 Bad Request')
     }
 
@@ -170,9 +162,9 @@ async function fetchKakaoUserToken(code: string) {
     },
     body: new URLSearchParams({
       grant_type: 'authorization_code',
-      client_id: kakaoRestApiKey,
+      client_id: KAKAO_REST_API_KEY,
       code,
-      client_secret: kakaoClientSecret,
+      client_secret: KAKAO_CLIENT_SECRET,
     }).toString(),
   })
 
@@ -188,23 +180,12 @@ async function fetchKakaoUser(accessToken: string) {
   return response.json() as Promise<Record<string, any>>
 }
 
-function getFrontendUrl(referer?: string) {
-  switch (referer) {
-    case 'https://accounts.kakao.com/':
-    case 'https://kauth.kakao.com/':
-    case undefined:
-      return frontendUrl
-    default:
-      return referer.substring(0, referer?.length - 1)
-  }
-}
-
 export async function unregisterKakaoUser(kakaoUserId: string) {
   return fetch('https://kapi.kakao.com/v1/user/unlink', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `KakaoAK ${kakaoAdminKey}`,
+      Authorization: `KakaoAK ${KAKAO_ADMIN_KEY}`,
     },
     body: new URLSearchParams({
       target_id_type: 'user_id',
@@ -214,6 +195,8 @@ export async function unregisterKakaoUser(kakaoUserId: string) {
 }
 
 function getKakaoSolarBirthday(kakaoUser: any) {
+  if (!kakaoUser.birthday) return null
+
   if (kakaoUser.birthday_type === 'SOLAR') return kakaoUser.birthday
 
   const solarFromLunar = Lunar.fromYmd(

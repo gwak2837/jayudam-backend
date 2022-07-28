@@ -3,9 +3,54 @@ type User {
   creationTime: DateTime!
   bio: String
   birthyear: Int
-  imageUrl: URL
+  blockingStartTime: DateTime
+  blockingEndTime: DateTime
+  certAgreement: CertAgreement
+  cherry: NonNegativeInt!
+  grade: Grade
+  email: EmailAddress
+  imageUrls: [URL!]
+  isVerifiedBirthyear: Boolean!
+  isVerifiedBirthday: Boolean!
+  isVerifiedEmail: Boolean!
+  isVerifiedName: Boolean!
+  isVerifiedPhoneNumber: Boolean!
+  isVerifiedSex: Boolean!
+  logoutTime: DateTime
   nickname: String
-  sex: Sex!
+  oAuthProviders: [OAuthProvider!]
+  serviceAgreement: ServiceAgreement
+  sex: Sex
+  towns: [Town!]
+}
+
+type CertAgreement {
+  showBirthdate: Boolean!
+  showName: Boolean!
+  showSex: Boolean!
+  showSTDTest: Boolean!
+  stdTestSince: DateTime
+  showImmunization: Boolean!
+  immunizationSince: DateTime
+  showSexualCrime: Boolean!
+  sexualCrimeSince: DateTime
+}
+
+type ServiceAgreement {
+  termsAgreement: Boolean!
+  termsAgreementTime: DateTime
+  privacyAgreement: Boolean!
+  privacyAgreementTime: DateTime
+  locationAgreement: Boolean!
+  locationAgreementTime: DateTime
+  adAgreement: Boolean!
+  adAgreementTime: DateTime
+  personalDataStoringYear: NonNegativeInt!
+}
+
+type Town {
+  count: NonNegativeInt!
+  name: String
 }
 
 enum Sex {
@@ -13,4 +58,16 @@ enum Sex {
   MALE
   FEMALE
   OTHER
+}
+
+enum OAuthProvider {
+  KAKAO
+  NAVER
+  GOOGLE
+}
+
+enum Grade {
+  FREE
+  PRO
+  ENTERPRISE
 }

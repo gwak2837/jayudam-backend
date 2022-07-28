@@ -9,15 +9,15 @@ export type IGetUserParams = void;
 /** 'GetUser' return type */
 export interface IGetUserResult {
   birthday: string | null;
-  birthyear: string | null;
+  birthyear: number | null;
   email: string | null;
-  google_oauth: string | null;
   id: string;
   image_urls: stringArray | null;
-  kakao_oauth: string | null;
   name: string | null;
-  naver_oauth: string | null;
   nickname: string | null;
+  oauth_google: string | null;
+  oauth_kakao: string | null;
+  oauth_naver: string | null;
   phone_number: string | null;
   sex: number | null;
 }
@@ -28,7 +28,7 @@ export interface IGetUserQuery {
   result: IGetUserResult;
 }
 
-const getUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  nickname,\n  sex,\n  birthyear,\n  birthday,\n  email,\n  name,\n  phone_number,\n  image_urls,\n  google_oauth,\n  kakao_oauth,\n  naver_oauth\nFROM \"user\"\nWHERE id = $1"};
+const getUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  nickname,\n  sex,\n  birthyear,\n  birthday,\n  email,\n  name,\n  phone_number,\n  image_urls,\n  oauth_google,\n  oauth_kakao,\n  oauth_naver\nFROM \"user\"\nWHERE id = $1"};
 
 /**
  * Query generated from SQL:
@@ -42,9 +42,9 @@ const getUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n 
  *   name,
  *   phone_number,
  *   image_urls,
- *   google_oauth,
- *   kakao_oauth,
- *   naver_oauth
+ *   oauth_google,
+ *   oauth_kakao,
+ *   oauth_naver
  * FROM "user"
  * WHERE id = $1
  * ```

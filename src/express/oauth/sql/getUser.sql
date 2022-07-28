@@ -8,8 +8,8 @@ SELECT id,
   name,
   phone_number,
   image_urls,
-  google_oauth,
-  kakao_oauth,
-  naver_oauth
+  oauth_google,
+  oauth_kakao,
+  oauth_naver
 FROM "user"
 WHERE id = $1;

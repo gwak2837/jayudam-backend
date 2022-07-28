@@ -13,13 +13,13 @@ export interface IAwakeBBatonUserQuery {
   result: IAwakeBBatonUserResult;
 }
 
-const awakeBBatonUserIR: any = {"usedParamSet":{},"params":[],"statement":"UPDATE \"user\"\nSET modification_time = CURRENT_TIMESTAMP,\n  is_verified_sex = TRUE,\n  sex = $2,\n  sleeping_time = NULL\nWHERE id = $1"};
+const awakeBBatonUserIR: any = {"usedParamSet":{},"params":[],"statement":"UPDATE \"user\"\nSET update_time = CURRENT_TIMESTAMP,\n  is_verified_sex = TRUE,\n  sex = $2,\n  sleeping_time = NULL\nWHERE id = $1"};
 
 /**
  * Query generated from SQL:
  * ```
  * UPDATE "user"
- * SET modification_time = CURRENT_TIMESTAMP,
+ * SET update_time = CURRENT_TIMESTAMP,
  *   is_verified_sex = TRUE,
  *   sex = $2,
  *   sleeping_time = NULL

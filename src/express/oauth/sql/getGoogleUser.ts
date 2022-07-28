@@ -20,7 +20,7 @@ export interface IGetGoogleUserQuery {
   result: IGetGoogleUserResult;
 }
 
-const getGoogleUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  blocking_start_time,\n  blocking_end_time,\n  nickname,\n  name,\n  sleeping_time\nFROM \"user\"\nWHERE google_oauth = $1"};
+const getGoogleUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  blocking_start_time,\n  blocking_end_time,\n  nickname,\n  name,\n  sleeping_time\nFROM \"user\"\nWHERE oauth_google = $1"};
 
 /**
  * Query generated from SQL:
@@ -32,7 +32,7 @@ const getGoogleUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT 
  *   name,
  *   sleeping_time
  * FROM "user"
- * WHERE google_oauth = $1
+ * WHERE oauth_google = $1
  * ```
  */
 export const getGoogleUser = new PreparedQuery<IGetGoogleUserParams,IGetGoogleUserResult>(getGoogleUserIR);

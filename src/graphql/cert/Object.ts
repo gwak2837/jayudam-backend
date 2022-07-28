@@ -1,0 +1,6 @@
+export const CertType = {
+  CLINICAL_LABORATORY_TEST: 0,
+  STD_TEST: 1,
+  IMMUNIZATION: 2,
+  SEXUAL_CRIME: 3,
+}

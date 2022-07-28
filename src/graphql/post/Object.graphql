@@ -1,0 +1,18 @@
+type Post {
+  id: ID!
+  creationTime: DateTime
+  modificationTime: DateTime
+  deletionTime: DateTime
+  content: NonEmptyString
+  imageUrls: [URL]
+
+  author: User
+  likeCount: NonNegativeInt
+}
+
+enum Sex {
+  UNKNOWN
+  MALE
+  FEMALE
+  OTHER
+}

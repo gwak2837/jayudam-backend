@@ -10,4 +10,4 @@ SELECT id,
   phone_number,
   sleeping_time
 FROM "user"
-WHERE naver_oauth = $1;
+WHERE oauth_naver = $1;

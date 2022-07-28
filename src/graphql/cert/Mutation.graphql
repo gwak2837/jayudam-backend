@@ -1,0 +1,27 @@
+type Mutation {
+  submitCert(input: CertCreation!): Cert
+  updateCertAgreement(input: CertAgreementInput!): JWT!
+  verifyCertJWT(jwt: JWT!): Certs
+}
+
+input CertCreation {
+  birthdate: DateTime!
+  issueDate: DateTime!
+  name: NonEmptyString!
+  sex: Sex!
+  verificationCode: NonEmptyString!
+}
+
+# ___Since 기본값: 전체기간
+# show___ 기본값: 미동의
+input CertAgreementInput {
+  showBirthdate: Boolean
+  showName: Boolean
+  showSex: Boolean
+  showSTDTest: Boolean
+  stdTestSince: DateTime
+  showImmunization: Boolean
+  immunizationSince: DateTime
+  showSexualCrime: Boolean
+  sexualCrimeSince: DateTime
+}

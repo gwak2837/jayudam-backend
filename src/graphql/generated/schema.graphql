@@ -1,37 +1,109 @@
-scalar Date
+scalar Any
+
+type Cert {
+  content: String
+  effectiveDate: DateTime
+  id: ID!
+  issueDate: DateTime
+  location: String
+  name: String
+  type: CertType!
+}
+
+type CertAgreement {
+  immunizationSince: DateTime
+  sexualCrimeSince: DateTime
+  showBirthdate: Boolean!
+  showImmunization: Boolean!
+  showName: Boolean!
+  showSTDTest: Boolean!
+  showSex: Boolean!
+  showSexualCrime: Boolean!
+  stdTestSince: DateTime
+}
+
+input CertAgreementInput {
+  immunizationSince: DateTime
+  sexualCrimeSince: DateTime
+  showBirthdate: Boolean
+  showImmunization: Boolean
+  showName: Boolean
+  showSTDTest: Boolean
+  showSex: Boolean
+  showSexualCrime: Boolean
+  stdTestSince: DateTime
+}
+
+input CertCreation {
+  birthdate: DateTime!
+  issueDate: DateTime!
+  name: NonEmptyString!
+  sex: Sex!
+  verificationCode: NonEmptyString!
+}
+
+enum CertType {
+  CLINICAL_LABORATORY_TEST
+  IMMUNIZATION
+  SEXUAL_CRIME
+  STD_TEST
+}
+
+type Certs {
+  birthdate: DateTime
+  creationTime: DateTime!
+  id: ID!
+  immunizationCerts: [Cert!]
+  name: String
+  sex: Sex
+  sexualCrimeCerts: [Cert!]
+  stdTestCerts: [Cert!]
+}
 
 scalar DateTime
 
 scalar EmailAddress
 
-scalar JWT
+enum Grade {
+  ENTERPRISE
+  FREE
+  PRO
+}
 
-scalar LastValue
+scalar JWT
 
 scalar Latitude
 
 scalar Longitude
 
 type Mutation {
-  """
-  로그아웃 성공 여부 반환
-  """
-  logout: Boolean!
-
-  """
-  회원탈퇴 시 사용자 정보가 모두 초기화됩니다
-  """
+  createPost(input: PostCreationInput!): Post
+  deletePost(id: ID!): Post
+  disconnectFromGoogleOAuth: Boolean
+  disconnectFromKakaoOAuth: Boolean
+  disconnectFromNaverOAuth: Boolean
+  logout: User
+  submitCert(input: CertCreation!): Cert
+  takeAttendance: User
   unregister: User
-
-  """
-  사용자 정보를 수정합니다
-  """
-  updateUser(input: UserModificationInput!): User
+  updateCertAgreement(input: CertAgreementInput!): JWT!
+  updateMyCertAgreement(input: CertAgreementInput): CertAgreement
+  updatePost(input: PostUpdateInput!): Post
+  updateUser(input: UserUpdate!): User
+  verifyCertJWT(jwt: JWT!): Certs
+  verifyTown(lat: Latitude!, lon: Longitude!): User
+  wakeUser: User
 }
 
 scalar NonEmptyString
 
 scalar NonNegativeInt
+
+enum OAuthProvider {
+  GOOGLE
+  KAKAO
+  NAVER
+}
 
 """
 기본값: 내림차순
@@ -42,27 +114,67 @@ enum OrderDirection {
 
 input Pagination {
   lastId: ID
-  lastValue: LastValue
+  lastValue: Any
   limit: PositiveInt!
 }
 
 scalar PositiveInt
 
+type Post {
+  author: User
+  content: NonEmptyString
+  creationTime: DateTime
+  deletionTime: DateTime
+  id: ID!
+  imageUrls: [URL]
+  likeCount: NonNegativeInt
+  modificationTime: DateTime
+}
+
+input PostCreationInput {
+  content: NonEmptyString!
+  imageUrls: [URL!]
+  parentPostId: ID
+}
+
+input PostUpdateInput {
+  content: NonEmptyString!
+  id: ID!
+  imageUrls: [URL!]
+}
+
 type Query {
-  """
-  사용자 닉네임 중복 여부 검사
-  """
-  isNicknameUnique(nickname: NonEmptyString!): Boolean!
+  auth: User
+  certs: Certs
+  isUniqueNickname(nickname: NonEmptyString!): Boolean!
+  myCertAgreement: CertAgreement
+  myVerificationHistories: [VerificationHistory!]
+  pendingCerts: [Cert!]
+  post(id: ID!): Post
+  posts: [Post!]
+  sampleCertJWT: JWT!
+  user(nickname: NonEmptyString): User
+  verificationHistories: [Certs!]
+}
 
-  """
-  현재 로그인된(JWT) 사용자 정보를 반환
-  """
-  me: User
+type ServiceAgreement {
+  adAgreement: Boolean!
+  adAgreementTime: DateTime
+  locationAgreement: Boolean!
+  locationAgreementTime: DateTime
+  personalDataStoringYear: NonNegativeInt!
+  privacyAgreement: Boolean!
+  privacyAgreementTime: DateTime
+  termsAgreement: Boolean!
+  termsAgreementTime: DateTime
+}
 
-  """
-  닉네임으로 사용자 검색
-  """
-  userByNickname(nickname: NonEmptyString!): User
+input ServiceAgreementInput {
+  adAgreement: Boolean
+  locationAgreement: Boolean
+  personalDataStoringYear: NonNegativeInt
+  privacyAgreement: Boolean
+  termsAgreement: Boolean
 }
 
 enum Sex {
@@ -72,6 +184,11 @@ enum Sex {
   UNKNOWN
 }
 
+type Town {
+  count: NonNegativeInt!
+  name: String
+}
+
 scalar URL
 
 scalar UUID
@@ -79,20 +196,42 @@ scalar UUID
 type User {
   bio: String
   birthyear: Int
+  blockingEndTime: DateTime
+  blockingStartTime: DateTime
+  certAgreement: CertAgreement
+  cherry: NonNegativeInt!
   creationTime: DateTime!
+  email: EmailAddress
+  grade: Grade
   id: UUID!
-  imageUrl: URL
+  imageUrls: [URL!]
+  isVerifiedBirthday: Boolean!
+  isVerifiedBirthyear: Boolean!
+  isVerifiedEmail: Boolean!
+  isVerifiedName: Boolean!
+  isVerifiedPhoneNumber: Boolean!
+  isVerifiedSex: Boolean!
+  logoutTime: DateTime
   nickname: String
-  sex: Sex!
+  oAuthProviders: [OAuthProvider!]
+  serviceAgreement: ServiceAgreement
+  sex: Sex
+  towns: [Town!]
 }
 
-input UserModificationInput {
-  ageRange: NonEmptyString
-  bio: String
-  birthday: NonEmptyString
+input UserUpdate {
+  bio: NonEmptyString
+  certAgreement: CertAgreementInput
   email: EmailAddress
-  imageUrl: URL
+  imageUrls: [URL!]
   nickname: NonEmptyString
-  phoneNumber: NonEmptyString
-  sex: Sex
+  serviceAgreement: ServiceAgreementInput
+  town1Name: NonEmptyString
+  town2Name: NonEmptyString
+}
+
+type VerificationHistory {
+  content: NonEmptyString!
+  creationTime: DateTime!
+  id: Int!
 }

@@ -6,4 +6,4 @@ SELECT id,
   name,
   sleeping_time
 FROM "user"
-WHERE google_oauth = $1;
+WHERE oauth_google = $1;

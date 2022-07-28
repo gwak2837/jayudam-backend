@@ -1,0 +1,27 @@
+type Certs {
+  id: ID!
+  creationTime: DateTime!
+  birthdate: DateTime
+  name: String
+  sex: Sex
+  stdTestCerts: [Cert!]
+  immunizationCerts: [Cert!]
+  sexualCrimeCerts: [Cert!]
+}
+
+type Cert {
+  id: ID!
+  content: String
+  effectiveDate: DateTime
+  issueDate: DateTime
+  location: String
+  name: String
+  type: CertType!
+}
+
+enum CertType {
+  CLINICAL_LABORATORY_TEST
+  STD_TEST
+  IMMUNIZATION
+  SEXUAL_CRIME
+}

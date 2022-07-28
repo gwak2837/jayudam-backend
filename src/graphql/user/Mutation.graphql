@@ -1,21 +1,31 @@
 type Mutation {
-  "로그아웃 성공 여부 반환"
-  logout: Boolean!
-
-  "회원탈퇴 시 사용자 정보가 모두 초기화됩니다"
+  disconnectFromGoogleOAuth: Boolean
+  disconnectFromKakaoOAuth: Boolean
+  disconnectFromNaverOAuth: Boolean
+  logout: User
+  takeAttendance: User
+  updateMyCertAgreement(input: CertAgreementInput): CertAgreement
+  updateUser(input: UserUpdate!): User
   unregister: User
-
-  "사용자 정보를 수정합니다"
-  updateUser(input: UserModificationInput!): User
+  wakeUser: User
+  verifyTown(lat: Latitude!, lon: Longitude!): User
 }
 
-input UserModificationInput {
-  nickname: NonEmptyString
-  imageUrl: URL
+input UserUpdate {
+  bio: NonEmptyString
+  certAgreement: CertAgreementInput
   email: EmailAddress
-  phoneNumber: NonEmptyString
-  sex: Sex
-  ageRange: NonEmptyString
-  birthday: NonEmptyString
-  bio: String
+  imageUrls: [URL!]
+  nickname: NonEmptyString
+  serviceAgreement: ServiceAgreementInput
+  town1Name: NonEmptyString
+  town2Name: NonEmptyString
+}
+
+input ServiceAgreementInput {
+  termsAgreement: Boolean
+  privacyAgreement: Boolean
+  locationAgreement: Boolean
+  adAgreement: Boolean
+  personalDataStoringYear: NonNegativeInt
 }

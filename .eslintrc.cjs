@@ -41,6 +41,8 @@ module.exports = {
     'n/no-missing-import': 'off',
     'n/no-unpublished-import': 'off',
 
+    'promise/always-return': 'off',
+
     '@typescript-eslint/no-unused-vars': 'off',
   },
 }

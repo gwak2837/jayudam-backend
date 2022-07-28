@@ -101,3 +101,8 @@ export function sha128(str: string) {
 export function sha256(str: string) {
   return crypto.createHash('sha256').update(str).digest('hex')
 }
+
+export const defaultDate = new Date(0)
+
+export const tomorrow = new Date()
+tomorrow.setDate(tomorrow.getDate() + 1)

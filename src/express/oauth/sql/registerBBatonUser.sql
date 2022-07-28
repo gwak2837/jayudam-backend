@@ -1,9 +1,9 @@
 /* @name registerBBatonUser */
 INSERT INTO "user" (
     is_verified_sex,
-    sex,
-    personal_data_storing_period,
-    bbaton_oauth
+    oauth_bbaton,
+    personal_data_storing_year,
+    sex
   )
 VALUES(TRUE, $1, $2, $3)
 RETURNING id;

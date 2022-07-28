@@ -1,4 +1,3 @@
-scalar Date
 scalar DateTime
 scalar EmailAddress
 scalar JWT
@@ -9,7 +8,7 @@ scalar NonNegativeInt
 scalar PositiveInt
 scalar URL
 scalar UUID
-scalar LastValue
+scalar Any
 
 "기본값: 내림차순"
 enum OrderDirection {
@@ -18,6 +17,6 @@ enum OrderDirection {
 
 input Pagination {
   lastId: ID
-  lastValue: LastValue
+  lastValue: Any
   limit: PositiveInt!
 }

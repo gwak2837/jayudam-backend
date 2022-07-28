@@ -7,7 +7,7 @@ export type IGetNaverUserParams = void;
 /** 'GetNaverUser' return type */
 export interface IGetNaverUserResult {
   birthday: string | null;
-  birthyear: string | null;
+  birthyear: number | null;
   blocking_end_time: Date | null;
   blocking_start_time: Date | null;
   id: string;
@@ -24,7 +24,7 @@ export interface IGetNaverUserQuery {
   result: IGetNaverUserResult;
 }
 
-const getNaverUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  blocking_start_time,\n  blocking_end_time,\n  nickname,\n  sex,\n  birthyear,\n  birthday,\n  name,\n  phone_number,\n  sleeping_time\nFROM \"user\"\nWHERE naver_oauth = $1"};
+const getNaverUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  blocking_start_time,\n  blocking_end_time,\n  nickname,\n  sex,\n  birthyear,\n  birthday,\n  name,\n  phone_number,\n  sleeping_time\nFROM \"user\"\nWHERE oauth_naver = $1"};
 
 /**
  * Query generated from SQL:
@@ -40,7 +40,7 @@ const getNaverUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT i
  *   phone_number,
  *   sleeping_time
  * FROM "user"
- * WHERE naver_oauth = $1
+ * WHERE oauth_naver = $1
  * ```
  */
 export const getNaverUser = new PreparedQuery<IGetNaverUserParams,IGetNaverUserResult>(getNaverUserIR);

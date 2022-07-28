@@ -4,7 +4,7 @@
 
 ## 💻 Requirements
 
-- macOS 11.5 (or Windows 10 Edu 21H2 with minor errors)
+- macOS 12.4 (or Windows 10 Edu 21H2 with minor errors)
 - [Node.js](https://nodejs.org/en/) 18.2
 - [Yarn](https://yarnpkg.com/getting-started/install#install-corepack) 3.2
 - [Git](https://git-scm.com/download) 2.36
@@ -48,6 +48,12 @@ POSTGRES_USER=DB계정이름
 POSTGRES_PASSWORD=DB계정암호
 POSTGRES_DB=DB이름
 POSTGRES_DOCKER_VOLUME_NAME=DB도커볼륨이름
+
+ 
+ 
+ 
+ 
+ 
 
 # https://www.postgresql.org/docs/14/ssl-tcp.html
 openssl req -new -nodes -text -out root.csr \
@@ -110,13 +116,13 @@ sudo docker run \
   -p 5432:5432 \
   --restart=on-failure \
   --shm-size=256MB \
-  --volume $POSTGRES_DOCKER_VOLUME_NAME:/var/lib/postgresql/data \
+  --volume $POSTGRES_DOCKER_VOLUME_NAME:/var/lib/postgresql \
   postgres:14-alpine \
   -c ssl=on \
-  -c ssl_ca_file=/var/lib/postgresql/data/root.crt \
-  -c ssl_cert_file=/var/lib/postgresql/data/server.crt \
-  -c ssl_key_file=/var/lib/postgresql/data/server.key \
-  -c hba_file=/var/lib/postgresql/data/pg_hba.conf
+  -c ssl_ca_file=/var/lib/postgresql/root.crt \
+  -c ssl_cert_file=/var/lib/postgresql/server.crt \
+  -c ssl_key_file=/var/lib/postgresql/server.key \
+  -c hba_file=/var/lib/postgresql/pg_hba.conf
 ```
 
 위 명령어를 실행하면 아래와 같은 파일이 생성됩니다.
@@ -163,6 +169,8 @@ git clone https://github.com/redis/redis.git
 vi ./redis/utils/gen-test-certs.sh
 ```
 
+인증서의 CN을 수정해줍니다.
+
 ```bash
 # set variables
 REDIS_USER=REDIS_계정_이름
@@ -171,9 +179,11 @@ REDIS_HOST=REDIS_주소
 REDIS_DOCKER_VOLUME_NAME=REDIS_도커_볼륨_이름
 
 # generate certificates
+# https://github.com/redis/redis/blob/unstable/utils/gen-test-certs.sh
 ./redis/utils/gen-test-certs.sh $REDIS_HOST
 
 echo "
+user default off
 user $REDIS_USER on >$REDIS_PASSWORD allkeys allchannels allcommands
 " > users.acl
 
@@ -205,6 +215,20 @@ sudo docker run \
   --appendonly yes --appendfsync no \
   --requirepass $REDIS_PASSWORD \
   --aclfile /data/users.acl
+```
+
+그리고 아래와 같은 명령어로 Redis 서버에 접속할 수 있습니다. `client.crt`, `client.key`, `ca.crt` 파일은 서버에서 가져옵니다.
+
+```bash
+redis-cli \
+  -h $REDIS_HOST \
+  -p 포트번호 \
+  --user $REDIS_USER \
+  --askpass \
+  --tls \
+  --cert ./client.crt \
+  --key ./client.key \
+  --cacert ./ca.crt
 ```
 
 ### Create environment variables

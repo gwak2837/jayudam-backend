@@ -10,7 +10,7 @@ import { setOAuthStrategies } from '../express/oauth'
 import { setUploadingFiles } from '../express/upload'
 import { resolvers } from '../graphql'
 import typeDefs from '../graphql/generated/schema.graphql'
-import { port, projectEnv } from '../utils/constants'
+import { PORT, PROJECT_ENV } from '../utils/constants'
 import { verifyJWT } from '../utils/jwt'
 
 export type ApolloContext = {
@@ -38,15 +38,15 @@ export async function startApolloServer() {
       if (!jwt) return {}
 
       const verifiedJwt = await verifyJWT(jwt)
-      if (!verifiedJwt.iat) throw new AuthenticationError('다시 로그인 해주세요.')
+      if (!verifiedJwt.iat) throw new AuthenticationError('다시 로그인 해주세요')
 
       const logoutTime = await redisClient.get(`${verifiedJwt.userId}:logoutTime`)
-      if (Number(logoutTime) > Number(verifiedJwt.iat))
-        throw new AuthenticationError('다시 로그인 해주세요.')
+      if (Number(logoutTime) > Number(verifiedJwt.iat) * 1000)
+        throw new AuthenticationError('다시 로그인 해주세요')
 
       return { userId: verifiedJwt.userId }
     },
-    introspection: projectEnv.startsWith('local'),
+    introspection: PROJECT_ENV.startsWith('local'),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     resolvers,
     typeDefs,
@@ -59,8 +59,8 @@ export async function startApolloServer() {
   })
 
   return new Promise((resolve) =>
-    httpServer.listen({ port }, () =>
-      resolve(`http://localhost:${port}${apolloServer.graphqlPath}`)
+    httpServer.listen({ port: PORT }, () =>
+      resolve(`http://localhost:${PORT}${apolloServer.graphqlPath}`)
     )
   )
 }

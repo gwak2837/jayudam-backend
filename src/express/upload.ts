@@ -1,11 +1,12 @@
-// import sharp from 'sharp'
 import { Storage } from '@google-cloud/storage'
 import { Express } from 'express'
 import Multer from 'multer'
 import path from 'node:path'
 
 import { sha128 } from '../utils'
-import { googleCloudStorageBucket } from '../utils/constants'
+import { GOOGLE_CLOUD_STORAGE_BUCKET } from '../utils/constants'
+
+// import sharp from 'sharp'
 
 // https://cloud.google.com/appengine/docs/flexible/nodejs/using-cloud-storage
 export function setUploadingFiles(app: Express) {
@@ -13,11 +14,9 @@ export function setUploadingFiles(app: Express) {
     const files = req.files as Express.Multer.File[]
     if (!files.length) return res.status(400).send('No file uploaded.')
 
-    for (const file of files) {
-      if (!isExtensionAllowed(file))
-        return res
-          .status(400)
-          .send(`There is a file with unauthorized extension. File name: ${file.originalname}`)
+    for (let i = 0; i < files.length; i++) {
+      if (!isExtensionAllowed(files[i]))
+        return res.status(400).send(`The extension of ${i}th file is unauthorized.`)
     }
 
     try {
@@ -39,7 +38,7 @@ const multer = Multer({
   },
 })
 
-const bucket = new Storage().bucket(googleCloudStorageBucket)
+const bucket = new Storage().bucket(GOOGLE_CLOUD_STORAGE_BUCKET)
 
 function isExtensionAllowed(file: Express.Multer.File) {
   for (const allowedExtension of allowedExtensions) {
