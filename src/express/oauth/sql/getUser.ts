@@ -13,8 +13,8 @@ export interface IGetUserResult {
   email: string | null;
   id: string;
   image_urls: stringArray | null;
+  legal_name: string | null;
   name: string | null;
-  nickname: string | null;
   oauth_google: string | null;
   oauth_kakao: string | null;
   oauth_naver: string | null;
@@ -28,23 +28,23 @@ export interface IGetUserQuery {
   result: IGetUserResult;
 }
 
-const getUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  nickname,\n  sex,\n  birthyear,\n  birthday,\n  email,\n  name,\n  phone_number,\n  image_urls,\n  oauth_google,\n  oauth_kakao,\n  oauth_naver\nFROM \"user\"\nWHERE id = $1"};
+const getUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  birthyear,\n  birthday,\n  email,\n  image_urls,\n  legal_name,\n  name,\n  oauth_google,\n  oauth_kakao,\n  oauth_naver,\n  phone_number,\n  sex\nFROM \"user\"\nWHERE id = $1"};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT id,
- *   nickname,
- *   sex,
  *   birthyear,
  *   birthday,
  *   email,
- *   name,
- *   phone_number,
  *   image_urls,
+ *   legal_name,
+ *   name,
  *   oauth_google,
  *   oauth_kakao,
- *   oauth_naver
+ *   oauth_naver,
+ *   phone_number,
+ *   sex
  * FROM "user"
  * WHERE id = $1
  * ```

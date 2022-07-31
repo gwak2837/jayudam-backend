@@ -7,8 +7,8 @@ type User {
   blockingEndTime: DateTime
   certAgreement: CertAgreement
   cherry: NonNegativeInt!
-  grade: Grade
   email: EmailAddress
+  grade: Grade
   imageUrls: [URL!]
   isVerifiedBirthyear: Boolean!
   isVerifiedBirthday: Boolean!
@@ -16,7 +16,9 @@ type User {
   isVerifiedName: Boolean!
   isVerifiedPhoneNumber: Boolean!
   isVerifiedSex: Boolean!
+  legalName: NonEmptyString
   logoutTime: DateTime
+  name: NonEmptyString
   nickname: String
   oAuthProviders: [OAuthProvider!]
   serviceAgreement: ServiceAgreement
@@ -26,7 +28,7 @@ type User {
 
 type CertAgreement {
   showBirthdate: Boolean!
-  showName: Boolean!
+  showLegalName: Boolean!
   showSex: Boolean!
   showSTDTest: Boolean!
   stdTestSince: DateTime

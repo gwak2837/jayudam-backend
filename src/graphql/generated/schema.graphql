@@ -15,7 +15,7 @@ type CertAgreement {
   sexualCrimeSince: DateTime
   showBirthdate: Boolean!
   showImmunization: Boolean!
-  showName: Boolean!
+  showLegalName: Boolean!
   showSTDTest: Boolean!
   showSex: Boolean!
   showSexualCrime: Boolean!
@@ -27,7 +27,7 @@ input CertAgreementInput {
   sexualCrimeSince: DateTime
   showBirthdate: Boolean
   showImmunization: Boolean
-  showName: Boolean
+  showLegalName: Boolean
   showSTDTest: Boolean
   showSex: Boolean
   showSexualCrime: Boolean
@@ -37,7 +37,7 @@ input CertAgreementInput {
 input CertCreation {
   birthdate: DateTime!
   issueDate: DateTime!
-  name: NonEmptyString!
+  legalName: NonEmptyString!
   sex: Sex!
   verificationCode: NonEmptyString!
 }
@@ -54,7 +54,7 @@ type Certs {
   creationTime: DateTime!
   id: ID!
   immunizationCerts: [Cert!]
-  name: String
+  legalName: String
   sex: Sex
   sexualCrimeCerts: [Cert!]
   stdTestCerts: [Cert!]
@@ -129,6 +129,7 @@ type Post {
   imageUrls: [URL]
   likeCount: NonNegativeInt
   modificationTime: DateTime
+  sharingPost: Post
 }
 
 input PostCreationInput {
@@ -146,14 +147,14 @@ input PostUpdateInput {
 type Query {
   auth: User
   certs: Certs
-  isUniqueNickname(nickname: NonEmptyString!): Boolean!
+  isUniqueUsername(username: NonEmptyString!): Boolean!
   myCertAgreement: CertAgreement
   myVerificationHistories: [VerificationHistory!]
   pendingCerts: [Cert!]
   post(id: ID!): Post
   posts: [Post!]
   sampleCertJWT: JWT!
-  user(nickname: NonEmptyString): User
+  user(name: NonEmptyString): User
   verificationHistories: [Certs!]
 }
 
@@ -211,7 +212,9 @@ type User {
   isVerifiedName: Boolean!
   isVerifiedPhoneNumber: Boolean!
   isVerifiedSex: Boolean!
+  legalName: NonEmptyString
   logoutTime: DateTime
+  name: NonEmptyString
   nickname: String
   oAuthProviders: [OAuthProvider!]
   serviceAgreement: ServiceAgreement
@@ -224,6 +227,7 @@ input UserUpdate {
   certAgreement: CertAgreementInput
   email: EmailAddress
   imageUrls: [URL!]
+  name: NonEmptyString
   nickname: NonEmptyString
   serviceAgreement: ServiceAgreementInput
   town1Name: NonEmptyString

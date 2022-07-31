@@ -70,19 +70,17 @@ export function setBBatonOAuthStrategies(app: Express) {
         encodeSex(bBatonUser.gender),
       ])
 
-      const nickname = jayudamUser.nickname ?? ''
       const querystring = new URLSearchParams({
         jwt: await signJWT({ userId: jayudamUser.id }),
-        nickname,
+        ...(jayudamUser.name && { username: jayudamUser.name }),
       })
       return res.redirect(`${frontendUrl}/oauth?${querystring}`)
     }
 
     // 이미 가입된 경우
-    const nickname = jayudamUser.nickname ?? ''
     const querystring = new URLSearchParams({
       jwt: await signJWT({ userId: jayudamUser.id }),
-      nickname,
+      ...(jayudamUser.name && { username: jayudamUser.name }),
     })
     return res.redirect(`${frontendUrl}/oauth?${querystring}`)
   })

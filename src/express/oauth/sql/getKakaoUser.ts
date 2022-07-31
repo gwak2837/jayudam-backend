@@ -11,8 +11,8 @@ export interface IGetKakaoUserResult {
   blocking_end_time: Date | null;
   blocking_start_time: Date | null;
   id: string;
+  legal_name: string | null;
   name: string | null;
-  nickname: string | null;
   phone_number: string | null;
   sex: number | null;
   sleeping_time: Date | null;
@@ -24,7 +24,7 @@ export interface IGetKakaoUserQuery {
   result: IGetKakaoUserResult;
 }
 
-const getKakaoUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  blocking_start_time,\n  blocking_end_time,\n  nickname,\n  name,\n  sex,\n  birthyear,\n  birthday,\n  phone_number,\n  sleeping_time\nFROM \"user\"\nWHERE oauth_kakao = $1"};
+const getKakaoUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  blocking_start_time,\n  blocking_end_time,\n  legal_name,\n  name,\n  sex,\n  birthyear,\n  birthday,\n  phone_number,\n  sleeping_time\nFROM \"user\"\nWHERE oauth_kakao = $1"};
 
 /**
  * Query generated from SQL:
@@ -32,7 +32,7 @@ const getKakaoUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT i
  * SELECT id,
  *   blocking_start_time,
  *   blocking_end_time,
- *   nickname,
+ *   legal_name,
  *   name,
  *   sex,
  *   birthyear,

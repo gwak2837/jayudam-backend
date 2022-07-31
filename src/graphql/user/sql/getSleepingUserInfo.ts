@@ -15,7 +15,7 @@ export interface IGetSleepingUserInfoResult {
   is_verified_birthday: boolean;
   is_verified_birthyear: boolean;
   is_verified_email: boolean;
-  is_verified_name: boolean;
+  is_verified_legal_name: boolean;
   is_verified_phone_number: boolean;
   is_verified_sex: boolean;
   name: string | null;
@@ -32,7 +32,7 @@ export interface IGetSleepingUserInfoQuery {
   result: IGetSleepingUserInfoResult;
 }
 
-const getSleepingUserInfoIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT bio,\n  birthyear,\n  birthday,\n  image_urls,\n  is_verified_birthyear,\n  is_verified_birthday,\n  is_verified_email,\n  is_verified_name,\n  is_verified_phone_number,\n  is_verified_sex,\n  name,\n  sex,\n  town1_count,\n  town1_name,\n  town2_count,\n  town2_name\nFROM \"user\"\nWHERE id = $1"};
+const getSleepingUserInfoIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT bio,\n  birthyear,\n  birthday,\n  image_urls,\n  is_verified_birthyear,\n  is_verified_birthday,\n  is_verified_email,\n  is_verified_legal_name,\n  is_verified_phone_number,\n  is_verified_sex,\n  name,\n  sex,\n  town1_count,\n  town1_name,\n  town2_count,\n  town2_name\nFROM \"user\"\nWHERE id = $1"};
 
 /**
  * Query generated from SQL:
@@ -44,7 +44,7 @@ const getSleepingUserInfoIR: any = {"usedParamSet":{},"params":[],"statement":"S
  *   is_verified_birthyear,
  *   is_verified_birthday,
  *   is_verified_email,
- *   is_verified_name,
+ *   is_verified_legal_name,
  *   is_verified_phone_number,
  *   is_verified_sex,
  *   name,

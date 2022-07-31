@@ -51,14 +51,13 @@ export function setGoogleOAuthStrategies(app: Express) {
       )
 
     // OAuth 사용자 정보와 자유담 사용자 정보 비교
-    if (jayudamUser.name && jayudamUser.name !== googleUser.name)
+    if (jayudamUser.legal_name && jayudamUser.legal_name !== googleUser.name)
       return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=google`)
 
     // 소셜 로그인 정보가 존재하는 경우
-    const nickname = jayudamUser.nickname
     const querystring = new URLSearchParams({
       jwt: await signJWT({ userId: jayudamUser.id }),
-      ...(nickname && { nickname }),
+      ...(jayudamUser.name && { username: jayudamUser.name }),
     })
     return res.redirect(`${frontendUrl}/oauth?${querystring}`)
   })
@@ -95,7 +94,7 @@ export function setGoogleOAuthStrategies(app: Express) {
       return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=true&oauth=google`)
 
     // OAuth 사용자 정보와 자유담 사용자 정보 비교
-    if (jayudamUser.name && jayudamUser.name !== googleUser.name)
+    if (jayudamUser.legal_name && jayudamUser.legal_name !== googleUser.name)
       return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=google`)
 
     await poolQuery<IUpdateGoogleUserResult>(updateGoogleUser, [
@@ -108,7 +107,7 @@ export function setGoogleOAuthStrategies(app: Express) {
     return res.redirect(
       `${frontendUrl}/oauth?${new URLSearchParams({
         jwt: await signJWT({ userId: jayudamUser.id }),
-        ...(jayudamUser.nickname && { nickname: jayudamUser.nickname }),
+        ...(jayudamUser.name && { username: jayudamUser.name }),
       })}`
     )
   })

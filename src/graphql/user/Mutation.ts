@@ -65,11 +65,19 @@ export const Mutation: MutationResolvers<ApolloContext> = {
 
     if (Object.keys(input).length === 0) throw new UserInputError('하나 이상 입력해주세요')
 
+    const name = input.name
+    const nickname = input.nickname
     if (
-      illegalNickname.has(input.nickname) ||
-      !nicknameRegex.test(input.nickname) ||
-      input.nickname.length > 20 ||
-      input.nickname.length < 2
+      (nickname &&
+        (illegalNickname.has(nickname) ||
+          !nicknameRegex.test(nickname) ||
+          nickname.length > 30 ||
+          nickname.length < 2)) ||
+      (name &&
+        (illegalNickname.has(name) ||
+          !nicknameRegex.test(name) ||
+          name.length > 30 ||
+          name.length < 2))
     )
       throw new UserInputError('허용되지 않는 이름입니다')
 
@@ -79,7 +87,8 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       JSON.stringify(input.certAgreement),
       input.email,
       input.imageUrls?.map((imageUrl) => imageUrl.href),
-      input.nickname,
+      name,
+      nickname,
       JSON.stringify({
         ...input.serviceAgreement,
         termsAgreementTime: Date.now(),
@@ -99,7 +108,8 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       }),
       ...(input.email && { email: rows[0].email }),
       ...(input.imageUrls && { imageUrls: rows[0].image_urls }),
-      ...(input.nickname && { nickname: rows[0].nickname }),
+      ...(name && { name: rows[0].name }),
+      ...(nickname && { nickname: rows[0].nickname }),
       ...(input.serviceAgreement && {
         serviceAgreement: rows[0].service_agreement ? JSON.parse(rows[0].service_agreement) : null,
       }),

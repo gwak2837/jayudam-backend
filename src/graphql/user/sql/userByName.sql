@@ -1,10 +1,11 @@
-/* @name userByNickname */
+/* @name userByName */
 SELECT bio,
   blocking_start_time,
   blocking_end_time,
   grade,
   image_urls,
   is_verified_sex,
+  name,
   nickname,
   sex,
   town1_count,
@@ -12,4 +13,4 @@ SELECT bio,
   town2_count,
   town2_name
 FROM "user"
-WHERE nickname = $1;
+WHERE name = $1;

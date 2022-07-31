@@ -84,17 +84,18 @@ CREATE TABLE "user" (
   deactivation_time timestamptz,
   email varchar(50) UNIQUE,
   grade int DEFAULT 0,
+  legal_name varchar(30),
   image_urls text [],
   invitation_code char(8) UNIQUE DEFAULT unique_random(8, 'user', 'invitation_code'),
   is_verified_birthyear boolean NOT NULL DEFAULT FALSE,
   is_verified_birthday boolean NOT NULL DEFAULT FALSE,
   is_verified_email boolean NOT NULL DEFAULT FALSE,
-  is_verified_name boolean NOT NULL DEFAULT FALSE,
+  is_verified_legal_name boolean NOT NULL DEFAULT FALSE,
   is_verified_phone_number boolean NOT NULL DEFAULT FALSE,
   is_verified_sex boolean NOT NULL DEFAULT FALSE,
   last_attendance timestamptz,
-  name varchar(50),
-  nickname varchar(20) UNIQUE,
+  name varchar(30),
+  nickname varchar(30) UNIQUE,
   oauth_bbaton varchar(100) NOT NULL UNIQUE,
   oauth_google varchar(100) UNIQUE,
   oauth_kakao varchar(100) UNIQUE,
@@ -117,7 +118,7 @@ CREATE TABLE cert_pending (
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   birthdate timestamptz NOT NULL,
   issue_date timestamptz NOT NULL,
-  name varchar(50) NOT NULL,
+  legal_name varchar(30) NOT NULL,
   sex int NOT NULL,
   verification_code varchar(100) NOT NULL,
   --
@@ -129,10 +130,10 @@ CREATE TABLE cert (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   birthdate timestamptz NOT NULL,
-  cert_name varchar(50) NOT NULL,
   content text NOT NULL,
   effective_date timestamptz NOT NULL,
   issue_date timestamptz NOT NULL,
+  legal_name varchar(30) NOT NULL,
   location varchar(100) NOT NULL,
   name varchar(50) NOT NULL,
   sex int NOT NULL,
@@ -170,6 +171,8 @@ CREATE TABLE post (
   image_urls text [],
   --
   parent_post_id bigint REFERENCES post ON DELETE
+  SET NULL,
+    sharing_post_id bigint REFERENCES post ON DELETE
   SET NULL,
     user_id uuid REFERENCES "user" ON DELETE
   SET NULL

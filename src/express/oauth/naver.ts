@@ -55,7 +55,7 @@ export function setNaverOAuthStrategies(app: Express) {
     // OAuth 사용자 정보와 자유담 사용자 정보 비교
     if (
       jayudamUser.sex !== encodeSex(naverUser.gender) ||
-      (jayudamUser.name && jayudamUser.name !== naverUser.name) ||
+      (jayudamUser.legal_name && jayudamUser.legal_name !== naverUser.name) ||
       (jayudamUser.birthyear && jayudamUser.birthyear !== naverUser.birthyear) ||
       (jayudamUser.birthday && jayudamUser.birthday !== encodeBirthDay(naverUser.birthday)) ||
       (jayudamUser.phone_number && jayudamUser.phone_number !== naverUser.mobile)
@@ -63,11 +63,10 @@ export function setNaverOAuthStrategies(app: Express) {
       return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=naver`)
 
     // 소셜 로그인 정보가 존재하는 경우
-    const nickname = jayudamUser.nickname
     return res.redirect(
       `${frontendUrl}/oauth?${new URLSearchParams({
         jwt: await signJWT({ userId: jayudamUser.id }),
-        ...(nickname && { nickname }),
+        ...(jayudamUser.name && { username: jayudamUser.name }),
       })}`
     )
   })
@@ -106,7 +105,7 @@ export function setNaverOAuthStrategies(app: Express) {
     // OAuth 사용자 정보와 자유담 사용자 정보 비교
     if (
       jayudamUser.sex !== encodeSex(naverUser.gender) ||
-      (jayudamUser.name && jayudamUser.name !== naverUser.name) ||
+      (jayudamUser.legal_name && jayudamUser.name !== naverUser.name) ||
       (jayudamUser.birthyear && jayudamUser.birthyear !== naverUser.birthyear) ||
       (jayudamUser.birthday && jayudamUser.birthday !== encodeBirthDay(naverUser.birthday)) ||
       (jayudamUser.phone_number && jayudamUser.phone_number !== naverUser.mobile)
@@ -123,7 +122,7 @@ export function setNaverOAuthStrategies(app: Express) {
     return res.redirect(
       `${frontendUrl}/oauth?${new URLSearchParams({
         jwt: await signJWT({ userId: jayudamUser.id }),
-        ...(jayudamUser.nickname && { nickname: jayudamUser.nickname }),
+        ...(jayudamUser.name && { username: jayudamUser.name }),
       })}`
     )
   })

@@ -1,5 +1,5 @@
-/* @name myNickname */
+/* @name auth */
 SELECT id,
-  nickname
+  name
 FROM "user"
 WHERE id = $1;
