@@ -1,0 +1,17 @@
+{
+  "Hook": {
+    "prefix": "query",
+    "body": [
+      "import type { ApolloContext } from '../../apollo/server'",
+      "import { QueryResolvers } from '../generated/graphql'",
+      "",
+      "export const Query: QueryResolvers<ApolloContext> = {",
+      "  $1: async (_, __, { userId }) => {",
+      "    return {} as $2",
+      "  },",
+      "}",
+      ""
+    ],
+    "description": "GraphQL Query"
+  }
+}

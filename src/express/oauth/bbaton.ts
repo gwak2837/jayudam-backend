@@ -10,6 +10,8 @@ import { IGetBBatonUserResult } from './sql/getBBatonUser'
 import getBBatonUser from './sql/getBBatonUser.sql'
 import { IRegisterBBatonUserResult } from './sql/registerBBatonUser'
 import registerBBatonUser from './sql/registerBBatonUser.sql'
+import { IUpdateBBatonUserResult } from './sql/updateBBatonUser'
+import updateBBatonUser from './sql/updateBBatonUser.sql'
 import { BBatonUser, BBatonUserToken, encodeSex, getFrontendUrl } from '.'
 
 export function setBBatonOAuthStrategies(app: Express) {
@@ -33,7 +35,7 @@ export function setBBatonOAuthStrategies(app: Express) {
     if (bBatonUser.error) return res.status(400).send('Bad Request3')
 
     const frontendUrl = getFrontendUrl(req.headers.referer)
-
+    const encodedBBatonUserSex = encodeSex(bBatonUser.gender)
     if (bBatonUser.adult_flag !== 'Y') return res.redirect(`${frontendUrl}/oauth?isAdult=false`)
 
     // 자유담 사용자 정보 가져오기
@@ -47,13 +49,21 @@ export function setBBatonOAuthStrategies(app: Express) {
       const { rows } = await poolQuery<IRegisterBBatonUserResult>(registerBBatonUser, [
         bBatonUser.user_id,
         registerConfig?.personalDataStoringPeriod ?? 1,
-        encodeSex(bBatonUser.gender),
+        encodedBBatonUserSex,
       ])
 
       const querystring = new URLSearchParams({
         jwt: await signJWT({ userId: rows[0].id }),
       })
       return res.redirect(`${frontendUrl}/oauth?${querystring}`)
+    }
+
+    // BBaton 사용자 정보가 달라진 경우
+    if (jayudamUser.sex !== encodedBBatonUserSex) {
+      await poolQuery<IUpdateBBatonUserResult>(updateBBatonUser, [
+        jayudamUser.id,
+        encodedBBatonUserSex,
+      ])
     }
 
     // 정지된 계정인 경우
@@ -67,14 +77,8 @@ export function setBBatonOAuthStrategies(app: Express) {
       // WIP: 개인정보보호법에 따라 컨테이너로 분리된 DB에서 데이터 가져오는 로직 필요
       await poolQuery<IAwakeBBatonUserResult>(awakeBBatonUser, [
         jayudamUser.id,
-        encodeSex(bBatonUser.gender),
+        encodedBBatonUserSex,
       ])
-
-      const querystring = new URLSearchParams({
-        jwt: await signJWT({ userId: jayudamUser.id }),
-        ...(jayudamUser.name && { username: jayudamUser.name }),
-      })
-      return res.redirect(`${frontendUrl}/oauth?${querystring}`)
     }
 
     // 이미 가입된 경우
