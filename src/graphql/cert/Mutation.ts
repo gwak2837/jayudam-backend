@@ -26,7 +26,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
 
     const {
       showBirthdate,
-      showName,
+      showLegalName,
       showSex,
       showSTDTest,
       stdTestSince,
@@ -41,7 +41,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
 
     const certAgreement = {
       ...(showBirthdate && { showBirthdate }),
-      ...(showName && { showName }),
+      ...(showLegalName && { showLegalName }),
       ...(showSex && { showSex }),
       ...(showSTDTest && { showSTDTest }),
       ...(showSTDTest && stdTestSince && { stdTestSince }),
@@ -70,7 +70,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       forTest,
       userId: targetUserId,
       showBirthdate,
-      showName,
+      showLegalName,
       showSex,
       showSTDTest,
       stdTestSince,
@@ -83,7 +83,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
 
     if (
       !showBirthdate &&
-      !showName &&
+      !showLegalName &&
       !showSex &&
       !showSTDTest &&
       !showImmunization &&
@@ -112,13 +112,13 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       effectiveDate: cert.effective_date,
       issueDate: cert.issue_date,
       location: cert.location,
-      name: cert.cert_name,
+      name: cert.name,
       type: cert.type,
     }))
 
     const results = {
       ...(showBirthdate && { birthdate: rows[0].birthdate }),
-      ...(showName && { name: rows[0].name }),
+      ...(showLegalName && { legalName: rows[0].legal_name }),
       ...(showSex && { sex: rows[0].sex }),
       ...(showSTDTest && {
         stdTestCerts: allCerts.filter((cert) => cert.type === 0 || cert.type === 1),

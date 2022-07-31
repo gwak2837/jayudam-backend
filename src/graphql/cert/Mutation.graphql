@@ -7,7 +7,7 @@ type Mutation {
 input CertCreation {
   birthdate: DateTime!
   issueDate: DateTime!
-  name: NonEmptyString!
+  legalName: NonEmptyString!
   sex: Sex!
   verificationCode: NonEmptyString!
 }
@@ -16,7 +16,7 @@ input CertCreation {
 # show___ 기본값: 미동의
 input CertAgreementInput {
   showBirthdate: Boolean
-  showName: Boolean
+  showLegalName: Boolean
   showSex: Boolean
   showSTDTest: Boolean
   stdTestSince: DateTime

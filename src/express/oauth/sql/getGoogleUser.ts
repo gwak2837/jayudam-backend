@@ -9,8 +9,8 @@ export interface IGetGoogleUserResult {
   blocking_end_time: Date | null;
   blocking_start_time: Date | null;
   id: string;
+  legal_name: string | null;
   name: string | null;
-  nickname: string | null;
   sleeping_time: Date | null;
 }
 
@@ -20,7 +20,7 @@ export interface IGetGoogleUserQuery {
   result: IGetGoogleUserResult;
 }
 
-const getGoogleUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  blocking_start_time,\n  blocking_end_time,\n  nickname,\n  name,\n  sleeping_time\nFROM \"user\"\nWHERE oauth_google = $1"};
+const getGoogleUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  blocking_start_time,\n  blocking_end_time,\n  legal_name,\n  name,\n  sleeping_time\nFROM \"user\"\nWHERE oauth_google = $1"};
 
 /**
  * Query generated from SQL:
@@ -28,7 +28,7 @@ const getGoogleUserIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT 
  * SELECT id,
  *   blocking_start_time,
  *   blocking_end_time,
- *   nickname,
+ *   legal_name,
  *   name,
  *   sleeping_time
  * FROM "user"

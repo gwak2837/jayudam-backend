@@ -4,26 +4,26 @@ import { NotFoundError } from '../../apollo/errors'
 import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
 import { QueryResolvers, User } from '../generated/graphql'
+import { IAuthResult } from './sql/auth'
+import auth from './sql/auth.sql'
 import { IGetMyCertAgreementResult } from './sql/getMyCertAgreement'
 import getMyCertAgreement from './sql/getMyCertAgreement.sql'
-import { IIsUniqueNicknameResult } from './sql/isUniqueNickname'
-import isUniqueNickname from './sql/isUniqueNickname.sql'
+import { IIsUniqueUsernameResult } from './sql/isUniqueUsername'
+import isUniqueUsername from './sql/isUniqueUsername.sql'
 import { IMeResult } from './sql/me'
 import me from './sql/me.sql'
-import { IMyNicknameResult } from './sql/myNickname'
-import myNickname from './sql/myNickname.sql'
-import { IUserByNicknameResult } from './sql/userByNickname'
-import userByNickname from './sql/userByNickname.sql'
+import { IUserByNameResult } from './sql/userByName'
+import userByName from './sql/userByName.sql'
 
 export const Query: QueryResolvers<ApolloContext> = {
   auth: async (_, __, { userId }) => {
     if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
 
-    const { rows } = await poolQuery<IMyNicknameResult>(myNickname, [userId])
+    const { rows } = await poolQuery<IAuthResult>(auth, [userId])
 
     return {
       id: rows[0].id,
-      nickname: rows[0].nickname,
+      name: rows[0].name,
     } as User
   },
 
@@ -34,7 +34,7 @@ export const Query: QueryResolvers<ApolloContext> = {
     if (!rows[0].cert_agreement)
       return {
         showBirthdate: false,
-        showName: false,
+        showLegalName: false,
         showSex: false,
         showSTDTest: false,
         showImmunization: false,
@@ -43,7 +43,7 @@ export const Query: QueryResolvers<ApolloContext> = {
 
     const {
       showBirthdate,
-      showName,
+      showLegalName,
       showSex,
       showSTDTest,
       stdTestSince,
@@ -55,7 +55,7 @@ export const Query: QueryResolvers<ApolloContext> = {
 
     return {
       showBirthdate: showBirthdate ?? false,
-      showName: showName ?? false,
+      showLegalName: showLegalName ?? false,
       showSex: showSex ?? false,
       showSTDTest: showSTDTest ?? false,
       ...(showSTDTest && stdTestSince && { stdTestSince }),
@@ -66,21 +66,21 @@ export const Query: QueryResolvers<ApolloContext> = {
     }
   },
 
-  isUniqueNickname: async (_, { nickname }) => {
-    const { rowCount } = await poolQuery<IIsUniqueNicknameResult>(isUniqueNickname, [nickname])
+  isUniqueUsername: async (_, { username }) => {
+    const { rowCount } = await poolQuery<IIsUniqueUsernameResult>(isUniqueUsername, [username])
 
     return rowCount === 0
   },
 
-  user: async (_, { nickname }, { userId }) => {
-    if (!nickname && !userId) throw new UserInputError('잘못된 요청입니다')
+  user: async (_, { name }, { userId }) => {
+    if (!name && !userId) throw new UserInputError('잘못된 요청입니다')
 
-    if (nickname === 'undefined' || nickname === 'null')
+    if (name === 'undefined' || name === 'null')
       throw new UserInputError('허용되지 않는 닉네임입니다')
 
-    if (nickname) {
-      const { rowCount, rows } = await poolQuery<IUserByNicknameResult>(userByNickname, [nickname])
-      if (rowCount === 0) throw new NotFoundError(`\`${nickname}\` 사용자를 찾을 수 없습니다`)
+    if (name) {
+      const { rowCount, rows } = await poolQuery<IUserByNameResult>(userByName, [name])
+      if (rowCount === 0) throw new NotFoundError(`\`${name}\` 사용자를 찾을 수 없습니다`)
 
       return {
         bio: rows[0].bio,
@@ -89,6 +89,7 @@ export const Query: QueryResolvers<ApolloContext> = {
         grade: rows[0].grade,
         imageUrls: rows[0].image_urls,
         isVerifiedSex: rows[0].is_verified_sex,
+        name: rows[0].name,
         nickname: rows[0].nickname,
         sex: rows[0].sex,
         towns: [
@@ -109,6 +110,7 @@ export const Query: QueryResolvers<ApolloContext> = {
         grade: rows[0].grade,
         imageUrls: rows[0].image_urls,
         isVerifiedSex: rows[0].is_verified_sex,
+        name: rows[0].name,
         nickname: rows[0].nickname,
         sex: rows[0].sex,
         towns: [

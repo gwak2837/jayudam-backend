@@ -16,6 +16,7 @@ export interface IMeResult {
   id: string;
   image_urls: stringArray | null;
   is_verified_sex: boolean;
+  name: string | null;
   nickname: string | null;
   sex: number | null;
   town1_count: number;
@@ -30,7 +31,7 @@ export interface IMeQuery {
   result: IMeResult;
 }
 
-const meIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  bio,\n  blocking_start_time,\n  blocking_end_time,\n  cherry,\n  grade,\n  image_urls,\n  is_verified_sex,\n  nickname,\n  sex,\n  town1_count,\n  town1_name,\n  town2_count,\n  town2_name\nFROM \"user\"\nWHERE id = $1"};
+const meIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  bio,\n  blocking_start_time,\n  blocking_end_time,\n  cherry,\n  grade,\n  image_urls,\n  is_verified_sex,\n  name,\n  nickname,\n  sex,\n  town1_count,\n  town1_name,\n  town2_count,\n  town2_name\nFROM \"user\"\nWHERE id = $1"};
 
 /**
  * Query generated from SQL:
@@ -43,6 +44,7 @@ const meIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  bio,
  *   grade,
  *   image_urls,
  *   is_verified_sex,
+ *   name,
  *   nickname,
  *   sex,
  *   town1_count,

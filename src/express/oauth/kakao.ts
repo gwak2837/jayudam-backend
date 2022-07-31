@@ -59,7 +59,7 @@ export function setKakaoOAuthStrategies(app: Express) {
     // OAuth 사용자 정보와 자유담 사용자 정보 비교
     if (
       jayudamUser.sex !== encodeSex(kakaoAccount.gender) ||
-      (jayudamUser.name && jayudamUser.name !== kakaoAccount.name) ||
+      (jayudamUser.legal_name && jayudamUser.legal_name !== kakaoAccount.name) ||
       (jayudamUser.birthyear && jayudamUser.birthyear !== kakaoAccount.birthyear) ||
       (jayudamUser.birthday && jayudamUser.birthday !== kakaoAccount.birthday) ||
       (jayudamUser.phone_number && jayudamUser.phone_number !== kakaoAccount.phone_number)
@@ -67,10 +67,9 @@ export function setKakaoOAuthStrategies(app: Express) {
       return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=kakao`)
 
     // 소셜 로그인 정보가 존재하는 경우
-    const nickname = jayudamUser.nickname
     const querystring = new URLSearchParams({
       jwt: await signJWT({ userId: jayudamUser.id }),
-      ...(nickname && { nickname }),
+      ...(jayudamUser.name && { username: jayudamUser.name }),
     })
     return res.redirect(`${frontendUrl}/oauth?${querystring}`)
   })
@@ -110,7 +109,7 @@ export function setKakaoOAuthStrategies(app: Express) {
     // OAuth 사용자 정보와 자유담 사용자 정보 비교
     if (
       jayudamUser.sex !== encodeSex(kakaoUser.gender) ||
-      (jayudamUser.name && jayudamUser.name !== kakaoUser.name) ||
+      (jayudamUser.legal_name && jayudamUser.name !== kakaoUser.name) ||
       (jayudamUser.birthyear && jayudamUser.birthyear !== kakaoUser.birthyear) ||
       (jayudamUser.birthday && jayudamUser.birthday !== kakaoUserBirthday) ||
       (jayudamUser.phone_number && jayudamUser.phone_number !== kakaoUser.phone_number)
@@ -129,15 +128,14 @@ export function setKakaoOAuthStrategies(app: Express) {
     return res.redirect(
       `${frontendUrl}/oauth?${new URLSearchParams({
         jwt: await signJWT({ userId: jayudamUser.id }),
-        ...(jayudamUser.nickname && { nickname: jayudamUser.nickname }),
+        ...(jayudamUser.name && { username: jayudamUser.name }),
       })}`
     )
   })
 
   app.get('/oauth/kakao/unregister', async (req, res) => {
-    if (req.headers.Authorization !== KAKAO_ADMIN_KEY) {
+    if (req.headers.Authorization !== KAKAO_ADMIN_KEY)
       return res.status(400).send('400 Bad Request')
-    }
 
     console.log('👀 - req.query.user_id', req.query.user_id)
     console.log('👀 - req.query.referrer_type', req.query.referrer_type)

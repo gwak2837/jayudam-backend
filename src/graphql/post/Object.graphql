@@ -8,6 +8,7 @@ type Post {
 
   author: User
   likeCount: NonNegativeInt
+  sharingPost: Post
 }
 
 enum Sex {

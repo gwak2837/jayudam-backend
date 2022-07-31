@@ -2,7 +2,7 @@
 SELECT id,
   blocking_start_time,
   blocking_end_time,
-  nickname,
+  legal_name,
   name,
   sleeping_time
 FROM "user"

@@ -11,8 +11,11 @@ import { GOOGLE_CLOUD_STORAGE_BUCKET } from '../utils/constants'
 // https://cloud.google.com/appengine/docs/flexible/nodejs/using-cloud-storage
 export function setUploadingFiles(app: Express) {
   app.post('/upload', multer.array('file', 10), async (req, res) => {
-    const files = req.files as Express.Multer.File[]
-    if (!files.length) return res.status(400).send('No file uploaded.')
+    const files = req.files
+
+    if (!Array.isArray(files)) return res.status(400).send('Bad Request')
+
+    if (!files.length) return res.status(400).send('No file uploaded')
 
     for (let i = 0; i < files.length; i++) {
       if (!isExtensionAllowed(files[i]))
@@ -34,7 +37,7 @@ const allowedExtensions = ['image', 'video', 'audio', 'application/ogg']
 const multer = Multer({
   storage: Multer.memoryStorage(),
   limits: {
-    fileSize: 100_000_000, // no larger than 100 MB
+    fileSize: 20_000_000, // no larger than 20 MB
   },
 })
 

@@ -7,11 +7,11 @@ export type ICertsParams = void;
 /** 'Certs' return type */
 export interface ICertsResult {
   birthdate: Date;
-  cert_name: string;
   content: string;
   effective_date: Date;
   id: string;
   issue_date: Date;
+  legal_name: string;
   location: string;
   name: string;
   sex: number;
@@ -24,18 +24,18 @@ export interface ICertsQuery {
   result: ICertsResult;
 }
 
-const certsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  birthdate,\n  cert_name,\n  content,\n  effective_date,\n  issue_date,\n  location,\n  name,\n  sex,\n  \"type\"\nFROM cert\nWHERE user_id = $1\n  AND \"type\" = ANY ($2)\n  AND (\n    (\n      \"type\" = 0\n      OR \"type\" = 1\n    )\n    AND effective_date > $3\n    OR \"type\" = 2\n    AND effective_date > $4\n    OR \"type\" = 3\n    AND effective_date > $5\n  )\nORDER BY effective_date DESC"};
+const certsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  birthdate,\n  content,\n  effective_date,\n  issue_date,\n  location,\n  legal_name,\n  name,\n  sex,\n  \"type\"\nFROM cert\nWHERE user_id = $1\n  AND \"type\" = ANY ($2)\n  AND (\n    (\n      \"type\" = 0\n      OR \"type\" = 1\n    )\n    AND effective_date > $3\n    OR \"type\" = 2\n    AND effective_date > $4\n    OR \"type\" = 3\n    AND effective_date > $5\n  )\nORDER BY effective_date DESC"};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT id,
  *   birthdate,
- *   cert_name,
  *   content,
  *   effective_date,
  *   issue_date,
  *   location,
+ *   legal_name,
  *   name,
  *   sex,
  *   "type"

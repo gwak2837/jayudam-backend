@@ -17,7 +17,7 @@ export const Query: QueryResolvers<ApolloContext> = {
         forTest: true,
         userId: '00000000-0000-0000-0000-000000000000',
         showBirthdate: true,
-        showName: true,
+        showLegalName: true,
         showSex: true,
         showSTDTest: true,
         showImmunization: true,
