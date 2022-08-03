@@ -171,14 +171,17 @@ export type Pagination = {
 export type Post = {
   __typename?: 'Post'
   author?: Maybe<User>
+  commentCount?: Maybe<Scalars['NonNegativeInt']>
+  comments?: Maybe<Array<Post>>
   content?: Maybe<Scalars['NonEmptyString']>
   creationTime?: Maybe<Scalars['DateTime']>
   deletionTime?: Maybe<Scalars['DateTime']>
   id: Scalars['ID']
   imageUrls?: Maybe<Array<Maybe<Scalars['URL']>>>
   likeCount?: Maybe<Scalars['NonNegativeInt']>
-  modificationTime?: Maybe<Scalars['DateTime']>
+  sharedCount?: Maybe<Scalars['NonNegativeInt']>
   sharingPost?: Maybe<Post>
+  updateTime?: Maybe<Scalars['DateTime']>
 }
 
 export type PostCreationInput = {
@@ -199,7 +202,6 @@ export type Query = {
   certs?: Maybe<Certs>
   isUniqueUsername: Scalars['Boolean']
   myCertAgreement?: Maybe<CertAgreement>
-  myVerificationHistories?: Maybe<Array<VerificationHistory>>
   pendingCerts?: Maybe<Array<Cert>>
   post?: Maybe<Post>
   posts?: Maybe<Array<Post>>
@@ -266,6 +268,7 @@ export type User = {
   email?: Maybe<Scalars['EmailAddress']>
   grade?: Maybe<Grade>
   id: Scalars['UUID']
+  imageUrl?: Maybe<Scalars['URL']>
   imageUrls?: Maybe<Array<Scalars['URL']>>
   isVerifiedBirthday: Scalars['Boolean']
   isVerifiedBirthyear: Scalars['Boolean']
@@ -293,13 +296,6 @@ export type UserUpdate = {
   serviceAgreement?: InputMaybe<ServiceAgreementInput>
   town1Name?: InputMaybe<Scalars['NonEmptyString']>
   town2Name?: InputMaybe<Scalars['NonEmptyString']>
-}
-
-export type VerificationHistory = {
-  __typename?: 'VerificationHistory'
-  content: Scalars['NonEmptyString']
-  creationTime: Scalars['DateTime']
-  id: Scalars['Int']
 }
 
 export type WithIndex<TObject> = TObject & Record<string, any>
@@ -425,7 +421,6 @@ export type ResolversTypes = ResolversObject<{
   UUID: ResolverTypeWrapper<Scalars['UUID']>
   User: ResolverTypeWrapper<User>
   UserUpdate: UserUpdate
-  VerificationHistory: ResolverTypeWrapper<VerificationHistory>
 }>
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -461,7 +456,6 @@ export type ResolversParentTypes = ResolversObject<{
   UUID: Scalars['UUID']
   User: User
   UserUpdate: UserUpdate
-  VerificationHistory: VerificationHistory
 }>
 
 export interface AnyScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Any'], any> {
@@ -624,14 +618,17 @@ export type PostResolvers<
   ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']
 > = ResolversObject<{
   author?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
+  commentCount?: Resolver<Maybe<ResolversTypes['NonNegativeInt']>, ParentType, ContextType>
+  comments?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType>
   content?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
   creationTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   deletionTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>
   imageUrls?: Resolver<Maybe<Array<Maybe<ResolversTypes['URL']>>>, ParentType, ContextType>
   likeCount?: Resolver<Maybe<ResolversTypes['NonNegativeInt']>, ParentType, ContextType>
-  modificationTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
+  sharedCount?: Resolver<Maybe<ResolversTypes['NonNegativeInt']>, ParentType, ContextType>
   sharingPost?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>
+  updateTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
@@ -648,11 +645,6 @@ export type QueryResolvers<
     RequireFields<QueryIsUniqueUsernameArgs, 'username'>
   >
   myCertAgreement?: Resolver<Maybe<ResolversTypes['CertAgreement']>, ParentType, ContextType>
-  myVerificationHistories?: Resolver<
-    Maybe<Array<ResolversTypes['VerificationHistory']>>,
-    ParentType,
-    ContextType
-  >
   pendingCerts?: Resolver<Maybe<Array<ResolversTypes['Cert']>>, ParentType, ContextType>
   post?: Resolver<
     Maybe<ResolversTypes['Post']>,
@@ -713,6 +705,7 @@ export type UserResolvers<
   email?: Resolver<Maybe<ResolversTypes['EmailAddress']>, ParentType, ContextType>
   grade?: Resolver<Maybe<ResolversTypes['Grade']>, ParentType, ContextType>
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>
+  imageUrl?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>
   imageUrls?: Resolver<Maybe<Array<ResolversTypes['URL']>>, ParentType, ContextType>
   isVerifiedBirthday?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   isVerifiedBirthyear?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
@@ -728,16 +721,6 @@ export type UserResolvers<
   serviceAgreement?: Resolver<Maybe<ResolversTypes['ServiceAgreement']>, ParentType, ContextType>
   sex?: Resolver<Maybe<ResolversTypes['Sex']>, ParentType, ContextType>
   towns?: Resolver<Maybe<Array<ResolversTypes['Town']>>, ParentType, ContextType>
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
-}>
-
-export type VerificationHistoryResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['VerificationHistory'] = ResolversParentTypes['VerificationHistory']
-> = ResolversObject<{
-  content?: Resolver<ResolversTypes['NonEmptyString'], ParentType, ContextType>
-  creationTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
@@ -762,5 +745,4 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   URL?: GraphQLScalarType
   UUID?: GraphQLScalarType
   User?: UserResolvers<ContextType>
-  VerificationHistory?: VerificationHistoryResolvers<ContextType>
 }>

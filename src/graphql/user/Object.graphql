@@ -9,6 +9,7 @@ type User {
   cherry: NonNegativeInt!
   email: EmailAddress
   grade: Grade
+  imageUrl: URL
   imageUrls: [URL!]
   isVerifiedBirthyear: Boolean!
   isVerifiedBirthday: Boolean!
