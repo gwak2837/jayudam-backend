@@ -1,19 +1,15 @@
 type Post {
   id: ID!
   creationTime: DateTime
-  modificationTime: DateTime
+  updateTime: DateTime
   deletionTime: DateTime
   content: NonEmptyString
   imageUrls: [URL]
 
   author: User
+  commentCount: NonNegativeInt
   likeCount: NonNegativeInt
+  sharedCount: NonNegativeInt
+  comments: [Post!]
   sharingPost: Post
-}
-
-enum Sex {
-  UNKNOWN
-  MALE
-  FEMALE
-  OTHER
 }

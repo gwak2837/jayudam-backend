@@ -122,14 +122,17 @@ scalar PositiveInt
 
 type Post {
   author: User
+  commentCount: NonNegativeInt
+  comments: [Post!]
   content: NonEmptyString
   creationTime: DateTime
   deletionTime: DateTime
   id: ID!
   imageUrls: [URL]
   likeCount: NonNegativeInt
-  modificationTime: DateTime
+  sharedCount: NonNegativeInt
   sharingPost: Post
+  updateTime: DateTime
 }
 
 input PostCreationInput {
@@ -149,7 +152,6 @@ type Query {
   certs: Certs
   isUniqueUsername(username: NonEmptyString!): Boolean!
   myCertAgreement: CertAgreement
-  myVerificationHistories: [VerificationHistory!]
   pendingCerts: [Cert!]
   post(id: ID!): Post
   posts: [Post!]
@@ -205,6 +207,7 @@ type User {
   email: EmailAddress
   grade: Grade
   id: UUID!
+  imageUrl: URL
   imageUrls: [URL!]
   isVerifiedBirthday: Boolean!
   isVerifiedBirthyear: Boolean!
@@ -232,10 +235,4 @@ input UserUpdate {
   serviceAgreement: ServiceAgreementInput
   town1Name: NonEmptyString
   town2Name: NonEmptyString
-}
-
-type VerificationHistory {
-  content: NonEmptyString!
-  creationTime: DateTime!
-  id: Int!
 }
