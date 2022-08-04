@@ -73,7 +73,7 @@ $$ language plpgsql;
 CREATE TABLE "user" (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   creation_time timestamptz DEFAULT CURRENT_TIMESTAMP,
-  update_time timestamptz DEFAULT CURRENT_TIMESTAMP,
+  update_time timestamptz,
   bio varchar(100),
   birthyear int,
   birthday char(4),
@@ -165,7 +165,7 @@ CREATE TABLE notification (
 CREATE TABLE post (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   creation_time timestamptz DEFAULT CURRENT_TIMESTAMP,
-  update_time timestamptz DEFAULT CURRENT_TIMESTAMP,
+  update_time timestamptz,
   deletion_time timestamptz,
   content varchar(500),
   image_urls text [],
