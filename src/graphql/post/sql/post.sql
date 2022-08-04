@@ -9,7 +9,7 @@ SELECT parent_post.id AS parent_post__id,
     SELECT COUNT(user_id)
     FROM post_x_user
     WHERE post_id = $1
-  ) AS parent_post_like_count,
+  ) AS parent_post__like_count,
   (
     SELECT COUNT(id)
     FROM post

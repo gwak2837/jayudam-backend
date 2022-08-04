@@ -30,9 +30,9 @@ function getParentPost(postRow: Record<string, any>): Post {
     deletionTime: postRow.parent_post__deletion_time,
     content: postRow.parent_post__content,
     imageUrls: postRow.parent_post__image_urls,
-    likeCount: postRow.parent_post__like_count,
-    commentCount: postRow.parent_post__comment_count,
-    sharedCount: postRow.parent_post__shared_count,
+    likeCount: postRow.parent_post__like_count ?? 0,
+    commentCount: postRow.parent_post__comment_count ?? 0,
+    sharedCount: postRow.parent_post__shared_count ?? 0,
     ...(postRow.parent_post__user__id && {
       author: {
         id: postRow.parent_post__user__id,
@@ -75,9 +75,9 @@ function getPost(postRow: Record<string, any>): Post {
     deletionTime: postRow.post__deletion_time,
     content: postRow.post__content,
     imageUrls: postRow.post__image_urls,
-    likeCount: postRow.post__like_count,
-    commentCount: postRow.post__comment_count,
-    sharedCount: postRow.post__shared_count,
+    likeCount: postRow.post__like_count ?? 0,
+    commentCount: postRow.post__comment_count ?? 0,
+    sharedCount: postRow.post__shared_count ?? 0,
     ...(postRow.post__user__id && {
       author: {
         id: postRow.post__user__id,
@@ -101,9 +101,9 @@ function getChildPost(postRow: Record<string, any>): Post {
     deletionTime: postRow.child_post__deletion_time,
     content: postRow.child_post__content,
     imageUrls: postRow.child_post__image_urls,
-    likeCount: postRow.child_post__like_count,
-    commentCount: postRow.child_post__comment_count,
-    sharedCount: postRow.child_post__shared_count,
+    likeCount: postRow.child_post__like_count ?? 0,
+    commentCount: postRow.child_post__comment_count ?? 0,
+    sharedCount: postRow.child_post__shared_count ?? 0,
     ...(postRow.child_post__user__id && {
       author: {
         id: postRow.child_post__user__id,
