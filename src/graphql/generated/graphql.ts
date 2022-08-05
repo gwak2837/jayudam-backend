@@ -178,6 +178,7 @@ export type Post = {
   deletionTime?: Maybe<Scalars['DateTime']>
   id: Scalars['ID']
   imageUrls?: Maybe<Array<Maybe<Scalars['URL']>>>
+  isLiked: Scalars['Boolean']
   likeCount?: Maybe<Scalars['NonNegativeInt']>
   sharedCount?: Maybe<Scalars['NonNegativeInt']>
   sharingPost?: Maybe<Post>
@@ -625,6 +626,7 @@ export type PostResolvers<
   deletionTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>
   imageUrls?: Resolver<Maybe<Array<Maybe<ResolversTypes['URL']>>>, ParentType, ContextType>
+  isLiked?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   likeCount?: Resolver<Maybe<ResolversTypes['NonNegativeInt']>, ParentType, ContextType>
   sharedCount?: Resolver<Maybe<ResolversTypes['NonNegativeInt']>, ParentType, ContextType>
   sharingPost?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>
