@@ -7,8 +7,8 @@ import { IPostResult } from './sql/post'
 import post from './sql/post.sql'
 
 export const Query: QueryResolvers<ApolloContext> = {
-  post: async (_, { id }) => {
-    const { rowCount, rows } = await poolQuery<IPostResult>(post, [id])
+  post: async (_, { id }, { userId }) => {
+    const { rowCount, rows } = await poolQuery<IPostResult>(post, [id, userId])
 
     if (rowCount === 0) throw new NotFoundError('해당 글을 찾을 수 없어요')
 

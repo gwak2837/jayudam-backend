@@ -129,6 +129,7 @@ type Post {
   deletionTime: DateTime
   id: ID!
   imageUrls: [URL]
+  isLiked: Boolean!
   likeCount: NonNegativeInt
   sharedCount: NonNegativeInt
   sharingPost: Post
