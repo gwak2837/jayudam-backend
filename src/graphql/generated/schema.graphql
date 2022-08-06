@@ -155,7 +155,7 @@ type Query {
   myCertAgreement: CertAgreement
   pendingCerts: [Cert!]
   post(id: ID!): Post
-  posts: [Post!]
+  posts(lastId: ID): [Post!]
   sampleCertJWT: JWT!
   user(name: NonEmptyString): User
   verificationHistories: [Certs!]

@@ -219,6 +219,10 @@ export type QueryPostArgs = {
   id: Scalars['ID']
 }
 
+export type QueryPostsArgs = {
+  lastId?: InputMaybe<Scalars['ID']>
+}
+
 export type QueryUserArgs = {
   name?: InputMaybe<Scalars['NonEmptyString']>
 }
@@ -654,7 +658,12 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryPostArgs, 'id'>
   >
-  posts?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType>
+  posts?: Resolver<
+    Maybe<Array<ResolversTypes['Post']>>,
+    ParentType,
+    ContextType,
+    Partial<QueryPostsArgs>
+  >
   sampleCertJWT?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<QueryUserArgs>>
   verificationHistories?: Resolver<Maybe<Array<ResolversTypes['Certs']>>, ParentType, ContextType>

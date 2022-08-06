@@ -1,5 +1,54 @@
 import { Post } from '../generated/graphql'
 
+export function postsORM(postRows: Record<string, any>[]) {
+  const posts: Post[] = []
+
+  for (const postRow of postRows) {
+    posts.push({
+      id: postRow.post__id,
+      creationTime: postRow.post__creation_time,
+      updateTime: postRow.post__update_time,
+      deletionTime: postRow.post__deletion_time,
+      content: postRow.post__content,
+      imageUrls: postRow.post__image_urls,
+      isLiked: postRow.post__is_liked,
+      likeCount: postRow.post__like_count ?? 0,
+      commentCount: postRow.post__comment_count ?? 0,
+      sharedCount: postRow.post__shared_count ?? 0,
+
+      ...(postRow.post__user__id && {
+        author: {
+          id: postRow.post__user__id,
+          name: postRow.post__user__name,
+          nickname: postRow.post__user__nickname,
+          imageUrl: postRow.post__user__image_url,
+        },
+      }),
+
+      ...(postRow.sharing_post__id && {
+        sharingPost: {
+          id: postRow.sharing_post__id,
+          creationTime: postRow.sharing_post__creation_time,
+          updateTime: postRow.sharing_post__update_time,
+          deletionTime: postRow.sharing_post__delete_time,
+          content: postRow.sharing_post__content,
+          imageUrls: postRow.sharing_post__image_urls,
+          ...(postRow.sharing_post__user__id && {
+            author: {
+              id: postRow.sharing_post__user__id,
+              name: postRow.sharing_post__user__name,
+              nickname: postRow.sharing_post__user__nickname,
+              imageUrl: postRow.sharing_post__user__image_url,
+            },
+          }),
+        },
+      }),
+    })
+  }
+
+  return posts
+}
+
 export function postORM(postRows: Record<string, any>[]) {
   const parentPost = getParentPost(postRows[0])
 
