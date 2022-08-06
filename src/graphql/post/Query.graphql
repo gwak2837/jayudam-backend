@@ -1,4 +1,4 @@
 type Query {
-  posts: [Post!]
+  posts(lastId: ID): [Post!]
   post(id: ID!): Post
 }

@@ -14,6 +14,7 @@ export interface IPostsResult {
   post__deletion_time: Date | null;
   post__id: string;
   post__image_urls: stringArray | null;
+  post__is_liked: boolean | null;
   post__like_count: string | null;
   post__shared_count: string | null;
   post__update_time: Date | null;
@@ -21,6 +22,16 @@ export interface IPostsResult {
   post__user__image_url: string | null;
   post__user__name: string | null;
   post__user__nickname: string | null;
+  sharing_post__content: string | null;
+  sharing_post__creation_time: Date | null;
+  sharing_post__deletion_time: Date | null;
+  sharing_post__id: string;
+  sharing_post__image_urls: stringArray | null;
+  sharing_post__update_time: Date | null;
+  sharing_post__user__id: string;
+  sharing_post__user__image_url: string | null;
+  sharing_post__user__name: string | null;
+  sharing_post__user__nickname: string | null;
 }
 
 /** 'Posts' query type */
@@ -29,7 +40,7 @@ export interface IPostsQuery {
   result: IPostsResult;
 }
 
-const postsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT post.id AS post__id,\n  post.creation_time AS post__creation_time,\n  post.update_time AS post__update_time,\n  post.deletion_time AS post__deletion_time,\n  post.content AS post__content,\n  post.image_urls AS post__image_urls,\n  \"like\".count AS post__like_count,\n  \"comment\".count AS post__comment_count,\n  shared.count AS post__shared_count,\n  \"user\".id AS post__user__id,\n  \"user\".name AS post__user__name,\n  \"user\".nickname AS post__user__nickname,\n  \"user\".image_urls [1] AS post__user__image_url\nFROM post\n  LEFT JOIN (\n    SELECT post_id,\n      COUNT(user_id)\n    FROM post_x_user\n    GROUP BY post_id\n  ) AS \"like\" ON \"like\".post_id = post.id\n  LEFT JOIN (\n    SELECT parent_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY parent_post_id\n  ) AS \"comment\" ON \"comment\".parent_post_id = post.id\n  LEFT JOIN (\n    SELECT sharing_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY sharing_post_id\n  ) AS shared ON shared.sharing_post_id = post.id\n  LEFT JOIN \"user\" ON \"user\".id = post.user_id\nWHERE post.parent_post_id IS NULL\nLIMIT 20"};
+const postsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT post.id AS post__id,\n  post.creation_time AS post__creation_time,\n  post.update_time AS post__update_time,\n  post.deletion_time AS post__deletion_time,\n  post.content AS post__content,\n  post.image_urls AS post__image_urls,\n  is_liked.user_id IS NOT NULL AS post__is_liked,\n  \"like\".count AS post__like_count,\n  \"comment\".count AS post__comment_count,\n  shared.count AS post__shared_count,\n  \"user\".id AS post__user__id,\n  \"user\".name AS post__user__name,\n  \"user\".nickname AS post__user__nickname,\n  \"user\".image_urls [1] AS post__user__image_url,\n  --\n  sharing_post.id AS sharing_post__id,\n  sharing_post.creation_time AS sharing_post__creation_time,\n  sharing_post.update_time AS sharing_post__update_time,\n  sharing_post.deletion_time AS sharing_post__deletion_time,\n  sharing_post.content AS sharing_post__content,\n  sharing_post.image_urls AS sharing_post__image_urls,\n  sharing_user.id AS sharing_post__user__id,\n  sharing_user.name AS sharing_post__user__name,\n  sharing_user.nickname AS sharing_post__user__nickname,\n  sharing_user.image_urls [1] AS sharing_post__user__image_url\nFROM post\n  LEFT JOIN post_x_user AS is_liked ON is_liked.post_id = post.id\n  AND is_liked.user_id = $1\n  LEFT JOIN (\n    SELECT post_id,\n      COUNT(user_id)\n    FROM post_x_user\n    GROUP BY post_id\n  ) AS \"like\" ON \"like\".post_id = post.id\n  LEFT JOIN (\n    SELECT parent_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY parent_post_id\n  ) AS \"comment\" ON \"comment\".parent_post_id = post.id\n  LEFT JOIN (\n    SELECT sharing_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY sharing_post_id\n  ) AS shared ON shared.sharing_post_id = post.id\n  LEFT JOIN \"user\" ON \"user\".id = post.user_id\n  LEFT JOIN post AS sharing_post ON sharing_post.id = post.sharing_post_id\n  LEFT JOIN \"user\" AS sharing_user ON sharing_user.id = sharing_post.user_id\nWHERE post.parent_post_id IS NULL\n  AND post.id < $2\nORDER BY post.id DESC\nLIMIT 20"};
 
 /**
  * Query generated from SQL:
@@ -40,14 +51,28 @@ const postsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT post.id 
  *   post.deletion_time AS post__deletion_time,
  *   post.content AS post__content,
  *   post.image_urls AS post__image_urls,
+ *   is_liked.user_id IS NOT NULL AS post__is_liked,
  *   "like".count AS post__like_count,
  *   "comment".count AS post__comment_count,
  *   shared.count AS post__shared_count,
  *   "user".id AS post__user__id,
  *   "user".name AS post__user__name,
  *   "user".nickname AS post__user__nickname,
- *   "user".image_urls [1] AS post__user__image_url
+ *   "user".image_urls [1] AS post__user__image_url,
+ *   --
+ *   sharing_post.id AS sharing_post__id,
+ *   sharing_post.creation_time AS sharing_post__creation_time,
+ *   sharing_post.update_time AS sharing_post__update_time,
+ *   sharing_post.deletion_time AS sharing_post__deletion_time,
+ *   sharing_post.content AS sharing_post__content,
+ *   sharing_post.image_urls AS sharing_post__image_urls,
+ *   sharing_user.id AS sharing_post__user__id,
+ *   sharing_user.name AS sharing_post__user__name,
+ *   sharing_user.nickname AS sharing_post__user__nickname,
+ *   sharing_user.image_urls [1] AS sharing_post__user__image_url
  * FROM post
+ *   LEFT JOIN post_x_user AS is_liked ON is_liked.post_id = post.id
+ *   AND is_liked.user_id = $1
  *   LEFT JOIN (
  *     SELECT post_id,
  *       COUNT(user_id)
@@ -67,7 +92,11 @@ const postsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT post.id 
  *     GROUP BY sharing_post_id
  *   ) AS shared ON shared.sharing_post_id = post.id
  *   LEFT JOIN "user" ON "user".id = post.user_id
+ *   LEFT JOIN post AS sharing_post ON sharing_post.id = post.sharing_post_id
+ *   LEFT JOIN "user" AS sharing_user ON sharing_user.id = sharing_post.user_id
  * WHERE post.parent_post_id IS NULL
+ *   AND post.id < $2
+ * ORDER BY post.id DESC
  * LIMIT 20
  * ```
  */

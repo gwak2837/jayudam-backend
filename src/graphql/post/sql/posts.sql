@@ -5,14 +5,28 @@ SELECT post.id AS post__id,
   post.deletion_time AS post__deletion_time,
   post.content AS post__content,
   post.image_urls AS post__image_urls,
+  is_liked.user_id IS NOT NULL AS post__is_liked,
   "like".count AS post__like_count,
   "comment".count AS post__comment_count,
   shared.count AS post__shared_count,
   "user".id AS post__user__id,
   "user".name AS post__user__name,
   "user".nickname AS post__user__nickname,
-  "user".image_urls [1] AS post__user__image_url
+  "user".image_urls [1] AS post__user__image_url,
+  --
+  sharing_post.id AS sharing_post__id,
+  sharing_post.creation_time AS sharing_post__creation_time,
+  sharing_post.update_time AS sharing_post__update_time,
+  sharing_post.deletion_time AS sharing_post__deletion_time,
+  sharing_post.content AS sharing_post__content,
+  sharing_post.image_urls AS sharing_post__image_urls,
+  sharing_user.id AS sharing_post__user__id,
+  sharing_user.name AS sharing_post__user__name,
+  sharing_user.nickname AS sharing_post__user__nickname,
+  sharing_user.image_urls [1] AS sharing_post__user__image_url
 FROM post
+  LEFT JOIN post_x_user AS is_liked ON is_liked.post_id = post.id
+  AND is_liked.user_id = $1
   LEFT JOIN (
     SELECT post_id,
       COUNT(user_id)
@@ -32,5 +46,9 @@ FROM post
     GROUP BY sharing_post_id
   ) AS shared ON shared.sharing_post_id = post.id
   LEFT JOIN "user" ON "user".id = post.user_id
+  LEFT JOIN post AS sharing_post ON sharing_post.id = post.sharing_post_id
+  LEFT JOIN "user" AS sharing_user ON sharing_user.id = sharing_post.user_id
 WHERE post.parent_post_id IS NULL
+  AND post.id < $2
+ORDER BY post.id DESC
 LIMIT 20;
