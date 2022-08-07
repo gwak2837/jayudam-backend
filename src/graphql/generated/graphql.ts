@@ -104,6 +104,7 @@ export type Mutation = {
   logout?: Maybe<User>
   submitCert?: Maybe<Cert>
   takeAttendance?: Maybe<User>
+  toggleLikingPost?: Maybe<Post>
   unregister?: Maybe<User>
   updateCertAgreement: Scalars['JWT']
   updateMyCertAgreement?: Maybe<CertAgreement>
@@ -124,6 +125,10 @@ export type MutationDeletePostArgs = {
 
 export type MutationSubmitCertArgs = {
   input: CertCreation
+}
+
+export type MutationToggleLikingPostArgs = {
+  id: Scalars['ID']
 }
 
 export type MutationUpdateCertAgreementArgs = {
@@ -180,6 +185,7 @@ export type Post = {
   imageUrls?: Maybe<Array<Maybe<Scalars['URL']>>>
   isLiked: Scalars['Boolean']
   likeCount?: Maybe<Scalars['NonNegativeInt']>
+  parentAuthor?: Maybe<User>
   sharedCount?: Maybe<Scalars['NonNegativeInt']>
   sharingPost?: Maybe<Post>
   updateTime?: Maybe<Scalars['DateTime']>
@@ -563,6 +569,12 @@ export type MutationResolvers<
     RequireFields<MutationSubmitCertArgs, 'input'>
   >
   takeAttendance?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
+  toggleLikingPost?: Resolver<
+    Maybe<ResolversTypes['Post']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationToggleLikingPostArgs, 'id'>
+  >
   unregister?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   updateCertAgreement?: Resolver<
     ResolversTypes['JWT'],
@@ -632,6 +644,7 @@ export type PostResolvers<
   imageUrls?: Resolver<Maybe<Array<Maybe<ResolversTypes['URL']>>>, ParentType, ContextType>
   isLiked?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   likeCount?: Resolver<Maybe<ResolversTypes['NonNegativeInt']>, ParentType, ContextType>
+  parentAuthor?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   sharedCount?: Resolver<Maybe<ResolversTypes['NonNegativeInt']>, ParentType, ContextType>
   sharingPost?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>
   updateTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>

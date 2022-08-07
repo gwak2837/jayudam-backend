@@ -85,6 +85,7 @@ type Mutation {
   logout: User
   submitCert(input: CertCreation!): Cert
   takeAttendance: User
+  toggleLikingPost(id: ID!): Post
   unregister: User
   updateCertAgreement(input: CertAgreementInput!): JWT!
   updateMyCertAgreement(input: CertAgreementInput): CertAgreement
@@ -131,6 +132,7 @@ type Post {
   imageUrls: [URL]
   isLiked: Boolean!
   likeCount: NonNegativeInt
+  parentAuthor: User
   sharedCount: NonNegativeInt
   sharingPost: Post
   updateTime: DateTime

@@ -4,7 +4,7 @@ import * as certMutationResolver from './cert/Mutation'
 import * as certrObjectResolver from './cert/Object'
 import * as certQueryResolver from './cert/Query'
 import * as commonResolver from './common/common'
-// import * as postMutationResolver from './post/Mutation'
+import * as postMutationResolver from './post/Mutation'
 // import * as postObjectResolver from './post/Object'
 import * as postQueryResolver from './post/Query'
 import * as userMutationResolver from './user/Mutation'
@@ -16,7 +16,7 @@ const resolversArray = [
   certrObjectResolver,
   certQueryResolver,
   commonResolver,
-  // postMutationResolver,
+  postMutationResolver,
   // postObjectResolver,
   postQueryResolver,
   userMutationResolver,

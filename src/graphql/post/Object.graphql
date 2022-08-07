@@ -13,4 +13,5 @@ type Post {
   comments: [Post!]
   sharingPost: Post
   author: User
+  parentAuthor: User
 }
