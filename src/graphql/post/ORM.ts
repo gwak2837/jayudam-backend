@@ -55,15 +55,22 @@ export function postORM(postRows: Record<string, any>[]) {
   for (const postRow of postRows) {
     if (postRow.post__id) {
       if (!parentPost.comments) parentPost.comments = []
-      const postIndex = parentPost.comments.findIndex((comment) => comment.id === postRow.post__id)
+      const posts = parentPost.comments
+      const postIndex = posts.findIndex((comment) => comment.id === postRow.post__id)
 
       if (postIndex === -1) {
         parentPost.comments.push(getPost(postRow))
       } else if (postRow.child_post__id) {
-        const post = parentPost.comments[postIndex]
-        if (!post.comments) post.comments = []
+        const post = posts[postIndex]
 
-        post.comments.push(getChildPost(postRow))
+        if (!post.comments) post.comments = []
+        const childPostIndex = post.comments.findIndex(
+          (comment) => comment.id === postRow.child_post__id
+        )
+
+        if (childPostIndex === -1) {
+          post.comments.push(getChildPost(postRow))
+        }
       }
     }
   }
@@ -89,6 +96,12 @@ function getParentPost(postRow: Record<string, any>): Post {
         name: postRow.parent_post__user__name,
         nickname: postRow.parent_post__user__nickname,
         imageUrl: postRow.parent_post__user__image_url,
+      },
+    }),
+    ...(postRow.parent_post__grandparent_user__id && {
+      parentAuthor: {
+        id: postRow.parent_post__grandparent_user__id,
+        name: postRow.parent_post__grandparent_user__name,
       },
     }),
 
@@ -137,6 +150,12 @@ function getPost(postRow: Record<string, any>): Post {
         imageUrl: postRow.post__user__image_url,
       },
     }),
+    ...(postRow.parent_post__user__id && {
+      parentAuthor: {
+        id: postRow.parent_post__user__id,
+        name: postRow.parent_post__user__name,
+      },
+    }),
 
     ...(postRow.child_post__id && {
       comments: [getChildPost(postRow)],
@@ -162,6 +181,12 @@ function getChildPost(postRow: Record<string, any>): Post {
         name: postRow.child_post__user__name,
         nickname: postRow.child_post__user__nickname,
         imageUrl: postRow.child_post__user__image_url,
+      },
+    }),
+    ...(postRow.post__user__id && {
+      parentAuthor: {
+        id: postRow.post__user__id,
+        name: postRow.post__user__name,
       },
     }),
   }

@@ -25,6 +25,8 @@ SELECT parent_post.id AS parent_post__id,
   parent_user.name AS parent_post__user__name,
   parent_user.nickname AS parent_post__user__nickname,
   parent_user.image_urls [1] AS parent_post__user__image_url,
+  grandparent_user.id AS parent_post__grandparent_user__id,
+  grandparent_user.name AS parent_post__grandparent_user__name,
   --
   sharing_post.id AS sharing_post__id,
   sharing_post.creation_time AS sharing_post__creation_time,
@@ -60,7 +62,7 @@ SELECT parent_post.id AS parent_post__id,
   child_post.image_urls AS child_post__image_urls,
   child_is_liked.user_id IS NOT NULL AS child_post__is_liked,
   child_like.count AS child_post__like_count,
-  COUNT(grand_child_post.id) AS child_post__comment_count,
+  COUNT(grandchild_post.id) AS child_post__comment_count,
   child_shared.count AS child_post__shared_count,
   child_user.id AS child_post__user__id,
   child_user.name AS child_post__user__name,
@@ -72,6 +74,8 @@ FROM post AS parent_post
   LEFT JOIN "user" AS parent_user ON parent_user.id = parent_post.user_id
   LEFT JOIN post AS sharing_post ON sharing_post.id = parent_post.sharing_post_id
   LEFT JOIN "user" AS sharing_user ON sharing_user.id = sharing_post.user_id
+  LEFT JOIN post AS grandparent_post ON grandparent_post.id = parent_post.parent_post_id
+  LEFT JOIN "user" AS grandparent_user ON grandparent_user.id = grandparent_post.user_id
   LEFT JOIN post ON post.parent_post_id = parent_post.id
   LEFT JOIN post_x_user AS is_liked ON is_liked.post_id = post.id
   AND is_liked.user_id = $2
@@ -110,13 +114,14 @@ FROM post AS parent_post
     GROUP BY sharing_post_id
   ) AS child_shared ON child_shared.sharing_post_id = child_post.id
   LEFT JOIN "user" AS child_user ON child_user.id = child_post.user_id
-  LEFT JOIN post AS grand_child_post ON grand_child_post.parent_post_id = child_post.id
+  LEFT JOIN post AS grandchild_post ON grandchild_post.parent_post_id = child_post.id
 WHERE parent_post.id = $1
 GROUP BY parent_post.id,
   parent_is_liked.user_id,
   parent_user.id,
   sharing_post.id,
   sharing_user.id,
+  grandparent_user.id,
   --
   post.id,
   is_liked.user_id,
