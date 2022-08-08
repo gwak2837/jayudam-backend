@@ -195,6 +195,7 @@ export type PostCreationInput = {
   content: Scalars['NonEmptyString']
   imageUrls?: InputMaybe<Array<Scalars['URL']>>
   parentPostId?: InputMaybe<Scalars['ID']>
+  sharingPostId?: InputMaybe<Scalars['ID']>
 }
 
 export type PostUpdateInput = {
