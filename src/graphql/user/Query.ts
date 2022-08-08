@@ -73,7 +73,7 @@ export const Query: QueryResolvers<ApolloContext> = {
   },
 
   user: async (_, { name }, { userId }) => {
-    if (!name && !userId) throw new UserInputError('잘못된 요청입니다')
+    if (!name && !userId) throw new AuthenticationError('로그인 후 시도해주세요')
 
     if (name === 'undefined' || name === 'null')
       throw new UserInputError('허용되지 않는 닉네임입니다')

@@ -9,6 +9,7 @@ input PostCreationInput {
   content: NonEmptyString!
   imageUrls: [URL!]
   parentPostId: ID
+  sharingPostId: ID
 }
 
 input PostUpdateInput {
