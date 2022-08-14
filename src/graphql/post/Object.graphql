@@ -6,9 +6,11 @@ type Post {
   content: NonEmptyString
   imageUrls: [URL]
 
-  commentCount: NonNegativeInt
   isLiked: Boolean!
+  doIComment: Boolean!
+  doIShare: Boolean!
   likeCount: NonNegativeInt
+  commentCount: NonNegativeInt
   sharedCount: NonNegativeInt
   comments: [Post!]
   sharingPost: Post
