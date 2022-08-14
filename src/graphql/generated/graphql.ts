@@ -96,7 +96,7 @@ export enum Grade {
 
 export type Mutation = {
   __typename?: 'Mutation'
-  createPost?: Maybe<Post>
+  createPost?: Maybe<PostCreationResult>
   deletePost?: Maybe<Post>
   disconnectFromGoogleOAuth?: Maybe<Scalars['Boolean']>
   disconnectFromKakaoOAuth?: Maybe<Scalars['Boolean']>
@@ -181,6 +181,8 @@ export type Post = {
   content?: Maybe<Scalars['NonEmptyString']>
   creationTime?: Maybe<Scalars['DateTime']>
   deletionTime?: Maybe<Scalars['DateTime']>
+  doIComment: Scalars['Boolean']
+  doIShare: Scalars['Boolean']
   id: Scalars['ID']
   imageUrls?: Maybe<Array<Maybe<Scalars['URL']>>>
   isLiked: Scalars['Boolean']
@@ -196,6 +198,13 @@ export type PostCreationInput = {
   imageUrls?: InputMaybe<Array<Scalars['URL']>>
   parentPostId?: InputMaybe<Scalars['ID']>
   sharingPostId?: InputMaybe<Scalars['ID']>
+}
+
+export type PostCreationResult = {
+  __typename?: 'PostCreationResult'
+  newPost: Post
+  parentPost?: Maybe<Post>
+  sharedPost?: Maybe<Post>
 }
 
 export type PostUpdateInput = {
@@ -422,6 +431,7 @@ export type ResolversTypes = ResolversObject<{
   PositiveInt: ResolverTypeWrapper<Scalars['PositiveInt']>
   Post: ResolverTypeWrapper<Post>
   PostCreationInput: PostCreationInput
+  PostCreationResult: ResolverTypeWrapper<PostCreationResult>
   PostUpdateInput: PostUpdateInput
   Query: ResolverTypeWrapper<{}>
   ServiceAgreement: ResolverTypeWrapper<ServiceAgreement>
@@ -458,6 +468,7 @@ export type ResolversParentTypes = ResolversObject<{
   PositiveInt: Scalars['PositiveInt']
   Post: Post
   PostCreationInput: PostCreationInput
+  PostCreationResult: PostCreationResult
   PostUpdateInput: PostUpdateInput
   Query: {}
   ServiceAgreement: ServiceAgreement
@@ -548,7 +559,7 @@ export type MutationResolvers<
   ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
 > = ResolversObject<{
   createPost?: Resolver<
-    Maybe<ResolversTypes['Post']>,
+    Maybe<ResolversTypes['PostCreationResult']>,
     ParentType,
     ContextType,
     RequireFields<MutationCreatePostArgs, 'input'>
@@ -641,6 +652,8 @@ export type PostResolvers<
   content?: Resolver<Maybe<ResolversTypes['NonEmptyString']>, ParentType, ContextType>
   creationTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   deletionTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
+  doIComment?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  doIShare?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>
   imageUrls?: Resolver<Maybe<Array<Maybe<ResolversTypes['URL']>>>, ParentType, ContextType>
   isLiked?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
@@ -649,6 +662,16 @@ export type PostResolvers<
   sharedCount?: Resolver<Maybe<ResolversTypes['NonNegativeInt']>, ParentType, ContextType>
   sharingPost?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>
   updateTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
+}>
+
+export type PostCreationResultResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['PostCreationResult'] = ResolversParentTypes['PostCreationResult']
+> = ResolversObject<{
+  newPost?: Resolver<ResolversTypes['Post'], ParentType, ContextType>
+  parentPost?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>
+  sharedPost?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
@@ -764,6 +787,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   NonNegativeInt?: GraphQLScalarType
   PositiveInt?: GraphQLScalarType
   Post?: PostResolvers<ContextType>
+  PostCreationResult?: PostCreationResultResolvers<ContextType>
   Query?: QueryResolvers<ContextType>
   ServiceAgreement?: ServiceAgreementResolvers<ContextType>
   Town?: TownResolvers<ContextType>

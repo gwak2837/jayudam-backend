@@ -1,8 +1,14 @@
 type Mutation {
-  createPost(input: PostCreationInput!): Post
+  createPost(input: PostCreationInput!): PostCreationResult
   updatePost(input: PostUpdateInput!): Post
   deletePost(id: ID!): Post
   toggleLikingPost(id: ID!): Post
+}
+
+type PostCreationResult {
+  newPost: Post!
+  parentPost: Post
+  sharedPost: Post
 }
 
 input PostCreationInput {

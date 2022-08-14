@@ -167,7 +167,7 @@ CREATE TABLE post (
   creation_time timestamptz DEFAULT CURRENT_TIMESTAMP,
   update_time timestamptz,
   deletion_time timestamptz,
-  content varchar(500),
+  content varchar(200),
   image_urls text [],
   --
   parent_post_id bigint REFERENCES post ON DELETE
