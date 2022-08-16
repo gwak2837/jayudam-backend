@@ -6,6 +6,8 @@ SELECT parent_post.id AS parent_post__id,
   parent_post.content AS parent_post__content,
   parent_post.image_urls AS parent_post__image_urls,
   parent_is_liked.user_id IS NOT NULL AS parent_post__is_liked,
+  parent_do_i_comment.id IS NOT NULL AS parent_post__do_i_comment,
+  parent_do_i_share.id IS NOT NULL AS parent_post__do_i_share,
   (
     SELECT COUNT(user_id)
     FROM post_x_user
@@ -46,6 +48,8 @@ SELECT parent_post.id AS parent_post__id,
   post.content AS post__content,
   post.image_urls AS post__image_urls,
   is_liked.user_id IS NOT NULL AS post__is_liked,
+  do_i_comment.id IS NOT NULL AS post__do_i_comment,
+  do_i_share.id IS NOT NULL AS post__do_i_share,
   "like".count AS post__like_count,
   "comment".count AS post__comment_count,
   shared.count AS post__shared_count,
@@ -62,6 +66,8 @@ SELECT parent_post.id AS parent_post__id,
   child_post.image_urls AS child_post__image_urls,
   child_is_liked.user_id IS NOT NULL AS child_post__is_liked,
   child_like.count AS child_post__like_count,
+  child_do_i_comment.id IS NOT NULL AS child_post__do_i_comment,
+  child_do_i_share.id IS NOT NULL AS child_post__do_i_share,
   COUNT(grandchild_post.id) AS child_post__comment_count,
   child_shared.count AS child_post__shared_count,
   child_user.id AS child_post__user__id,
@@ -71,6 +77,15 @@ SELECT parent_post.id AS parent_post__id,
 FROM post AS parent_post
   LEFT JOIN post_x_user AS parent_is_liked ON parent_is_liked.post_id = parent_post.id
   AND parent_is_liked.user_id = $2
+  LEFT JOIN post AS parent_do_i_comment ON parent_do_i_comment.id = (
+    SELECT id
+    FROM post
+    WHERE post.parent_post_id = parent_post.id
+      AND user_id = $2
+    LIMIT 1
+  )
+  LEFT JOIN post AS parent_do_i_share ON parent_do_i_share.sharing_post_id = parent_post.id
+  AND parent_do_i_share.user_id = $2
   LEFT JOIN "user" AS parent_user ON parent_user.id = parent_post.user_id
   LEFT JOIN post AS sharing_post ON sharing_post.id = parent_post.sharing_post_id
   LEFT JOIN "user" AS sharing_user ON sharing_user.id = sharing_post.user_id
@@ -79,6 +94,15 @@ FROM post AS parent_post
   LEFT JOIN post ON post.parent_post_id = parent_post.id
   LEFT JOIN post_x_user AS is_liked ON is_liked.post_id = post.id
   AND is_liked.user_id = $2
+  LEFT JOIN post AS do_i_comment ON do_i_comment.id = (
+    SELECT id
+    FROM post AS p
+    WHERE p.parent_post_id = post.id
+      AND user_id = $2
+    LIMIT 1
+  )
+  LEFT JOIN post AS do_i_share ON do_i_share.sharing_post_id = post.id
+  AND do_i_share.user_id = $2
   LEFT JOIN (
     SELECT post_id,
       COUNT(user_id)
@@ -101,6 +125,15 @@ FROM post AS parent_post
   LEFT JOIN post AS child_post ON child_post.parent_post_id = post.id
   LEFT JOIN post_x_user AS child_is_liked ON child_is_liked.post_id = child_post.id
   AND child_is_liked.user_id = $2
+  LEFT JOIN post AS child_do_i_comment ON child_do_i_comment.id = (
+    SELECT id
+    FROM post
+    WHERE post.parent_post_id = child_post.id
+      AND user_id = $2
+    LIMIT 1
+  )
+  LEFT JOIN post AS child_do_i_share ON child_do_i_share.sharing_post_id = child_post.id
+  AND child_do_i_share.user_id = $2
   LEFT JOIN (
     SELECT post_id,
       COUNT(user_id)
@@ -118,6 +151,8 @@ FROM post AS parent_post
 WHERE parent_post.id = $1
 GROUP BY parent_post.id,
   parent_is_liked.user_id,
+  parent_do_i_comment.id,
+  parent_do_i_share.id,
   parent_user.id,
   sharing_post.id,
   sharing_user.id,
@@ -125,6 +160,8 @@ GROUP BY parent_post.id,
   --
   post.id,
   is_liked.user_id,
+  do_i_comment.id,
+  do_i_share.id,
   "like".count,
   "comment".count,
   shared.count,
@@ -132,6 +169,8 @@ GROUP BY parent_post.id,
   --
   child_post.id,
   child_is_liked.user_id,
+  child_do_i_comment.id,
+  child_do_i_share.id,
   child_like.count,
   child_shared.count,
   child_user.id

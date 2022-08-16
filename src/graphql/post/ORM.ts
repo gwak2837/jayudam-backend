@@ -12,8 +12,8 @@ export function postsORM(postRows: Record<string, any>[]) {
       content: postRow.post__content,
       imageUrls: postRow.post__image_urls,
       isLiked: postRow.post__is_liked,
-      doIComment: postRow.post__is_liked, //
-      doIShare: postRow.post__is_liked, //
+      doIComment: postRow.post__do_i_comment,
+      doIShare: postRow.post__do_i_share,
       likeCount: postRow.post__like_count ?? 0,
       commentCount: postRow.post__comment_count ?? 0,
       sharedCount: postRow.post__shared_count ?? 0,
@@ -89,8 +89,8 @@ function getParentPost(postRow: Record<string, any>): Post {
     content: postRow.parent_post__content,
     imageUrls: postRow.parent_post__image_urls,
     isLiked: postRow.parent_post__is_liked,
-    doIComment: postRow.post__is_liked, //
-    doIShare: postRow.post__is_liked, //
+    doIComment: postRow.parent_post__do_i_comment,
+    doIShare: postRow.parent_post__do_i_share,
     likeCount: postRow.parent_post__like_count ?? 0,
     commentCount: postRow.parent_post__comment_count ?? 0,
     sharedCount: postRow.parent_post__shared_count ?? 0,
@@ -143,8 +143,8 @@ function getPost(postRow: Record<string, any>): Post {
     content: postRow.post__content,
     imageUrls: postRow.post__image_urls,
     isLiked: postRow.post__is_liked,
-    doIComment: postRow.post__is_liked, //
-    doIShare: postRow.post__is_liked, //
+    doIComment: postRow.post__do_i_comment,
+    doIShare: postRow.post__do_i_share,
     likeCount: postRow.post__like_count ?? 0,
     commentCount: postRow.post__comment_count ?? 0,
     sharedCount: postRow.post__shared_count ?? 0,
@@ -178,8 +178,8 @@ function getChildPost(postRow: Record<string, any>): Post {
     content: postRow.child_post__content,
     imageUrls: postRow.child_post__image_urls,
     isLiked: postRow.child_post__is_liked,
-    doIComment: postRow.post__is_liked, //
-    doIShare: postRow.post__is_liked, //
+    doIComment: postRow.child_post__do_i_comment,
+    doIShare: postRow.child_post__do_i_share,
     likeCount: postRow.child_post__like_count ?? 0,
     commentCount: postRow.child_post__comment_count ?? 0,
     sharedCount: postRow.child_post__shared_count ?? 0,

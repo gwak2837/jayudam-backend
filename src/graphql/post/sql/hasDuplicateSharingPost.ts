@@ -15,7 +15,7 @@ export interface IHasDuplicateSharingPostQuery {
   result: IHasDuplicateSharingPostResult;
 }
 
-const hasDuplicateSharingPostIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id\nFROM post\nWHERE user_id = $1\n  AND parent_post_id = $2"};
+const hasDuplicateSharingPostIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id\nFROM post\nWHERE user_id = $1\n  AND sharing_post_id = $2"};
 
 /**
  * Query generated from SQL:
@@ -23,7 +23,7 @@ const hasDuplicateSharingPostIR: any = {"usedParamSet":{},"params":[],"statement
  * SELECT id
  * FROM post
  * WHERE user_id = $1
- *   AND parent_post_id = $2
+ *   AND sharing_post_id = $2
  * ```
  */
 export const hasDuplicateSharingPost = new PreparedQuery<IHasDuplicateSharingPostParams,IHasDuplicateSharingPostResult>(hasDuplicateSharingPostIR);

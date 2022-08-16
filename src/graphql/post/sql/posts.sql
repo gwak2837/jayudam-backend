@@ -6,6 +6,8 @@ SELECT post.id AS post__id,
   post.content AS post__content,
   post.image_urls AS post__image_urls,
   is_liked.user_id IS NOT NULL AS post__is_liked,
+  do_i_comment.id IS NOT NULL AS post__do_i_comment,
+  do_i_share.id IS NOT NULL AS post__do_i_share,
   "like".count AS post__like_count,
   "comment".count AS post__comment_count,
   shared.count AS post__shared_count,
@@ -27,6 +29,15 @@ SELECT post.id AS post__id,
 FROM post
   LEFT JOIN post_x_user AS is_liked ON is_liked.post_id = post.id
   AND is_liked.user_id = $1
+  LEFT JOIN post AS do_i_comment ON do_i_comment.id = (
+    SELECT id
+    FROM post AS p
+    WHERE p.parent_post_id = post.id
+      AND user_id = $1
+    LIMIT 1
+  )
+  LEFT JOIN post AS do_i_share ON do_i_share.sharing_post_id = post.id
+  AND do_i_share.user_id = $1
   LEFT JOIN (
     SELECT post_id,
       COUNT(user_id)
@@ -48,7 +59,7 @@ FROM post
   LEFT JOIN "user" ON "user".id = post.user_id
   LEFT JOIN post AS sharing_post ON sharing_post.id = post.sharing_post_id
   LEFT JOIN "user" AS sharing_user ON sharing_user.id = sharing_post.user_id
-WHERE post.parent_post_id IS NULL
+WHERE post.deletion_time IS NULL
   AND post.id < $2
 ORDER BY post.id DESC
 LIMIT 20;
