@@ -1,15 +1,18 @@
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
-import { MutationResolvers, Post } from '../generated/graphql'
+import { MutationResolvers, Post, PostCreationResult } from '../generated/graphql'
 import { IToggleLikingPostResult } from './sql/toggleLikingPost'
 import createPost from './sql/createPost.sql'
 import toggleLikingPost from './sql/toggleLikingPost.sql'
 import hasDuplicateSharingPost from './sql/hasDuplicateSharingPost.sql'
 import deletePost from './sql/deletePost.sql'
+import countComments from './sql/countComments.sql'
+import countSharingPosts from './sql/countSharingPosts.sql'
 import { ICreatePostResult } from './sql/createPost'
 import { IHasDuplicateSharingPostResult } from './sql/hasDuplicateSharingPost'
 import { IDeletePostResult } from './sql/deletePost'
+import { ICountCommentsResult } from './sql/countComments'
 
 export const Mutation: MutationResolvers<ApolloContext> = {
   createPost: async (_, { input }, { userId }) => {
@@ -38,7 +41,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
     ])
     const newPost = rows[0]
 
-    return {
+    const result: PostCreationResult = {
       newPost: {
         id: newPost.id,
         creationTime: newPost.creation_time,
@@ -56,19 +59,28 @@ export const Mutation: MutationResolvers<ApolloContext> = {
           id: userId,
         },
       } as Post,
-      ...(parentPostId && {
-        parentPost: {
-          id: parentPostId,
-          doIComment: true,
-        } as Post,
-      }),
-      ...(sharingPostId && {
-        sharedPost: {
-          id: sharingPostId,
-          doIShare: true,
-        } as Post,
-      }),
     }
+
+    if (parentPostId) {
+      const { rows } = await poolQuery<ICountCommentsResult>(countComments, [parentPostId])
+
+      result.parentPost = {
+        id: parentPostId,
+        doIComment: true,
+        commentCount: rows[0].count,
+      } as Post
+    } else if (sharingPostId) {
+      const { rows } = await poolQuery<ICountCommentsResult>(countSharingPosts, [sharingPostId])
+      console.log('👀 - rows', rows)
+
+      result.sharedPost = {
+        id: sharingPostId,
+        doIShare: true,
+        sharedCount: rows[0].count,
+      } as Post
+    }
+
+    return result
   },
 
   deletePost: async (_, { id }, { userId }) => {
