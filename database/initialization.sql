@@ -185,6 +185,7 @@ CREATE TABLE verification_history (
   user_id uuid REFERENCES "user" ON DELETE CASCADE
 );
 
+-- post에 있는 해시태그
 CREATE TABLE hashtag_x_post (
   hashtag_id bigint REFERENCES hashtag ON DELETE CASCADE,
   post_id bigint REFERENCES post ON DELETE CASCADE,
@@ -192,6 +193,7 @@ CREATE TABLE hashtag_x_post (
   PRIMARY KEY (hashtag_id, post_id)
 );
 
+-- bio에 있는 해시태그
 CREATE TABLE hashtag_x_user (
   hashtag_id bigint REFERENCES hashtag ON DELETE CASCADE,
   user_id uuid REFERENCES "user" ON DELETE CASCADE,
@@ -205,4 +207,18 @@ CREATE TABLE post_x_user (
   user_id uuid REFERENCES "user" ON DELETE CASCADE,
   --
   PRIMARY KEY (post_id, user_id)
+);
+
+CREATE TABLE post_x_mentioned_user (
+  post_id bigint REFERENCES post ON DELETE CASCADE,
+  user_id uuid REFERENCES "user" ON DELETE CASCADE,
+  --
+  PRIMARY KEY (post_id, user_id)
+);
+
+CREATE TABLE user_x_user (
+  leader_id uuid REFERENCES "user" ON DELETE CASCADE,
+  follower_id uuid REFERENCES "user" ON DELETE CASCADE,
+  --
+  PRIMARY KEY (leader_id, follower_id)
 );
