@@ -104,9 +104,11 @@ export const Mutation: MutationResolvers<ApolloContext> = {
 
     const { rows } = await poolQuery<IToggleLikingPostResult>(toggleLikingPost, [userId, id])
 
+    if (rows[0].like === null) throw new UserInputError('삭제된 글은 좋아할 수 없습니다')
+
     return {
       id,
-      isLiked: Boolean(rows[0].result),
+      isLiked: Boolean(rows[0].like),
       likeCount: Number(rows[0].like_count),
     } as Post
   },

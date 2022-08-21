@@ -6,8 +6,8 @@ export type IToggleLikingPostParams = void;
 
 /** 'ToggleLikingPost' return type */
 export interface IToggleLikingPostResult {
+  like: boolean | null;
   like_count: number | null;
-  result: boolean | null;
 }
 
 /** 'ToggleLikingPost' query type */
@@ -16,12 +16,12 @@ export interface IToggleLikingPostQuery {
   result: IToggleLikingPostResult;
 }
 
-const toggleLikingPostIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT result,\n  like_count\nFROM toggle_liking_post($1, $2)"};
+const toggleLikingPostIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT \"like\",\n  like_count\nFROM toggle_liking_post($1, $2)"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT result,
+ * SELECT "like",
  *   like_count
  * FROM toggle_liking_post($1, $2)
  * ```
