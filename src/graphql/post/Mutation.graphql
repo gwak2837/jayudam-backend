@@ -12,7 +12,7 @@ type PostCreationResult {
 }
 
 input PostCreationInput {
-  content: NonEmptyString!
+  content: String
   imageUrls: [URL!]
   parentPostId: ID
   sharingPostId: ID

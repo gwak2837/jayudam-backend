@@ -28,7 +28,6 @@ fi
 echo $PGURI_WITH_SSL
 
 do_not_print=$(PGOPTIONS='--client-min-messages=warning' psql -f database/initialization.sql $PGURI_WITH_SSL)
-do_not_print=$(PGOPTIONS='--client-min-messages=warning' psql -f database/functions.sql $PGURI_WITH_SSL)
 
 # 테이블 생성 순서와 동일하게
 public_tables=(

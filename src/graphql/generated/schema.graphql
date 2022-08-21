@@ -141,7 +141,7 @@ type Post {
 }
 
 input PostCreationInput {
-  content: NonEmptyString!
+  content: String
   imageUrls: [URL!]
   parentPostId: ID
   sharingPostId: ID
@@ -210,17 +210,23 @@ scalar UUID
 
 type User {
   bio: String
+  birthday: String
   birthyear: Int
   blockingEndTime: DateTime
   blockingStartTime: DateTime
   certAgreement: CertAgreement
   cherry: NonNegativeInt!
+  coverImageUrls: URL
   creationTime: DateTime!
   email: EmailAddress
+  followerCount: NonNegativeInt
+  followingCount: NonNegativeInt
   grade: Grade
   id: UUID!
   imageUrl: URL
   imageUrls: [URL!]
+  isPrivate: Boolean!
+  isSleeping: Boolean!
   isVerifiedBirthday: Boolean!
   isVerifiedBirthyear: Boolean!
   isVerifiedEmail: Boolean!

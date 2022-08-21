@@ -3,14 +3,20 @@ type User {
   creationTime: DateTime!
   bio: String
   birthyear: Int
+  birthday: String
   blockingStartTime: DateTime
   blockingEndTime: DateTime
   certAgreement: CertAgreement
+  coverImageUrls: URL
   cherry: NonNegativeInt!
   email: EmailAddress
+  followerCount: NonNegativeInt
+  followingCount: NonNegativeInt
   grade: Grade
   imageUrl: URL
   imageUrls: [URL!]
+  isPrivate: Boolean!
+  isSleeping: Boolean!
   isVerifiedBirthyear: Boolean!
   isVerifiedBirthday: Boolean!
   isVerifiedEmail: Boolean!
