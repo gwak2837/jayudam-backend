@@ -222,3 +222,169 @@ CREATE TABLE user_x_user (
   --
   PRIMARY KEY (leader_id, follower_id)
 );
+
+CREATE FUNCTION toggle_liking_post (
+  _user_id uuid,
+  _post_id bigint,
+  out "like" boolean,
+  out like_count int
+) LANGUAGE plpgsql AS $$ BEGIN
+/* 삭제된 글엔 좋아요 하기/취소 불가 */
+PERFORM
+FROM post
+WHERE id = post_id
+  AND deletion_time IS NOT NULL;
+
+IF found THEN RETURN;
+
+END IF;
+
+/* 좋아요 하기/취소 */
+PERFORM
+FROM post_x_user
+WHERE user_id = _user_id
+  AND post_id = _post_id;
+
+IF FOUND THEN
+DELETE FROM post_x_user
+WHERE user_id = _user_id
+  AND post_id = _post_id;
+
+"like" = FALSE;
+
+ELSE
+INSERT INTO post_x_user (user_id, post_id)
+VALUES (_user_id, _post_id);
+
+"like" = TRUE;
+
+END IF;
+
+/* 좋아요 개수 갱신 */
+SELECT COUNT(user_id) INTO like_count
+FROM post_x_user
+WHERE post_id = _post_id;
+
+END $$;
+
+CREATE FUNCTION create_post (
+  _content varchar(200),
+  _image_urls text [],
+  _parent_post_id bigint,
+  _shared_post_id bigint,
+  _user_id uuid,
+  out reason int,
+  out new_post record
+) LANGUAGE plpgsql AS $$ BEGIN
+/* 댓글 달기 검사 */
+IF _parent_post_id IS NOT NULL THEN PERFORM
+FROM post
+WHERE id = _parent_post_id
+  AND deletion_time IS NOT NULL;
+
+IF found THEN reason = 1;
+
+RETURN;
+
+END IF;
+
+END IF;
+
+/* 공유하기 검사 */
+IF _shared_post_id IS NOT NULL THEN PERFORM
+FROM post
+WHERE user_id = _user_id
+  AND sharing_post_id = _shared_post_id;
+
+IF found THEN reason = 2;
+
+RETURN;
+
+END IF;
+
+PERFORM
+FROM post
+WHERE id = _shared_post_id
+  AND deletion_time IS NOT NULL;
+
+IF found THEN reason = 3;
+
+RETURN;
+
+END IF;
+
+END IF;
+
+/* 글쓰기 */
+INSERT INTO post (
+    content,
+    image_urls,
+    parent_post_id,
+    sharing_post_id,
+    user_id
+  )
+VALUES (
+    _content,
+    _image_urls,
+    _parent_post_id,
+    _shared_post_id,
+    _user_id
+  )
+RETURNING id,
+  creation_time INTO new_post;
+
+END $$;
+
+CREATE FUNCTION delete_post (
+  post_id bigint,
+  user_id uuid,
+  out has_authorized boolean,
+  out is_deleted boolean,
+  out deletion_time timestamptz
+) LANGUAGE plpgsql AS $$ BEGIN PERFORM
+FROM post
+WHERE parent_post_id = delete_post.post_id
+  OR sharing_post_id = delete_post.post_id;
+
+/* 댓글이 있거나 공유됐을 경우 내용만 삭제 */
+IF FOUND THEN
+UPDATE post
+SET deletion_time = CURRENT_TIMESTAMP,
+  content = NULL,
+  image_urls = NULL,
+  parent_post_id = NULL,
+  sharing_post_id = NULL
+WHERE id = delete_post.post_id
+  AND post.user_id = delete_post.user_id
+  AND post.deletion_time IS NULL
+RETURNING post.deletion_time INTO delete_post.deletion_time;
+
+IF FOUND THEN has_authorized = TRUE;
+
+is_deleted = FALSE;
+
+ELSE has_authorized = FALSE;
+
+delete_post.deletion_time = NULL;
+
+END IF;
+
+/* 그외 경우 레코드를 삭제 */
+ELSE
+DELETE FROM post
+WHERE id = delete_post.post_id
+  AND post.user_id = delete_post.user_id;
+
+IF FOUND THEN has_authorized = TRUE;
+
+is_deleted = TRUE;
+
+delete_post.deletion_time = CURRENT_TIMESTAMP;
+
+ELSE has_authorized = FALSE;
+
+END IF;
+
+END IF;
+
+END $$;

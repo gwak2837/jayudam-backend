@@ -194,7 +194,7 @@ export type Post = {
 }
 
 export type PostCreationInput = {
-  content: Scalars['NonEmptyString']
+  content?: InputMaybe<Scalars['String']>
   imageUrls?: InputMaybe<Array<Scalars['URL']>>
   parentPostId?: InputMaybe<Scalars['ID']>
   sharingPostId?: InputMaybe<Scalars['ID']>
@@ -280,17 +280,23 @@ export type Town = {
 export type User = {
   __typename?: 'User'
   bio?: Maybe<Scalars['String']>
+  birthday?: Maybe<Scalars['String']>
   birthyear?: Maybe<Scalars['Int']>
   blockingEndTime?: Maybe<Scalars['DateTime']>
   blockingStartTime?: Maybe<Scalars['DateTime']>
   certAgreement?: Maybe<CertAgreement>
   cherry: Scalars['NonNegativeInt']
+  coverImageUrls?: Maybe<Scalars['URL']>
   creationTime: Scalars['DateTime']
   email?: Maybe<Scalars['EmailAddress']>
+  followerCount?: Maybe<Scalars['NonNegativeInt']>
+  followingCount?: Maybe<Scalars['NonNegativeInt']>
   grade?: Maybe<Grade>
   id: Scalars['UUID']
   imageUrl?: Maybe<Scalars['URL']>
   imageUrls?: Maybe<Array<Scalars['URL']>>
+  isPrivate: Scalars['Boolean']
+  isSleeping: Scalars['Boolean']
   isVerifiedBirthday: Scalars['Boolean']
   isVerifiedBirthyear: Scalars['Boolean']
   isVerifiedEmail: Scalars['Boolean']
@@ -744,17 +750,23 @@ export type UserResolvers<
   ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']
 > = ResolversObject<{
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  birthday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   birthyear?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
   blockingEndTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   blockingStartTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   certAgreement?: Resolver<Maybe<ResolversTypes['CertAgreement']>, ParentType, ContextType>
   cherry?: Resolver<ResolversTypes['NonNegativeInt'], ParentType, ContextType>
+  coverImageUrls?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>
   creationTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>
   email?: Resolver<Maybe<ResolversTypes['EmailAddress']>, ParentType, ContextType>
+  followerCount?: Resolver<Maybe<ResolversTypes['NonNegativeInt']>, ParentType, ContextType>
+  followingCount?: Resolver<Maybe<ResolversTypes['NonNegativeInt']>, ParentType, ContextType>
   grade?: Resolver<Maybe<ResolversTypes['Grade']>, ParentType, ContextType>
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>
   imageUrl?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>
   imageUrls?: Resolver<Maybe<Array<ResolversTypes['URL']>>, ParentType, ContextType>
+  isPrivate?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
+  isSleeping?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   isVerifiedBirthday?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   isVerifiedBirthyear?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   isVerifiedEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>

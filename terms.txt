@@ -11,7 +11,10 @@
 사용자 개인 정보 및 게시글 등은 남아 있지만 사용자 마이페이지에 정보가 나타나지 않는 상태
 
 following, follower
-mute
-block
-hide - 특정 친구에게만 보이게
+
+mute: client 단에서 보여주지 않는 것
+hide, mute - 나에게 보여주지 않는것
+
+block: 차단 server 단에서 보여주지 않는 것
+
 archive
