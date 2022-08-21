@@ -41,7 +41,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
     const result: PostCreationResult = {
       newPost: {
         id: newPost[0],
-        creationTime: newPost[1],
+        creationTime: new Date(newPost[1]),
         content,
         imageUrls,
         isLiked: false,
