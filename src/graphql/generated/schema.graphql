@@ -79,6 +79,7 @@ scalar Longitude
 type Mutation {
   createPost(input: PostCreationInput!): PostCreationResult
   deletePost(id: ID!): Post
+  deleteSharingPost(sharedPostId: ID!): PostDeletionResult
   disconnectFromGoogleOAuth: Boolean
   disconnectFromKakaoOAuth: Boolean
   disconnectFromNaverOAuth: Boolean
@@ -106,9 +107,7 @@ enum OAuthProvider {
   NAVER
 }
 
-"""
-기본값: 내림차순
-"""
+"""기본값: 내림차순"""
 enum OrderDirection {
   ASC
 }
@@ -153,6 +152,11 @@ type PostCreationResult {
   sharedPost: Post
 }
 
+type PostDeletionResult {
+  deletedPost: Post
+  sharedPost: Post
+}
+
 input PostUpdateInput {
   content: NonEmptyString!
   id: ID!
@@ -166,7 +170,7 @@ type Query {
   myCertAgreement: CertAgreement
   pendingCerts: [Cert!]
   post(id: ID!): Post
-  posts(lastId: ID): [Post!]
+  posts(lastId: ID, limit: PositiveInt): [Post!]
   sampleCertJWT: JWT!
   user(name: NonEmptyString): User
   verificationHistories: [Certs!]
