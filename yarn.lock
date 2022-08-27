@@ -2377,7 +2377,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pg@npm:^8.6.5":
+"@types/pg-copy-streams@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@types/pg-copy-streams@npm:1.2.1"
+  dependencies:
+    "@types/node": "*"
+    "@types/pg": "*"
+  checksum: a6887c4c68511c8f2e6398801ef9d4f6975665e160353e1e0016a003c43b9afb9563d1ec845059cf621b5480bf03e581afaff9f227312a64f13bced7d49a3d57
+  languageName: node
+  linkType: hard
+
+"@types/pg@npm:*, @types/pg@npm:^8.6.5":
   version: 8.6.5
   resolution: "@types/pg@npm:8.6.5"
   dependencies:
@@ -6537,6 +6547,7 @@ __metadata:
     "@types/multer": ^1.4.7
     "@types/node": ^18.6.2
     "@types/pg": ^8.6.5
+    "@types/pg-copy-streams": ^1.2.1
     "@types/sharp": ^0.30.4
     "@typescript-eslint/eslint-plugin": ^5.31.0
     "@typescript-eslint/parser": ^5.31.0
@@ -6567,6 +6578,7 @@ __metadata:
     node-fetch: ^3.2.9
     nodemon: ^2.0.19
     pg: ^8.7.3
+    pg-copy-streams: ^6.0.2
     prettier: ^2.7.0
     telegraf: ^4.8.6
     ts-jest: ^28.0.7
@@ -8163,6 +8175,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"obuf@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "obuf@npm:1.1.2"
+  checksum: 41a2ba310e7b6f6c3b905af82c275bf8854896e2e4c5752966d64cbcd2f599cfffd5932006bcf3b8b419dfdacebb3a3912d5d94e10f1d0acab59876c8757f27f
+  languageName: node
+  linkType: hard
+
 "on-finished@npm:2.4.1":
   version: 2.4.1
   resolution: "on-finished@npm:2.4.1"
@@ -8471,6 +8490,15 @@ __metadata:
   version: 2.5.0
   resolution: "pg-connection-string@npm:2.5.0"
   checksum: a6f3a068f7c9416a5b33a326811caf0dfaaee045c225b7c628b4c9b4e9a2b25bdd12a21e4c48940e1000ea223a4e608ca122d2ff3dd08c8b1db0fc9f5705133a
+  languageName: node
+  linkType: hard
+
+"pg-copy-streams@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "pg-copy-streams@npm:6.0.2"
+  dependencies:
+    obuf: ^1.1.2
+  checksum: 552f562ff9854b6601fcf8fa3c5e831d0f4d195216e6dba23cbd10bcd4a647322a339f42a7c4149e5947c8fd95df2d0c47726b8cd2d014b746bcf5f43f7d88f8
   languageName: node
   linkType: hard
 

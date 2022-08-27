@@ -23,8 +23,8 @@
     "pre-push": "yarn type",
     "generate": "graphql-codegen --config codegen.yml --errors-only",
     "pgtyped": "database/pgtyped.sh",
-    "export": "database/export.sh",
-    "import": "database/import.sh",
+    "export": "tsc --project database/tsconfig.json && node database/dist/export.js",
+    "import": "tsc --project database/tsconfig.json && node database/dist/import.js",
     "postinstall": "husky install"
   },
   "dependencies": {
@@ -59,6 +59,7 @@
     "@types/multer": "^1.4.7",
     "@types/node": "^18.6.2",
     "@types/pg": "^8.6.5",
+    "@types/pg-copy-streams": "^1.2.1",
     "@types/sharp": "^0.30.4",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
@@ -75,6 +76,7 @@
     "husky": "^8.0.1",
     "jest": "^28.1.3",
     "nodemon": "^2.0.19",
+    "pg-copy-streams": "^6.0.2",
     "prettier": "^2.7.0",
     "ts-jest": "^28.0.7",
     "typescript": "^4.7.4"
