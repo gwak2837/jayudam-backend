@@ -11,8 +11,8 @@ export const pool = new Pool({
   connectionString: PGURI,
 
   ...((PROJECT_ENV === 'cloud-dev' ||
-    PROJECT_ENV === 'cloud-production' ||
-    PROJECT_ENV === 'local-production') && {
+    PROJECT_ENV === 'cloud-prod' ||
+    PROJECT_ENV === 'local-prod') && {
     ssl: {
       ca: `-----BEGIN CERTIFICATE-----\n${POSTGRES_CA}\n-----END CERTIFICATE-----`,
       checkServerIdentity: () => {

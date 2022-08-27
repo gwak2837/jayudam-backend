@@ -38,7 +38,7 @@ if (!PROJECT_ENV) throw new Error('`PROJECT_ENV` 환경 변수를 설정해주�
 if (!JWT_SECRET_KEY) throw new Error('`JWT_SECRET_KEY` 환경 변수를 설정해주세요.')
 
 if (!PGURI) throw new Error('`PGURI` 환경 변수를 설정해주세요.')
-if (!POSTGRES_CA) throw new Error('`POSTGRES_CERTIFICATE_AUTHORITY` 환경 변수를 설정해주세요.')
+if (!POSTGRES_CA) throw new Error('`POSTGRES_CA` 환경 변수를 설정해주세요.')
 
 if (!REDIS_CONNECTION_STRING) throw new Error('`REDIS_CONNECTION_STRING` 환경 변수를 설정해주세요.')
 if (!REDIS_CA) throw new Error('`REDIS_CA` 환경 변수를 설정해주세요.')
