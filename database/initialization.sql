@@ -336,15 +336,15 @@ RETURNING id,
 END $$;
 
 CREATE FUNCTION delete_post (
-  post_id bigint,
-  user_id uuid,
+  _post_id bigint,
+  _user_id uuid,
   out has_authorized boolean,
   out is_deleted boolean,
   out deletion_time timestamptz
 ) LANGUAGE plpgsql AS $$ BEGIN PERFORM
 FROM post
-WHERE parent_post_id = delete_post.post_id
-  OR sharing_post_id = delete_post.post_id;
+WHERE parent_post_id = _post_id
+  OR sharing_post_id = _post_id;
 
 /* 댓글이 있거나 공유됐을 경우 내용만 삭제 */
 IF FOUND THEN
@@ -354,8 +354,8 @@ SET deletion_time = CURRENT_TIMESTAMP,
   image_urls = NULL,
   parent_post_id = NULL,
   sharing_post_id = NULL
-WHERE id = delete_post.post_id
-  AND post.user_id = delete_post.user_id
+WHERE id = _post_id
+  AND user_id = _user_id
   AND post.deletion_time IS NULL
 RETURNING post.deletion_time INTO delete_post.deletion_time;
 
@@ -372,8 +372,8 @@ END IF;
 /* 그외 경우 레코드를 삭제 */
 ELSE
 DELETE FROM post
-WHERE id = delete_post.post_id
-  AND post.user_id = delete_post.user_id;
+WHERE id = _post_id
+  AND user_id = _user_id;
 
 IF FOUND THEN has_authorized = TRUE;
 

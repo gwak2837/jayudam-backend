@@ -17,10 +17,11 @@ export const Query: QueryResolvers<ApolloContext> = {
     return postORM(rows)
   },
 
-  posts: async (_, { lastId }, { userId }) => {
+  posts: async (_, { lastId, limit }, { userId }) => {
     const { rows } = await poolQuery<IPostsResult>(posts, [
       userId,
       lastId ?? 9_223_372_036_854_775_807n,
+      limit,
     ])
 
     return postsORM(rows)

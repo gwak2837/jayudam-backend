@@ -62,4 +62,4 @@ FROM post
 WHERE post.deletion_time IS NULL
   AND post.id < $2
 ORDER BY post.id DESC
-LIMIT 20;
+LIMIT $3;

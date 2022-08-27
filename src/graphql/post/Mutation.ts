@@ -1,4 +1,4 @@
-import { AuthenticationError, UserInputError } from 'apollo-server-errors'
+import { AuthenticationError, ForbiddenError, UserInputError } from 'apollo-server-errors'
 import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
 import { MutationResolvers, Post, PostCreationResult } from '../generated/graphql'
@@ -9,10 +9,12 @@ import toggleLikingPost from './sql/toggleLikingPost.sql'
 import deletePost from './sql/deletePost.sql'
 import countComments from './sql/countComments.sql'
 import countSharingPosts from './sql/countSharingPosts.sql'
+import sharingPost from './sql/sharingPost.sql'
 import { ICreatePostResult } from './sql/createPost'
 
 import { IDeletePostResult } from './sql/deletePost'
 import { ICountCommentsResult } from './sql/countComments'
+import { ISharingPostResult } from './sql/sharingPost'
 
 export const Mutation: MutationResolvers<ApolloContext> = {
   createPost: async (_, { input }, { userId }) => {
@@ -82,12 +84,17 @@ export const Mutation: MutationResolvers<ApolloContext> = {
   deletePost: async (_, { id }, { userId }) => {
     if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
 
-    const { rowCount, rows } = await poolQuery<IDeletePostResult>(deletePost, [id, userId])
-
-    if (rowCount === 0)
-      throw new AuthenticationError('존재하지 않는 이야기거나 자신의 이야기가 아닙니다')
+    const { rows } = await poolQuery<IDeletePostResult>(deletePost, [id, userId])
 
     const deletedPost = rows[0]
+
+    if (!deletedPost.has_authorized)
+      throw new ForbiddenError('존재하지 않는 이야기거나 자신의 이야기가 아닙니다')
+
+    if (deletedPost.is_deleted)
+      return {
+        id,
+      } as Post
 
     return {
       id,
@@ -97,6 +104,53 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       sharingPost: null,
       parentAuthor: null,
     } as Post
+  },
+
+  deleteSharingPost: async (_, { sharedPostId }, { userId }) => {
+    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+
+    const { rowCount, rows: rows2 } = await poolQuery<ISharingPostResult>(sharingPost, [
+      sharedPostId,
+      userId,
+    ])
+
+    if (rowCount === 0)
+      throw new ForbiddenError('존재하지 않는 이야기거나 자신의 이야기가 아닙니다')
+
+    const { rows } = await poolQuery<IDeletePostResult>(deletePost, [rows2[0].id, userId])
+
+    const deletedPost = rows[0]
+
+    if (!deletedPost.has_authorized)
+      throw new ForbiddenError('존재하지 않는 이야기거나 자신의 이야기가 아닙니다')
+
+    const { rows: rows3 } = await poolQuery<ICountCommentsResult>(countSharingPosts, [sharedPostId])
+
+    const sharedPost = {
+      id: sharedPostId,
+      sharedCount: rows3[0].count,
+      doIShare: false,
+    } as Post
+
+    if (deletedPost.is_deleted)
+      return {
+        deletedPost: {
+          id: rows2[0].id,
+        } as Post,
+        sharedPost,
+      }
+
+    return {
+      deletedPost: {
+        id: rows2[0].id,
+        deletionTime: deletedPost.deletion_time,
+        content: null,
+        imageUrls: null,
+        sharingPost: null,
+        parentAuthor: null,
+      } as Post,
+      sharedPost,
+    }
   },
 
   toggleLikingPost: async (_, { id }, { userId }) => {
