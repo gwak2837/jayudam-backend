@@ -53,7 +53,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       Object.keys(certAgreement).length === 0 ? null : JSON.stringify(certAgreement),
     ])
 
-    return await signJWT({ qrcode: true, userId, ...certAgreement }, '1d')
+    return await signJWT({ qrcode: true, userId, ...certAgreement }, '15s')
   },
 
   submitCert: async (_, { input }, { userId }) => {
