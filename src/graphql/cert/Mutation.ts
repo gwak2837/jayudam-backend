@@ -2,7 +2,7 @@ import { AuthenticationError, ForbiddenError, UserInputError } from 'apollo-serv
 
 import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
-import { defaultDate, tomorrow } from '../../utils'
+import { defaultDate } from '../../utils'
 import { signJWT, verifyJWT } from '../../utils/jwt'
 import { Cert, MutationResolvers } from '../generated/graphql'
 import { ICertsResult } from './sql/certs'
@@ -15,13 +15,7 @@ import { IUseCherryResult } from './sql/useCherry'
 import useCherry from './sql/useCherry.sql'
 
 export const Mutation: MutationResolvers<ApolloContext> = {
-  submitCert: async (_, { input }, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
-
-    return {} as Cert
-  },
-
-  updateCertAgreement: async (_, { input }, { userId }) => {
+  certJWT: async (_, { input }, { userId }) => {
     if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
 
     const {
@@ -36,7 +30,10 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       sexualCrimeSince,
     } = input
 
-    if (stdTestSince > tomorrow || immunizationSince > tomorrow || sexualCrimeSince > tomorrow)
+    const future = new Date()
+    future.setHours(future.getHours() + 1)
+
+    if (stdTestSince > future || immunizationSince > future || sexualCrimeSince > future)
       throw new UserInputError('날짜를 미래로 지정할 수 없습니다')
 
     const certAgreement = {
@@ -46,10 +43,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       ...(showSTDTest && { showSTDTest }),
       ...(showSTDTest && stdTestSince && { stdTestSince }),
       ...(showImmunization && { showImmunization }),
-      ...(showImmunization &&
-        immunizationSince && {
-          immunizationSince,
-        }),
+      ...(showImmunization && immunizationSince && { immunizationSince }),
       ...(showSexualCrime && { showSexualCrime }),
       ...(showSexualCrime && sexualCrimeSince && { sexualCrimeSince }),
     }
@@ -60,6 +54,12 @@ export const Mutation: MutationResolvers<ApolloContext> = {
     ])
 
     return await signJWT({ qrcode: true, userId, ...certAgreement }, '1d')
+  },
+
+  submitCert: async (_, { input }, { userId }) => {
+    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+
+    return {} as Cert
   },
 
   verifyCertJWT: async (_, { jwt }, { userId }) => {

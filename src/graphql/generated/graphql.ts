@@ -96,6 +96,7 @@ export enum Grade {
 
 export type Mutation = {
   __typename?: 'Mutation'
+  certJWT: Scalars['JWT']
   createPost?: Maybe<PostCreationResult>
   deletePost?: Maybe<Post>
   deleteSharingPost?: Maybe<PostDeletionResult>
@@ -107,13 +108,16 @@ export type Mutation = {
   takeAttendance?: Maybe<User>
   toggleLikingPost?: Maybe<Post>
   unregister?: Maybe<User>
-  updateCertAgreement: Scalars['JWT']
   updateMyCertAgreement?: Maybe<CertAgreement>
   updatePost?: Maybe<Post>
   updateUser?: Maybe<User>
   verifyCertJWT?: Maybe<Certs>
   verifyTown?: Maybe<User>
   wakeUser?: Maybe<User>
+}
+
+export type MutationCertJwtArgs = {
+  input: CertAgreementInput
 }
 
 export type MutationCreatePostArgs = {
@@ -134,10 +138,6 @@ export type MutationSubmitCertArgs = {
 
 export type MutationToggleLikingPostArgs = {
   id: Scalars['ID']
-}
-
-export type MutationUpdateCertAgreementArgs = {
-  input: CertAgreementInput
 }
 
 export type MutationUpdateMyCertAgreementArgs = {
@@ -578,6 +578,12 @@ export type MutationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
 > = ResolversObject<{
+  certJWT?: Resolver<
+    ResolversTypes['JWT'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationCertJwtArgs, 'input'>
+  >
   createPost?: Resolver<
     Maybe<ResolversTypes['PostCreationResult']>,
     ParentType,
@@ -614,12 +620,6 @@ export type MutationResolvers<
     RequireFields<MutationToggleLikingPostArgs, 'id'>
   >
   unregister?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
-  updateCertAgreement?: Resolver<
-    ResolversTypes['JWT'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationUpdateCertAgreementArgs, 'input'>
-  >
   updateMyCertAgreement?: Resolver<
     Maybe<ResolversTypes['CertAgreement']>,
     ParentType,

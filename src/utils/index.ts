@@ -103,6 +103,3 @@ export function sha256(str: string) {
 }
 
 export const defaultDate = new Date(0)
-
-export const tomorrow = new Date()
-tomorrow.setDate(tomorrow.getDate() + 1)
