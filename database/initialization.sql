@@ -232,7 +232,7 @@ CREATE FUNCTION toggle_liking_post (
 /* 삭제된 글엔 좋아요 하기/취소 불가 */
 PERFORM
 FROM post
-WHERE id = post_id
+WHERE id = _post_id
   AND deletion_time IS NOT NULL;
 
 IF found THEN RETURN;
