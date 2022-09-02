@@ -124,9 +124,9 @@ scalar PositiveInt
 
 type Post {
   author: User
-  commentCount: NonNegativeInt
+  commentCount: Int
   comments: [Post!]
-  content: NonEmptyString
+  content: String
   creationTime: DateTime
   deletionTime: DateTime
   doIComment: Boolean!
@@ -134,9 +134,9 @@ type Post {
   id: ID!
   imageUrls: [URL]
   isLiked: Boolean!
-  likeCount: NonNegativeInt
+  likeCount: Int
   parentAuthor: User
-  sharedCount: NonNegativeInt
+  sharedCount: Int
   sharingPost: Post
   updateTime: DateTime
 }
@@ -183,7 +183,7 @@ type ServiceAgreement {
   adAgreementTime: DateTime
   locationAgreement: Boolean!
   locationAgreementTime: DateTime
-  personalDataStoringYear: NonNegativeInt!
+  personalDataStoringYear: Int!
   privacyAgreement: Boolean!
   privacyAgreementTime: DateTime
   termsAgreement: Boolean!
@@ -206,7 +206,7 @@ enum Sex {
 }
 
 type Town {
-  count: NonNegativeInt!
+  count: Int!
   name: String
 }
 
@@ -221,31 +221,33 @@ type User {
   blockingEndTime: DateTime
   blockingStartTime: DateTime
   certAgreement: CertAgreement
-  cherry: NonNegativeInt!
-  coverImageUrls: URL
-  creationTime: DateTime!
-  email: EmailAddress
-  followerCount: NonNegativeInt
-  followingCount: NonNegativeInt
+  cherry: Int
+  coverImageUrls: [String!]
+  creationTime: DateTime
+  email: String
+  followerCount: Int
+  followingCount: Int
   grade: Grade
   id: UUID!
-  imageUrl: URL
-  imageUrls: [URL!]
-  isPrivate: Boolean!
-  isSleeping: Boolean!
-  isVerifiedBirthday: Boolean!
-  isVerifiedBirthyear: Boolean!
-  isVerifiedEmail: Boolean!
-  isVerifiedName: Boolean!
-  isVerifiedPhoneNumber: Boolean!
-  isVerifiedSex: Boolean!
-  legalName: NonEmptyString
+  imageUrl: String
+  imageUrls: [String!]
+  isPrivate: Boolean
+  isSleeping: Boolean
+  isVerifiedBirthday: Boolean
+  isVerifiedBirthyear: Boolean
+  isVerifiedEmail: Boolean
+  isVerifiedName: Boolean
+  isVerifiedPhoneNumber: Boolean
+  isVerifiedSex: Boolean
+  legalName: String
   logoutTime: DateTime
-  name: NonEmptyString
+  name: String
   nickname: String
   oAuthProviders: [OAuthProvider!]
+  postCount: Int
   serviceAgreement: ServiceAgreement
   sex: Sex
+  sleepingTime: DateTime
   towns: [Town!]
 }
 

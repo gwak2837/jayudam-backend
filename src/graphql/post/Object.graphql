@@ -3,15 +3,15 @@ type Post {
   creationTime: DateTime
   updateTime: DateTime
   deletionTime: DateTime
-  content: NonEmptyString
+  content: String
   imageUrls: [URL]
 
   isLiked: Boolean!
   doIComment: Boolean!
   doIShare: Boolean!
-  likeCount: NonNegativeInt
-  commentCount: NonNegativeInt
-  sharedCount: NonNegativeInt
+  likeCount: Int
+  commentCount: Int
+  sharedCount: Int
   comments: [Post!]
   sharingPost: Post
   author: User
