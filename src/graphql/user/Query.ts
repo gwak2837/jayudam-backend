@@ -82,42 +82,108 @@ export const Query: QueryResolvers<ApolloContext> = {
       const { rowCount, rows } = await poolQuery<IUserByNameResult>(userByName, [name])
       if (rowCount === 0) throw new NotFoundError(`\`${name}\` 사용자를 찾을 수 없습니다`)
 
-      return {
-        bio: rows[0].bio,
-        blockingStartTime: rows[0].blocking_start_time,
-        blockingEndTime: rows[0].blocking_end_time,
-        grade: rows[0].grade,
-        imageUrls: rows[0].image_urls,
-        isVerifiedSex: rows[0].is_verified_sex,
-        name: rows[0].name,
-        nickname: rows[0].nickname,
-        sex: rows[0].sex,
-        towns: [
-          { count: rows[0].town1_count, name: rows[0].town1_name },
-          { count: rows[0].town2_count, name: rows[0].town2_name },
-        ],
-      } as User
-    } else {
-      const { rowCount, rows } = await poolQuery<IMeResult>(me, [userId])
-      if (rowCount === 0) throw new NotFoundError('탈퇴했거나 존재하지 않는 사용자입니다')
+      const otherUser = rows[0]
+
+      if (otherUser.is_private) {
+        return {
+          id: otherUser.id,
+          creationTime: otherUser.creation_time,
+          bio: otherUser.bio,
+          imageUrls: otherUser.image_urls,
+          isPrivate: otherUser.is_private,
+          name: otherUser.name,
+          nickname: otherUser.nickname,
+          postCount: otherUser.post_count,
+        } as User
+      }
+
+      if (otherUser.sleeping_time) {
+        return {
+          id: otherUser.id,
+          creationTime: otherUser.creation_time,
+          bio: otherUser.bio,
+          imageUrls: otherUser.image_urls,
+          name: otherUser.name,
+          nickname: otherUser.nickname,
+          postCount: otherUser.post_count,
+        } as User
+      }
+
+      if (otherUser.blocking_start_time) {
+        return {
+          id: otherUser.id,
+          creationTime: otherUser.creation_time,
+          imageUrls: otherUser.image_urls,
+          name: otherUser.name,
+          nickname: otherUser.nickname,
+        }
+      }
 
       return {
-        id: rows[0].id,
-        bio: rows[0].bio,
-        blockingStartTime: rows[0].blocking_start_time,
-        blockingEndTime: rows[0].blocking_end_time,
-        cherry: rows[0].cherry,
-        grade: rows[0].grade,
-        imageUrls: rows[0].image_urls,
-        isVerifiedSex: rows[0].is_verified_sex,
-        name: rows[0].name,
-        nickname: rows[0].nickname,
-        sex: rows[0].sex,
+        id: otherUser.id,
+        creationTime: otherUser.creation_time,
+        bio: otherUser.bio,
+        blockingStartTime: otherUser.blocking_start_time,
+        blockingEndTime: otherUser.blocking_end_time,
+        grade: otherUser.grade,
+        imageUrls: otherUser.image_urls,
+        isPrivate: otherUser.is_private,
+        isVerifiedSex: otherUser.is_verified_sex,
+        name: otherUser.name,
+        nickname: otherUser.nickname,
+        sex: otherUser.sex,
         towns: [
-          { count: rows[0].town1_count, name: rows[0].town1_name },
-          { count: rows[0].town2_count, name: rows[0].town2_name },
+          { count: otherUser.town1_count, name: otherUser.town1_name },
+          { count: otherUser.town2_count, name: otherUser.town2_name },
         ],
       } as User
     }
+
+    const { rowCount, rows } = await poolQuery<IMeResult>(me, [userId])
+    if (rowCount === 0) throw new NotFoundError('탈퇴했거나 존재하지 않는 사용자입니다')
+
+    const myInfo = rows[0]
+
+    if (myInfo.sleeping_time) {
+      return {
+        id: myInfo.id,
+        creationTime: myInfo.creation_time,
+        bio: myInfo.bio,
+        imageUrls: myInfo.image_urls,
+        name: myInfo.name,
+        nickname: myInfo.nickname,
+        postCount: myInfo.post_count,
+      } as User
+    }
+
+    if (myInfo.blocking_start_time) {
+      return {
+        id: myInfo.id,
+        creationTime: myInfo.creation_time,
+        imageUrls: myInfo.image_urls,
+        name: myInfo.name,
+        nickname: myInfo.nickname,
+      }
+    }
+
+    return {
+      id: myInfo.id,
+      creationTime: myInfo.creation_time,
+      bio: myInfo.bio,
+      blockingStartTime: myInfo.blocking_start_time,
+      blockingEndTime: myInfo.blocking_end_time,
+      cherry: myInfo.cherry,
+      grade: myInfo.grade,
+      imageUrls: myInfo.image_urls,
+      isPrivate: myInfo.is_private,
+      isVerifiedSex: myInfo.is_verified_sex,
+      name: myInfo.name,
+      nickname: myInfo.nickname,
+      sex: myInfo.sex,
+      towns: [
+        { count: myInfo.town1_count, name: myInfo.town1_name },
+        { count: myInfo.town2_count, name: myInfo.town2_name },
+      ],
+    } as User
   },
 }
