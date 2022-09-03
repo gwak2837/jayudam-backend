@@ -228,6 +228,7 @@ export type Query = {
   __typename?: 'Query'
   auth?: Maybe<User>
   certs?: Maybe<Certs>
+  comments?: Maybe<Array<Post>>
   isUniqueUsername: Scalars['Boolean']
   myCertAgreement?: Maybe<CertAgreement>
   pendingCerts?: Maybe<Array<Cert>>
@@ -236,6 +237,12 @@ export type Query = {
   sampleCertJWT: Scalars['JWT']
   user?: Maybe<User>
   verificationHistories?: Maybe<Array<Certs>>
+}
+
+export type QueryCommentsArgs = {
+  lastId?: InputMaybe<Scalars['ID']>
+  limit?: InputMaybe<Scalars['PositiveInt']>
+  parentId: Scalars['ID']
 }
 
 export type QueryIsUniqueUsernameArgs = {
@@ -718,6 +725,12 @@ export type QueryResolvers<
 > = ResolversObject<{
   auth?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   certs?: Resolver<Maybe<ResolversTypes['Certs']>, ParentType, ContextType>
+  comments?: Resolver<
+    Maybe<Array<ResolversTypes['Post']>>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryCommentsArgs, 'parentId'>
+  >
   isUniqueUsername?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,

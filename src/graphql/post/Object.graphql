@@ -6,14 +6,15 @@ type Post {
   content: String
   imageUrls: [URL]
 
+  # from other table
   isLiked: Boolean!
   doIComment: Boolean!
   doIShare: Boolean!
   likeCount: Int
   commentCount: Int
   sharedCount: Int
-  comments: [Post!]
-  sharingPost: Post
   author: User
+  sharingPost: Post
   parentAuthor: User
+  comments: [Post!]
 }
