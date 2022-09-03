@@ -1,4 +1,5 @@
 type Query {
-  posts(lastId: ID, limit: PositiveInt): [Post!]
+  comments(parentId: ID!, lastId: ID, limit: PositiveInt): [Post!]
   post(id: ID!): Post
+  posts(lastId: ID, limit: PositiveInt): [Post!]
 }

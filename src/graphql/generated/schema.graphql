@@ -168,6 +168,7 @@ input PostUpdateInput {
 type Query {
   auth: User
   certs: Certs
+  comments(lastId: ID, limit: PositiveInt, parentId: ID!): [Post!]
   isUniqueUsername(username: NonEmptyString!): Boolean!
   myCertAgreement: CertAgreement
   pendingCerts: [Cert!]
