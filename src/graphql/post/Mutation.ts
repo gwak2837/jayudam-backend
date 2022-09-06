@@ -1,20 +1,19 @@
 import { AuthenticationError, ForbiddenError, UserInputError } from 'apollo-server-errors'
+
 import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
 import { MutationResolvers, Post, PostCreationResult } from '../generated/graphql'
-import { IToggleLikingPostResult } from './sql/toggleLikingPost'
-import createPost from './sql/createPost.sql'
-import toggleLikingPost from './sql/toggleLikingPost.sql'
-
-import deletePost from './sql/deletePost.sql'
+import { ICountCommentsResult } from './sql/countComments'
 import countComments from './sql/countComments.sql'
 import countSharingPosts from './sql/countSharingPosts.sql'
-import sharingPost from './sql/sharingPost.sql'
 import { ICreatePostResult } from './sql/createPost'
-
+import createPost from './sql/createPost.sql'
 import { IDeletePostResult } from './sql/deletePost'
-import { ICountCommentsResult } from './sql/countComments'
+import deletePost from './sql/deletePost.sql'
 import { ISharingPostResult } from './sql/sharingPost'
+import sharingPost from './sql/sharingPost.sql'
+import { IToggleLikingPostResult } from './sql/toggleLikingPost'
+import toggleLikingPost from './sql/toggleLikingPost.sql'
 
 export const Mutation: MutationResolvers<ApolloContext> = {
   createPost: async (_, { input }, { userId }) => {

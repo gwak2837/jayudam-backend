@@ -1,30 +1,35 @@
 /** Types generated for queries found in "src/graphql/cert/sql/certs.sql" */
-import { PreparedQuery } from '@pgtyped/query';
+import { PreparedQuery } from '@pgtyped/query'
 
 /** 'Certs' parameters type */
-export type ICertsParams = void;
+export type ICertsParams = void
 
 /** 'Certs' return type */
 export interface ICertsResult {
-  birthdate: Date;
-  content: string;
-  effective_date: Date;
-  id: string;
-  issue_date: Date;
-  legal_name: string;
-  location: string;
-  name: string;
-  sex: number;
-  type: number;
+  birthdate: Date
+  content: string
+  effective_date: Date
+  id: string
+  issue_date: Date
+  legal_name: string
+  location: string
+  name: string
+  sex: number
+  type: number
 }
 
 /** 'Certs' query type */
 export interface ICertsQuery {
-  params: ICertsParams;
-  result: ICertsResult;
+  params: ICertsParams
+  result: ICertsResult
 }
 
-const certsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  birthdate,\n  content,\n  effective_date,\n  issue_date,\n  location,\n  legal_name,\n  name,\n  sex,\n  \"type\"\nFROM cert\nWHERE user_id = $1\n  AND \"type\" = ANY ($2)\n  AND (\n    (\n      \"type\" = 0\n      OR \"type\" = 1\n    )\n    AND effective_date > $3\n    OR \"type\" = 2\n    AND effective_date > $4\n    OR \"type\" = 3\n    AND effective_date > $5\n  )\nORDER BY effective_date DESC"};
+const certsIR: any = {
+  usedParamSet: {},
+  params: [],
+  statement:
+    'SELECT id,\n  birthdate,\n  content,\n  effective_date,\n  issue_date,\n  location,\n  legal_name,\n  name,\n  sex,\n  "type"\nFROM cert\nWHERE user_id = $1\n  AND "type" = ANY ($2)\n  AND (\n    (\n      "type" = 0\n      OR "type" = 1\n    )\n    AND effective_date > $3\n    OR "type" = 2\n    AND effective_date > $4\n    OR "type" = 3\n    AND effective_date > $5\n  )\nORDER BY effective_date DESC',
+}
 
 /**
  * Query generated from SQL:
@@ -56,6 +61,4 @@ const certsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  b
  * ORDER BY effective_date DESC
  * ```
  */
-export const certs = new PreparedQuery<ICertsParams,ICertsResult>(certsIR);
-
-
+export const certs = new PreparedQuery<ICertsParams, ICertsResult>(certsIR)

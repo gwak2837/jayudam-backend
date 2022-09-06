@@ -1,21 +1,26 @@
 /** Types generated for queries found in "src/graphql/user/sql/deleteUserInfo.sql" */
-import { PreparedQuery } from '@pgtyped/query';
+import { PreparedQuery } from '@pgtyped/query'
 
 /** 'DeleteUserInfo' parameters type */
-export type IDeleteUserInfoParams = void;
+export type IDeleteUserInfoParams = void
 
 /** 'DeleteUserInfo' return type */
 export interface IDeleteUserInfoResult {
-  blocking_start_time: Date | null;
+  blocking_start_time: Date | null
 }
 
 /** 'DeleteUserInfo' query type */
 export interface IDeleteUserInfoQuery {
-  params: IDeleteUserInfoParams;
-  result: IDeleteUserInfoResult;
+  params: IDeleteUserInfoParams
+  result: IDeleteUserInfoResult
 }
 
-const deleteUserInfoIR: any = {"usedParamSet":{},"params":[],"statement":"UPDATE \"user\"\nSET creation_time = NULL,\n  update_time = NULL,\n  bio = NULL,\n  birthyear = NULL,\n  birthday = NULL,\n  cert_agreement = NULL,\n  cherry = 0,\n  deactivation_time = NULL,\n  email = NULL,\n  grade = NULL,\n  image_urls = NULL,\n  invitation_code = NULL,\n  is_verified_birthyear = FALSE,\n  is_verified_birthday = FALSE,\n  is_verified_email = FALSE,\n  is_verified_legal_name = FALSE,\n  is_verified_phone_number = FALSE,\n  last_attendance = NULL,\n  name = NULL,\n  nickname = NULL,\n  personal_data_storing_year = 1,\n  phone_number = NULL,\n  sex = NULL,\n  sleeping_time = NULL,\n  town1_count = 0,\n  town1_name = NULL,\n  town2_count = 0,\n  town2_name = NULL\nWHERE id = $1\nRETURNING blocking_start_time"};
+const deleteUserInfoIR: any = {
+  usedParamSet: {},
+  params: [],
+  statement:
+    'UPDATE "user"\nSET creation_time = NULL,\n  update_time = NULL,\n  bio = NULL,\n  birthyear = NULL,\n  birthday = NULL,\n  cert_agreement = NULL,\n  cherry = 0,\n  deactivation_time = NULL,\n  email = NULL,\n  grade = NULL,\n  image_urls = NULL,\n  invitation_code = NULL,\n  is_verified_birthyear = FALSE,\n  is_verified_birthday = FALSE,\n  is_verified_email = FALSE,\n  is_verified_legal_name = FALSE,\n  is_verified_phone_number = FALSE,\n  last_attendance = NULL,\n  name = NULL,\n  nickname = NULL,\n  personal_data_storing_year = 1,\n  phone_number = NULL,\n  sex = NULL,\n  sleeping_time = NULL,\n  town1_count = 0,\n  town1_name = NULL,\n  town2_count = 0,\n  town2_name = NULL\nWHERE id = $1\nRETURNING blocking_start_time',
+}
 
 /**
  * Query generated from SQL:
@@ -53,6 +58,6 @@ const deleteUserInfoIR: any = {"usedParamSet":{},"params":[],"statement":"UPDATE
  * RETURNING blocking_start_time
  * ```
  */
-export const deleteUserInfo = new PreparedQuery<IDeleteUserInfoParams,IDeleteUserInfoResult>(deleteUserInfoIR);
-
-
+export const deleteUserInfo = new PreparedQuery<IDeleteUserInfoParams, IDeleteUserInfoResult>(
+  deleteUserInfoIR
+)
