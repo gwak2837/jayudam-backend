@@ -1,25 +1,21 @@
 /** Types generated for queries found in "src/graphql/post/sql/countComments.sql" */
-import { PreparedQuery } from '@pgtyped/query'
+import { PreparedQuery } from '@pgtyped/query';
 
 /** 'CountComments' parameters type */
-export type ICountCommentsParams = void
+export type ICountCommentsParams = void;
 
 /** 'CountComments' return type */
 export interface ICountCommentsResult {
-  count: string | null
+  count: string | null;
 }
 
 /** 'CountComments' query type */
 export interface ICountCommentsQuery {
-  params: ICountCommentsParams
-  result: ICountCommentsResult
+  params: ICountCommentsParams;
+  result: ICountCommentsResult;
 }
 
-const countCommentsIR: any = {
-  usedParamSet: {},
-  params: [],
-  statement: 'SELECT COUNT(id)\nFROM post\nWHERE parent_post_id = $1',
-}
+const countCommentsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT COUNT(id)\nFROM post\nWHERE parent_post_id = $1"};
 
 /**
  * Query generated from SQL:
@@ -29,6 +25,6 @@ const countCommentsIR: any = {
  * WHERE parent_post_id = $1
  * ```
  */
-export const countComments = new PreparedQuery<ICountCommentsParams, ICountCommentsResult>(
-  countCommentsIR
-)
+export const countComments = new PreparedQuery<ICountCommentsParams,ICountCommentsResult>(countCommentsIR);
+
+

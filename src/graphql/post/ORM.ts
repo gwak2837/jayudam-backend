@@ -60,6 +60,26 @@ export function postORM(postRow: Record<string, any>): Post {
       },
     }),
 
+    ...(postRow.parent_post__id && {
+      parentPost: {
+        id: postRow.parent_post__id,
+        creationTime: postRow.parent_post__creation_time,
+        updateTime: postRow.parent_post__update_time,
+        deletionTime: postRow.parent_post__deletion_time,
+        content: postRow.parent_post__content,
+        imageUrls: postRow.parent_post__image_urls,
+
+        ...(postRow.parent_post__user__id && {
+          author: {
+            id: postRow.parent_post__user__id,
+            name: postRow.parent_post__user__name,
+            nickname: postRow.parent_post__user__nickname,
+            imageUrl: postRow.parent_post__user__image_url,
+          },
+        }),
+      },
+    }),
+
     ...(postRow.sharing_post__id && {
       sharingPost: {
         id: postRow.sharing_post__id,
@@ -77,13 +97,6 @@ export function postORM(postRow: Record<string, any>): Post {
             imageUrl: postRow.sharing_post__user__image_url,
           },
         }),
-      },
-    }),
-
-    ...(postRow.parent_post__user__id && {
-      parentAuthor: {
-        id: postRow.parent_post__user__id,
-        name: postRow.parent_post__user__name,
       },
     }),
 

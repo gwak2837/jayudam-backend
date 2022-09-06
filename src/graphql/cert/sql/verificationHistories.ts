@@ -1,28 +1,23 @@
 /** Types generated for queries found in "src/graphql/cert/sql/verificationHistories.sql" */
-import { PreparedQuery } from '@pgtyped/query'
+import { PreparedQuery } from '@pgtyped/query';
 
 /** 'VerificationHistories' parameters type */
-export type IVerificationHistoriesParams = void
+export type IVerificationHistoriesParams = void;
 
 /** 'VerificationHistories' return type */
 export interface IVerificationHistoriesResult {
-  content: string
-  creation_time: Date
-  id: string
+  content: string;
+  creation_time: Date;
+  id: string;
 }
 
 /** 'VerificationHistories' query type */
 export interface IVerificationHistoriesQuery {
-  params: IVerificationHistoriesParams
-  result: IVerificationHistoriesResult
+  params: IVerificationHistoriesParams;
+  result: IVerificationHistoriesResult;
 }
 
-const verificationHistoriesIR: any = {
-  usedParamSet: {},
-  params: [],
-  statement:
-    'SELECT id,\n  creation_time,\n  content\nFROM verification_history\nWHERE user_id = $1',
-}
+const verificationHistoriesIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT id,\n  creation_time,\n  content\nFROM verification_history\nWHERE user_id = $1"};
 
 /**
  * Query generated from SQL:
@@ -34,7 +29,6 @@ const verificationHistoriesIR: any = {
  * WHERE user_id = $1
  * ```
  */
-export const verificationHistories = new PreparedQuery<
-  IVerificationHistoriesParams,
-  IVerificationHistoriesResult
->(verificationHistoriesIR)
+export const verificationHistories = new PreparedQuery<IVerificationHistoriesParams,IVerificationHistoriesResult>(verificationHistoriesIR);
+
+

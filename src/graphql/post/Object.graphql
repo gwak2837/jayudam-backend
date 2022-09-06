@@ -14,7 +14,7 @@ type Post {
   commentCount: Int
   sharedCount: Int
   author: User
+  parentPost: Post
   sharingPost: Post
-  parentAuthor: User
   comments: [Post!]
 }
