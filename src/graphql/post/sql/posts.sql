@@ -16,6 +16,7 @@ SELECT post.id AS post__id,
   "user".nickname AS post__user__nickname,
   "user".image_urls [1] AS post__user__image_url,
   --
+  parent_post.id AS parent_post__id,
   parent_user.id AS parent_post__user__id,
   parent_user.name AS parent_post__user__name,
   --

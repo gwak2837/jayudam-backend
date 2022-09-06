@@ -192,7 +192,7 @@ export type Post = {
   imageUrls?: Maybe<Array<Maybe<Scalars['URL']>>>
   isLiked: Scalars['Boolean']
   likeCount?: Maybe<Scalars['Int']>
-  parentAuthor?: Maybe<User>
+  parentPost?: Maybe<Post>
   sharedCount?: Maybe<Scalars['Int']>
   sharingPost?: Maybe<Post>
   updateTime?: Maybe<Scalars['DateTime']>
@@ -693,7 +693,7 @@ export type PostResolvers<
   imageUrls?: Resolver<Maybe<Array<Maybe<ResolversTypes['URL']>>>, ParentType, ContextType>
   isLiked?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   likeCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
-  parentAuthor?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
+  parentPost?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>
   sharedCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
   sharingPost?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>
   updateTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>

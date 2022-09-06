@@ -1,27 +1,22 @@
 /** Types generated for queries found in "src/graphql/cert/sql/createVerificationHistory.sql" */
-import { PreparedQuery } from '@pgtyped/query'
+import { PreparedQuery } from '@pgtyped/query';
 
 /** 'CreateVerificationHistory' parameters type */
-export type ICreateVerificationHistoryParams = void
+export type ICreateVerificationHistoryParams = void;
 
 /** 'CreateVerificationHistory' return type */
 export interface ICreateVerificationHistoryResult {
-  creation_time: Date
-  id: string
+  creation_time: Date;
+  id: string;
 }
 
 /** 'CreateVerificationHistory' query type */
 export interface ICreateVerificationHistoryQuery {
-  params: ICreateVerificationHistoryParams
-  result: ICreateVerificationHistoryResult
+  params: ICreateVerificationHistoryParams;
+  result: ICreateVerificationHistoryResult;
 }
 
-const createVerificationHistoryIR: any = {
-  usedParamSet: {},
-  params: [],
-  statement:
-    'INSERT INTO verification_history (content, user_id)\nVALUES ($1, $2)\nRETURNING id,\n  creation_time',
-}
+const createVerificationHistoryIR: any = {"usedParamSet":{},"params":[],"statement":"INSERT INTO verification_history (content, user_id)\nVALUES ($1, $2)\nRETURNING id,\n  creation_time"};
 
 /**
  * Query generated from SQL:
@@ -32,7 +27,6 @@ const createVerificationHistoryIR: any = {
  *   creation_time
  * ```
  */
-export const createVerificationHistory = new PreparedQuery<
-  ICreateVerificationHistoryParams,
-  ICreateVerificationHistoryResult
->(createVerificationHistoryIR)
+export const createVerificationHistory = new PreparedQuery<ICreateVerificationHistoryParams,ICreateVerificationHistoryResult>(createVerificationHistoryIR);
+
+

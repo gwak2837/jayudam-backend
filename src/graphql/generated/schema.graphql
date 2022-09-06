@@ -135,7 +135,7 @@ type Post {
   imageUrls: [URL]
   isLiked: Boolean!
   likeCount: Int
-  parentAuthor: User
+  parentPost: Post
   sharedCount: Int
   sharingPost: Post
   updateTime: DateTime

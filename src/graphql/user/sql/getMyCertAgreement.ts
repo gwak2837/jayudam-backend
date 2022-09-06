@@ -1,25 +1,21 @@
 /** Types generated for queries found in "src/graphql/user/sql/getMyCertAgreement.sql" */
-import { PreparedQuery } from '@pgtyped/query'
+import { PreparedQuery } from '@pgtyped/query';
 
 /** 'GetMyCertAgreement' parameters type */
-export type IGetMyCertAgreementParams = void
+export type IGetMyCertAgreementParams = void;
 
 /** 'GetMyCertAgreement' return type */
 export interface IGetMyCertAgreementResult {
-  cert_agreement: string | null
+  cert_agreement: string | null;
 }
 
 /** 'GetMyCertAgreement' query type */
 export interface IGetMyCertAgreementQuery {
-  params: IGetMyCertAgreementParams
-  result: IGetMyCertAgreementResult
+  params: IGetMyCertAgreementParams;
+  result: IGetMyCertAgreementResult;
 }
 
-const getMyCertAgreementIR: any = {
-  usedParamSet: {},
-  params: [],
-  statement: 'SELECT cert_agreement\nFROM "user"\nWHERE id = $1',
-}
+const getMyCertAgreementIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT cert_agreement\nFROM \"user\"\nWHERE id = $1"};
 
 /**
  * Query generated from SQL:
@@ -29,7 +25,6 @@ const getMyCertAgreementIR: any = {
  * WHERE id = $1
  * ```
  */
-export const getMyCertAgreement = new PreparedQuery<
-  IGetMyCertAgreementParams,
-  IGetMyCertAgreementResult
->(getMyCertAgreementIR)
+export const getMyCertAgreement = new PreparedQuery<IGetMyCertAgreementParams,IGetMyCertAgreementResult>(getMyCertAgreementIR);
+
+

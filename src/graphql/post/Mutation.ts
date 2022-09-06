@@ -101,7 +101,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       content: null,
       imageUrls: null,
       sharingPost: null,
-      parentAuthor: null,
+      parentPost: null,
     } as Post
   },
 
@@ -146,7 +146,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
         content: null,
         imageUrls: null,
         sharingPost: null,
-        parentAuthor: null,
+        parentPost: null,
       } as Post,
       sharedPost,
     }
