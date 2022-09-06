@@ -19,7 +19,7 @@ export const Query: QueryResolvers<ApolloContext> = {
       limit ?? 20,
     ])
 
-    if (rowCount === 0) return []
+    if (rowCount === 0) return null
 
     return getComments(rows)
   },
@@ -33,11 +33,13 @@ export const Query: QueryResolvers<ApolloContext> = {
   },
 
   posts: async (_, { lastId, limit }, { userId }) => {
-    const { rows } = await poolQuery<IPostsResult>(posts, [
+    const { rowCount, rows } = await poolQuery<IPostsResult>(posts, [
       userId,
       lastId ?? 9_223_372_036_854_775_807n,
       limit ?? 20,
     ])
+
+    if (rowCount === 0) return null
 
     return getPosts(rows)
   },

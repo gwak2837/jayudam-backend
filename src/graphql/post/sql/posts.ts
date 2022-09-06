@@ -8,6 +8,8 @@ export type IPostsParams = void;
 
 /** 'Posts' return type */
 export interface IPostsResult {
+  parent_post__user__id: string;
+  parent_post__user__name: string | null;
   post__comment_count: string | null;
   post__content: string | null;
   post__creation_time: Date | null;
@@ -42,7 +44,7 @@ export interface IPostsQuery {
   result: IPostsResult;
 }
 
-const postsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT post.id AS post__id,\n  post.creation_time AS post__creation_time,\n  post.update_time AS post__update_time,\n  post.deletion_time AS post__deletion_time,\n  post.content AS post__content,\n  post.image_urls AS post__image_urls,\n  is_liked.user_id IS NOT NULL AS post__is_liked,\n  do_i_comment.id IS NOT NULL AS post__do_i_comment,\n  do_i_share.id IS NOT NULL AS post__do_i_share,\n  \"like\".count AS post__like_count,\n  \"comment\".count AS post__comment_count,\n  shared.count AS post__shared_count,\n  \"user\".id AS post__user__id,\n  \"user\".name AS post__user__name,\n  \"user\".nickname AS post__user__nickname,\n  \"user\".image_urls [1] AS post__user__image_url,\n  --\n  sharing_post.id AS sharing_post__id,\n  sharing_post.creation_time AS sharing_post__creation_time,\n  sharing_post.update_time AS sharing_post__update_time,\n  sharing_post.deletion_time AS sharing_post__deletion_time,\n  sharing_post.content AS sharing_post__content,\n  sharing_post.image_urls AS sharing_post__image_urls,\n  sharing_user.id AS sharing_post__user__id,\n  sharing_user.name AS sharing_post__user__name,\n  sharing_user.nickname AS sharing_post__user__nickname,\n  sharing_user.image_urls [1] AS sharing_post__user__image_url\nFROM post\n  LEFT JOIN post_x_user AS is_liked ON is_liked.post_id = post.id\n  AND is_liked.user_id = $1\n  LEFT JOIN post AS do_i_comment ON do_i_comment.id = (\n    SELECT id\n    FROM post AS p\n    WHERE p.parent_post_id = post.id\n      AND user_id = $1\n    LIMIT 1\n  )\n  LEFT JOIN post AS do_i_share ON do_i_share.sharing_post_id = post.id\n  AND do_i_share.user_id = $1\n  LEFT JOIN (\n    SELECT post_id,\n      COUNT(user_id)\n    FROM post_x_user\n    GROUP BY post_id\n  ) AS \"like\" ON \"like\".post_id = post.id\n  LEFT JOIN (\n    SELECT parent_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY parent_post_id\n  ) AS \"comment\" ON \"comment\".parent_post_id = post.id\n  LEFT JOIN (\n    SELECT sharing_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY sharing_post_id\n  ) AS shared ON shared.sharing_post_id = post.id\n  LEFT JOIN \"user\" ON \"user\".id = post.user_id\n  LEFT JOIN post AS sharing_post ON sharing_post.id = post.sharing_post_id\n  LEFT JOIN \"user\" AS sharing_user ON sharing_user.id = sharing_post.user_id\nWHERE post.deletion_time IS NULL\n  AND post.id < $2\nORDER BY post.id DESC\nLIMIT $3"};
+const postsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT post.id AS post__id,\n  post.creation_time AS post__creation_time,\n  post.update_time AS post__update_time,\n  post.deletion_time AS post__deletion_time,\n  post.content AS post__content,\n  post.image_urls AS post__image_urls,\n  is_liked.user_id IS NOT NULL AS post__is_liked,\n  do_i_comment.id IS NOT NULL AS post__do_i_comment,\n  do_i_share.id IS NOT NULL AS post__do_i_share,\n  \"like\".count AS post__like_count,\n  \"comment\".count AS post__comment_count,\n  shared.count AS post__shared_count,\n  \"user\".id AS post__user__id,\n  \"user\".name AS post__user__name,\n  \"user\".nickname AS post__user__nickname,\n  \"user\".image_urls [1] AS post__user__image_url,\n  --\n  parent_user.id AS parent_post__user__id,\n  parent_user.name AS parent_post__user__name,\n  --\n  sharing_post.id AS sharing_post__id,\n  sharing_post.creation_time AS sharing_post__creation_time,\n  sharing_post.update_time AS sharing_post__update_time,\n  sharing_post.deletion_time AS sharing_post__deletion_time,\n  sharing_post.content AS sharing_post__content,\n  sharing_post.image_urls AS sharing_post__image_urls,\n  sharing_user.id AS sharing_post__user__id,\n  sharing_user.name AS sharing_post__user__name,\n  sharing_user.nickname AS sharing_post__user__nickname,\n  sharing_user.image_urls [1] AS sharing_post__user__image_url\nFROM post\n  LEFT JOIN post_x_user AS is_liked ON is_liked.post_id = post.id\n  AND is_liked.user_id = $1\n  LEFT JOIN post AS do_i_comment ON do_i_comment.id = (\n    SELECT id\n    FROM post AS p\n    WHERE p.parent_post_id = post.id\n      AND user_id = $1\n    LIMIT 1\n  )\n  LEFT JOIN post AS do_i_share ON do_i_share.sharing_post_id = post.id\n  AND do_i_share.user_id = $1\n  LEFT JOIN (\n    SELECT post_id,\n      COUNT(user_id)\n    FROM post_x_user\n    GROUP BY post_id\n  ) AS \"like\" ON \"like\".post_id = post.id\n  LEFT JOIN (\n    SELECT parent_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY parent_post_id\n  ) AS \"comment\" ON \"comment\".parent_post_id = post.id\n  LEFT JOIN (\n    SELECT sharing_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY sharing_post_id\n  ) AS shared ON shared.sharing_post_id = post.id\n  LEFT JOIN \"user\" ON \"user\".id = post.user_id\n  LEFT JOIN post AS parent_post ON parent_post.id = post.parent_post_id\n  LEFT JOIN \"user\" AS parent_user ON parent_user.id = parent_post.user_id\n  LEFT JOIN post AS sharing_post ON sharing_post.id = post.sharing_post_id\n  LEFT JOIN \"user\" AS sharing_user ON sharing_user.id = sharing_post.user_id\nWHERE post.deletion_time IS NULL\n  AND post.id < $2\nORDER BY post.id DESC\nLIMIT $3"};
 
 /**
  * Query generated from SQL:
@@ -63,6 +65,9 @@ const postsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT post.id 
  *   "user".name AS post__user__name,
  *   "user".nickname AS post__user__nickname,
  *   "user".image_urls [1] AS post__user__image_url,
+ *   --
+ *   parent_user.id AS parent_post__user__id,
+ *   parent_user.name AS parent_post__user__name,
  *   --
  *   sharing_post.id AS sharing_post__id,
  *   sharing_post.creation_time AS sharing_post__creation_time,
@@ -105,6 +110,8 @@ const postsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT post.id 
  *     GROUP BY sharing_post_id
  *   ) AS shared ON shared.sharing_post_id = post.id
  *   LEFT JOIN "user" ON "user".id = post.user_id
+ *   LEFT JOIN post AS parent_post ON parent_post.id = post.parent_post_id
+ *   LEFT JOIN "user" AS parent_user ON parent_user.id = parent_post.user_id
  *   LEFT JOIN post AS sharing_post ON sharing_post.id = post.sharing_post_id
  *   LEFT JOIN "user" AS sharing_user ON sharing_user.id = sharing_post.user_id
  * WHERE post.deletion_time IS NULL

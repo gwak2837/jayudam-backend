@@ -16,6 +16,9 @@ SELECT post.id AS post__id,
   "user".nickname AS post__user__nickname,
   "user".image_urls [1] AS post__user__image_url,
   --
+  parent_user.id AS parent_post__user__id,
+  parent_user.name AS parent_post__user__name,
+  --
   sharing_post.id AS sharing_post__id,
   sharing_post.creation_time AS sharing_post__creation_time,
   sharing_post.update_time AS sharing_post__update_time,
@@ -57,6 +60,8 @@ FROM post
     GROUP BY sharing_post_id
   ) AS shared ON shared.sharing_post_id = post.id
   LEFT JOIN "user" ON "user".id = post.user_id
+  LEFT JOIN post AS parent_post ON parent_post.id = post.parent_post_id
+  LEFT JOIN "user" AS parent_user ON parent_user.id = parent_post.user_id
   LEFT JOIN post AS sharing_post ON sharing_post.id = post.sharing_post_id
   LEFT JOIN "user" AS sharing_user ON sharing_user.id = sharing_post.user_id
 WHERE post.deletion_time IS NULL
