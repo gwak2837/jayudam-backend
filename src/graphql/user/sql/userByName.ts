@@ -11,6 +11,7 @@ export interface IUserByNameResult {
   bio: string | null;
   blocking_end_time: Date | null;
   blocking_start_time: Date | null;
+  cover_image_urls: stringArray | null;
   creation_time: Date | null;
   grade: number | null;
   id: string;
@@ -34,7 +35,7 @@ export interface IUserByNameQuery {
   result: IUserByNameResult;
 }
 
-const userByNameIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT \"user\".id,\n  \"user\".creation_time,\n  bio,\n  blocking_start_time,\n  blocking_end_time,\n  grade,\n  \"user\".image_urls,\n  is_private,\n  is_verified_sex,\n  name,\n  nickname,\n  sex,\n  sleeping_time,\n  town1_count,\n  town1_name,\n  town2_count,\n  town2_name,\n  COUNT(post.id) AS post_count\nFROM \"user\"\n  LEFT JOIN post ON post.user_id = \"user\".id\nWHERE name = $1\nGROUP BY \"user\".id"};
+const userByNameIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT \"user\".id,\n  \"user\".creation_time,\n  bio,\n  blocking_start_time,\n  blocking_end_time,\n  cover_image_urls,\n  grade,\n  \"user\".image_urls,\n  is_private,\n  is_verified_sex,\n  name,\n  nickname,\n  sex,\n  sleeping_time,\n  town1_count,\n  town1_name,\n  town2_count,\n  town2_name,\n  COUNT(post.id) AS post_count\nFROM \"user\"\n  LEFT JOIN post ON post.user_id = \"user\".id\nWHERE name = $1\nGROUP BY \"user\".id"};
 
 /**
  * Query generated from SQL:
@@ -44,6 +45,7 @@ const userByNameIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT \"u
  *   bio,
  *   blocking_start_time,
  *   blocking_end_time,
+ *   cover_image_urls,
  *   grade,
  *   "user".image_urls,
  *   is_private,
