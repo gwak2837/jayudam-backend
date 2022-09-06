@@ -1,54 +1,59 @@
 /** Types generated for queries found in "src/graphql/post/sql/comments.sql" */
-import { PreparedQuery } from '@pgtyped/query';
+import { PreparedQuery } from '@pgtyped/query'
 
-export type stringArray = (string)[];
+export type stringArray = string[]
 
 /** 'Comments' parameters type */
-export type ICommentsParams = void;
+export type ICommentsParams = void
 
 /** 'Comments' return type */
 export interface ICommentsResult {
-  child_post__comment_count: string | null;
-  child_post__content: string | null;
-  child_post__creation_time: Date | null;
-  child_post__deletion_time: Date | null;
-  child_post__do_i_comment: boolean | null;
-  child_post__do_i_share: boolean | null;
-  child_post__id: string;
-  child_post__image_urls: stringArray | null;
-  child_post__is_liked: boolean | null;
-  child_post__like_count: string | null;
-  child_post__shared_count: string | null;
-  child_post__update_time: Date | null;
-  child_post__user__id: string;
-  child_post__user__image_url: string | null;
-  child_post__user__name: string | null;
-  child_post__user__nickname: string | null;
-  post__comment_count: string | null;
-  post__content: string | null;
-  post__creation_time: Date | null;
-  post__deletion_time: Date | null;
-  post__do_i_comment: boolean | null;
-  post__do_i_share: boolean | null;
-  post__id: string;
-  post__image_urls: stringArray | null;
-  post__is_liked: boolean | null;
-  post__like_count: string | null;
-  post__shared_count: string | null;
-  post__update_time: Date | null;
-  post__user__id: string;
-  post__user__image_url: string | null;
-  post__user__name: string | null;
-  post__user__nickname: string | null;
+  child_post__comment_count: string | null
+  child_post__content: string | null
+  child_post__creation_time: Date | null
+  child_post__deletion_time: Date | null
+  child_post__do_i_comment: boolean | null
+  child_post__do_i_share: boolean | null
+  child_post__id: string
+  child_post__image_urls: stringArray | null
+  child_post__is_liked: boolean | null
+  child_post__like_count: string | null
+  child_post__shared_count: string | null
+  child_post__update_time: Date | null
+  child_post__user__id: string
+  child_post__user__image_url: string | null
+  child_post__user__name: string | null
+  child_post__user__nickname: string | null
+  post__comment_count: string | null
+  post__content: string | null
+  post__creation_time: Date | null
+  post__deletion_time: Date | null
+  post__do_i_comment: boolean | null
+  post__do_i_share: boolean | null
+  post__id: string
+  post__image_urls: stringArray | null
+  post__is_liked: boolean | null
+  post__like_count: string | null
+  post__shared_count: string | null
+  post__update_time: Date | null
+  post__user__id: string
+  post__user__image_url: string | null
+  post__user__name: string | null
+  post__user__nickname: string | null
 }
 
 /** 'Comments' query type */
 export interface ICommentsQuery {
-  params: ICommentsParams;
-  result: ICommentsResult;
+  params: ICommentsParams
+  result: ICommentsResult
 }
 
-const commentsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT post.id AS post__id,\n  post.creation_time AS post__creation_time,\n  post.update_time AS post__update_time,\n  post.deletion_time AS post__deletion_time,\n  post.content AS post__content,\n  post.image_urls AS post__image_urls,\n  is_liked.user_id IS NOT NULL AS post__is_liked,\n  do_i_comment.id IS NOT NULL AS post__do_i_comment,\n  do_i_share.id IS NOT NULL AS post__do_i_share,\n  \"like\".count AS post__like_count,\n  \"comment\".count AS post__comment_count,\n  shared.count AS post__shared_count,\n  \"user\".id AS post__user__id,\n  \"user\".name AS post__user__name,\n  \"user\".nickname AS post__user__nickname,\n  \"user\".image_urls [1] AS post__user__image_url,\n  --\n  child_post.id AS child_post__id,\n  child_post.creation_time AS child_post__creation_time,\n  child_post.update_time AS child_post__update_time,\n  child_post.deletion_time AS child_post__deletion_time,\n  child_post.content AS child_post__content,\n  child_post.image_urls AS child_post__image_urls,\n  child_is_liked.user_id IS NOT NULL AS child_post__is_liked,\n  child_do_i_comment.id IS NOT NULL AS child_post__do_i_comment,\n  child_do_i_share.id IS NOT NULL AS child_post__do_i_share,\n  child_like.count AS child_post__like_count,\n  child_comment.count AS child_post__comment_count,\n  child_shared.count AS child_post__shared_count,\n  child_user.id AS child_post__user__id,\n  child_user.name AS child_post__user__name,\n  child_user.nickname AS child_post__user__nickname,\n  child_user.image_urls [1] AS child_post__user__image_url\nFROM post\n  LEFT JOIN post_x_user AS is_liked ON is_liked.post_id = post.id\n  AND is_liked.user_id = $2\n  LEFT JOIN post AS do_i_comment ON do_i_comment.id = (\n    SELECT id\n    FROM post AS p\n    WHERE p.parent_post_id = post.id\n      AND user_id = $2\n    LIMIT 1\n  )\n  LEFT JOIN post AS do_i_share ON do_i_share.sharing_post_id = post.id\n  AND do_i_share.user_id = $2\n  LEFT JOIN (\n    SELECT post_id,\n      COUNT(user_id)\n    FROM post_x_user\n    GROUP BY post_id\n  ) AS \"like\" ON \"like\".post_id = post.id\n  LEFT JOIN (\n    SELECT parent_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY parent_post_id\n  ) AS \"comment\" ON \"comment\".parent_post_id = post.id\n  LEFT JOIN (\n    SELECT sharing_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY sharing_post_id\n  ) AS shared ON shared.sharing_post_id = post.id\n  LEFT JOIN \"user\" ON \"user\".id = post.user_id\n  LEFT JOIN post AS child_post ON child_post.parent_post_id = post.id\n  LEFT JOIN post_x_user AS child_is_liked ON child_is_liked.post_id = child_post.id\n  AND child_is_liked.user_id = $2\n  LEFT JOIN post AS child_do_i_comment ON child_do_i_comment.id = (\n    SELECT id\n    FROM post\n    WHERE post.parent_post_id = child_post.id\n      AND user_id = $2\n    LIMIT 1\n  )\n  LEFT JOIN post AS child_do_i_share ON child_do_i_share.sharing_post_id = child_post.id\n  AND child_do_i_share.user_id = $2\n  LEFT JOIN (\n    SELECT post_id,\n      COUNT(user_id)\n    FROM post_x_user\n    GROUP BY post_id\n  ) AS child_like ON child_like.post_id = child_post.id\n  LEFT JOIN (\n    SELECT parent_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY parent_post_id\n  ) AS child_comment ON child_comment.parent_post_id = child_post.id\n  LEFT JOIN (\n    SELECT sharing_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY sharing_post_id\n  ) AS child_shared ON child_shared.sharing_post_id = child_post.id\n  LEFT JOIN \"user\" AS child_user ON child_user.id = child_post.user_id\nWHERE post.parent_post_id = $1\n  AND post.deletion_time IS NULL\n  AND child_post.deletion_time IS NULL\n  AND post.id > $3\nORDER BY post.id,\n  child_post.id\nLIMIT $4"};
+const commentsIR: any = {
+  usedParamSet: {},
+  params: [],
+  statement:
+    'SELECT post.id AS post__id,\n  post.creation_time AS post__creation_time,\n  post.update_time AS post__update_time,\n  post.deletion_time AS post__deletion_time,\n  post.content AS post__content,\n  post.image_urls AS post__image_urls,\n  is_liked.user_id IS NOT NULL AS post__is_liked,\n  do_i_comment.id IS NOT NULL AS post__do_i_comment,\n  do_i_share.id IS NOT NULL AS post__do_i_share,\n  "like".count AS post__like_count,\n  "comment".count AS post__comment_count,\n  shared.count AS post__shared_count,\n  "user".id AS post__user__id,\n  "user".name AS post__user__name,\n  "user".nickname AS post__user__nickname,\n  "user".image_urls [1] AS post__user__image_url,\n  --\n  child_post.id AS child_post__id,\n  child_post.creation_time AS child_post__creation_time,\n  child_post.update_time AS child_post__update_time,\n  child_post.deletion_time AS child_post__deletion_time,\n  child_post.content AS child_post__content,\n  child_post.image_urls AS child_post__image_urls,\n  child_is_liked.user_id IS NOT NULL AS child_post__is_liked,\n  child_do_i_comment.id IS NOT NULL AS child_post__do_i_comment,\n  child_do_i_share.id IS NOT NULL AS child_post__do_i_share,\n  child_like.count AS child_post__like_count,\n  child_comment.count AS child_post__comment_count,\n  child_shared.count AS child_post__shared_count,\n  child_user.id AS child_post__user__id,\n  child_user.name AS child_post__user__name,\n  child_user.nickname AS child_post__user__nickname,\n  child_user.image_urls [1] AS child_post__user__image_url\nFROM post\n  LEFT JOIN post_x_user AS is_liked ON is_liked.post_id = post.id\n  AND is_liked.user_id = $2\n  LEFT JOIN post AS do_i_comment ON do_i_comment.id = (\n    SELECT id\n    FROM post AS p\n    WHERE p.parent_post_id = post.id\n      AND user_id = $2\n    LIMIT 1\n  )\n  LEFT JOIN post AS do_i_share ON do_i_share.sharing_post_id = post.id\n  AND do_i_share.user_id = $2\n  LEFT JOIN (\n    SELECT post_id,\n      COUNT(user_id)\n    FROM post_x_user\n    GROUP BY post_id\n  ) AS "like" ON "like".post_id = post.id\n  LEFT JOIN (\n    SELECT parent_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY parent_post_id\n  ) AS "comment" ON "comment".parent_post_id = post.id\n  LEFT JOIN (\n    SELECT sharing_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY sharing_post_id\n  ) AS shared ON shared.sharing_post_id = post.id\n  LEFT JOIN "user" ON "user".id = post.user_id\n  LEFT JOIN post AS child_post ON child_post.parent_post_id = post.id\n  LEFT JOIN post_x_user AS child_is_liked ON child_is_liked.post_id = child_post.id\n  AND child_is_liked.user_id = $2\n  LEFT JOIN post AS child_do_i_comment ON child_do_i_comment.id = (\n    SELECT id\n    FROM post\n    WHERE post.parent_post_id = child_post.id\n      AND user_id = $2\n    LIMIT 1\n  )\n  LEFT JOIN post AS child_do_i_share ON child_do_i_share.sharing_post_id = child_post.id\n  AND child_do_i_share.user_id = $2\n  LEFT JOIN (\n    SELECT post_id,\n      COUNT(user_id)\n    FROM post_x_user\n    GROUP BY post_id\n  ) AS child_like ON child_like.post_id = child_post.id\n  LEFT JOIN (\n    SELECT parent_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY parent_post_id\n  ) AS child_comment ON child_comment.parent_post_id = child_post.id\n  LEFT JOIN (\n    SELECT sharing_post_id,\n      COUNT(id)\n    FROM post\n    GROUP BY sharing_post_id\n  ) AS child_shared ON child_shared.sharing_post_id = child_post.id\n  LEFT JOIN "user" AS child_user ON child_user.id = child_post.user_id\nWHERE post.parent_post_id = $1\n  AND post.deletion_time IS NULL\n  AND child_post.deletion_time IS NULL\n  AND post.id > $3\nORDER BY post.id,\n  child_post.id\nLIMIT $4',
+}
 
 /**
  * Query generated from SQL:
@@ -157,6 +162,4 @@ const commentsIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT post.
  * LIMIT $4
  * ```
  */
-export const comments = new PreparedQuery<ICommentsParams,ICommentsResult>(commentsIR);
-
-
+export const comments = new PreparedQuery<ICommentsParams, ICommentsResult>(commentsIR)

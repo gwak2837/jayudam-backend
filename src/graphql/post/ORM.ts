@@ -24,7 +24,7 @@ export function getComments(commentRows: Record<string, any>[]) {
       }
       // 대댓글 2개 이상
       else {
-        comments[commentIndex].comments!.push(childPostORM(commentRow))
+        comments[commentIndex].comments?.push(childPostORM(commentRow))
       }
     }
     // 대댓글 없는 경우
