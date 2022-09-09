@@ -12,6 +12,8 @@ import { IIsUniqueUsernameResult } from './sql/isUniqueUsername'
 import isUniqueUsername from './sql/isUniqueUsername.sql'
 import { IMeResult } from './sql/me'
 import me from './sql/me.sql'
+import { IMyProfileResult } from './sql/myProfile'
+import myProfile from './sql/myProfile.sql'
 import { IUserByNameResult } from './sql/userByName'
 import userByName from './sql/userByName.sql'
 
@@ -70,6 +72,22 @@ export const Query: QueryResolvers<ApolloContext> = {
     const { rowCount } = await poolQuery<IIsUniqueUsernameResult>(isUniqueUsername, [username])
 
     return rowCount === 0
+  },
+
+  myProfile: async (_, __, { userId }) => {
+    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+
+    const { rowCount, rows } = await poolQuery<IMyProfileResult>(myProfile, [userId])
+
+    if (rowCount === 0) throw new NotFoundError('사용자를 찾을 수 없습니다')
+
+    const myInfo = rows[0]
+    console.log('👀 - myInfo', myInfo)
+
+    return {
+      id: myInfo.id,
+      imageUrl: myInfo.image_urls,
+    }
   },
 
   user: async (_, { name }, { userId }) => {
@@ -184,6 +202,8 @@ export const Query: QueryResolvers<ApolloContext> = {
       id: myInfo.id,
       creationTime: myInfo.creation_time,
       bio: myInfo.bio,
+      birthday: myInfo.birthday,
+      birthyear: myInfo.birthyear,
       blockingStartTime: myInfo.blocking_start_time,
       blockingEndTime: myInfo.blocking_end_time,
       coverImageUrl: myInfo.cover_image_urls?.[0],
@@ -193,9 +213,12 @@ export const Query: QueryResolvers<ApolloContext> = {
       imageUrl: myInfo.image_urls?.[0],
       imageUrls: myInfo.image_urls,
       isPrivate: myInfo.is_private,
+      isVerifiedBirthday: myInfo.is_verified_birthday,
+      isVerifiedBirthyear: myInfo.is_verified_birthyear,
       isVerifiedSex: myInfo.is_verified_sex,
       name: myInfo.name,
       nickname: myInfo.nickname,
+      postCount: myInfo.post_count,
       sex: myInfo.sex,
       towns: [
         { count: myInfo.town1_count, name: myInfo.town1_name },

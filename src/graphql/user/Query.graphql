@@ -2,5 +2,6 @@ type Query {
   auth: User
   isUniqueUsername(username: NonEmptyString!): Boolean!
   myCertAgreement: CertAgreement
+  myProfile: User
   user(name: NonEmptyString): User
 }
