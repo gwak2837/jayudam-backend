@@ -171,6 +171,7 @@ type Query {
   comments(lastId: ID, limit: PositiveInt, parentId: ID!): [Post!]
   isUniqueUsername(username: NonEmptyString!): Boolean!
   myCertAgreement: CertAgreement
+  myProfile: User
   pendingCerts: [Cert!]
   post(id: ID!): Post
   posts(lastId: ID, limit: PositiveInt): [Post!]

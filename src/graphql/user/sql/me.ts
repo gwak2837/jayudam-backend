@@ -9,6 +9,8 @@ export type IMeParams = void;
 /** 'Me' return type */
 export interface IMeResult {
   bio: string | null;
+  birthday: string | null;
+  birthyear: number | null;
   blocking_end_time: Date | null;
   blocking_start_time: Date | null;
   cherry: number;
@@ -20,6 +22,8 @@ export interface IMeResult {
   id: string;
   image_urls: stringArray | null;
   is_private: boolean;
+  is_verified_birthday: boolean;
+  is_verified_birthyear: boolean;
   is_verified_sex: boolean;
   name: string | null;
   nickname: string | null;
@@ -38,7 +42,7 @@ export interface IMeQuery {
   result: IMeResult;
 }
 
-const meIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT \"user\".id,\n  \"user\".creation_time,\n  bio,\n  blocking_start_time,\n  blocking_end_time,\n  cover_image_urls,\n  cherry,\n  grade,\n  \"user\".image_urls,\n  is_private,\n  is_verified_sex,\n  name,\n  nickname,\n  sex,\n  sleeping_time,\n  town1_count,\n  town1_name,\n  town2_count,\n  town2_name,\n  COUNT(post.id) AS post_count,\n  COUNT(follower.leader_id) AS follower_count,\n  COUNT(\"following\".follower_id) AS following_count\nFROM \"user\"\n  LEFT JOIN post ON post.user_id = \"user\".id\n  LEFT JOIN user_x_user AS follower ON follower.leader_id = \"user\".id\n  LEFT JOIN user_x_user AS \"following\" ON \"following\".follower_id = \"user\".id\nWHERE \"user\".id = $1\nGROUP BY \"user\".id"};
+const meIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT \"user\".id,\n  \"user\".creation_time,\n  bio,\n  birthday,\n  birthyear,\n  blocking_start_time,\n  blocking_end_time,\n  cover_image_urls,\n  cherry,\n  grade,\n  \"user\".image_urls,\n  is_private,\n  is_verified_birthday,\n  is_verified_birthyear,\n  is_verified_sex,\n  name,\n  nickname,\n  sex,\n  sleeping_time,\n  town1_count,\n  town1_name,\n  town2_count,\n  town2_name,\n  COUNT(post.id) AS post_count,\n  COUNT(follower.leader_id) AS follower_count,\n  COUNT(\"following\".follower_id) AS following_count\nFROM \"user\"\n  LEFT JOIN post ON post.user_id = \"user\".id\n  LEFT JOIN user_x_user AS follower ON follower.leader_id = \"user\".id\n  LEFT JOIN user_x_user AS \"following\" ON \"following\".follower_id = \"user\".id\nWHERE \"user\".id = $1\nGROUP BY \"user\".id"};
 
 /**
  * Query generated from SQL:
@@ -46,6 +50,8 @@ const meIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT \"user\".id
  * SELECT "user".id,
  *   "user".creation_time,
  *   bio,
+ *   birthday,
+ *   birthyear,
  *   blocking_start_time,
  *   blocking_end_time,
  *   cover_image_urls,
@@ -53,6 +59,8 @@ const meIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT \"user\".id
  *   grade,
  *   "user".image_urls,
  *   is_private,
+ *   is_verified_birthday,
+ *   is_verified_birthyear,
  *   is_verified_sex,
  *   name,
  *   nickname,
