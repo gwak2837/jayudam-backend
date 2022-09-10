@@ -98,10 +98,6 @@ export const Mutation: MutationResolvers<ApolloContext> = {
     return {
       id,
       deletionTime: deletedPost.deletion_time,
-      content: null,
-      imageUrls: null,
-      sharingPost: null,
-      parentPost: null,
     } as Post
   },
 
