@@ -23,11 +23,17 @@ SELECT "user".id,
   town2_count,
   town2_name,
   COUNT(post.id) AS post_count,
-  COUNT(follower.leader_id) AS follower_count,
-  COUNT("following".follower_id) AS following_count
+  (
+    SELECT COUNT(leader_id)
+    FROM user_x_user
+    WHERE user_x_user.leader_id = $1
+  ) AS follower_count,
+  (
+    SELECT COUNT(follower_id)
+    FROM user_x_user
+    WHERE user_x_user.follower_id = $1
+  ) AS following_count
 FROM "user"
   LEFT JOIN post ON post.user_id = "user".id
-  LEFT JOIN user_x_user AS follower ON follower.leader_id = "user".id
-  LEFT JOIN user_x_user AS "following" ON "following".follower_id = "user".id
 WHERE "user".id = $1
 GROUP BY "user".id;
