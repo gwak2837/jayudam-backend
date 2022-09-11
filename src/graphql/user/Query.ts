@@ -96,6 +96,7 @@ export const Query: QueryResolvers<ApolloContext> = {
     if (name === 'undefined' || name === 'null')
       throw new UserInputError('허용되지 않는 닉네임입니다')
 
+    // 다른 사용자 정보
     if (name) {
       const { rowCount, rows } = await poolQuery<IUserByNameResult>(userByName, [name])
       if (rowCount === 0) throw new NotFoundError(`\`${name}\` 사용자를 찾을 수 없습니다`)
@@ -167,36 +168,11 @@ export const Query: QueryResolvers<ApolloContext> = {
       } as User
     }
 
+    // 내 정보
     const { rowCount, rows } = await poolQuery<IMeResult>(me, [userId])
     if (rowCount === 0) throw new NotFoundError('탈퇴했거나 존재하지 않는 사용자입니다')
 
     const myInfo = rows[0]
-
-    if (myInfo.sleeping_time) {
-      return {
-        id: myInfo.id,
-        creationTime: myInfo.creation_time,
-        bio: myInfo.bio,
-        imageUrl: myInfo.image_urls?.[0],
-        imageUrls: myInfo.image_urls,
-        name: myInfo.name,
-        nickname: myInfo.nickname,
-        postCount: myInfo.post_count,
-      } as User
-    }
-
-    if (myInfo.blocking_start_time) {
-      return {
-        id: myInfo.id,
-        creationTime: myInfo.creation_time,
-        coverImageUrl: myInfo.cover_image_urls?.[0],
-        coverImageUrls: myInfo.cover_image_urls,
-        imageUrl: myInfo.image_urls?.[0],
-        imageUrls: myInfo.image_urls,
-        name: myInfo.name,
-        nickname: myInfo.nickname,
-      }
-    }
 
     return {
       id: myInfo.id,
@@ -209,6 +185,8 @@ export const Query: QueryResolvers<ApolloContext> = {
       coverImageUrl: myInfo.cover_image_urls?.[0],
       coverImageUrls: myInfo.cover_image_urls,
       cherry: myInfo.cherry,
+      followerCount: myInfo.follower_count,
+      followingCount: myInfo.following_count,
       grade: myInfo.grade,
       imageUrl: myInfo.image_urls?.[0],
       imageUrls: myInfo.image_urls,
@@ -220,6 +198,7 @@ export const Query: QueryResolvers<ApolloContext> = {
       nickname: myInfo.nickname,
       postCount: myInfo.post_count,
       sex: myInfo.sex,
+      sleepingTime: myInfo.sleeping_time,
       towns: [
         { count: myInfo.town1_count, name: myInfo.town1_name },
         { count: myInfo.town2_count, name: myInfo.town2_name },

@@ -42,7 +42,7 @@ export interface IMeQuery {
   result: IMeResult;
 }
 
-const meIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT \"user\".id,\n  \"user\".creation_time,\n  bio,\n  birthday,\n  birthyear,\n  blocking_start_time,\n  blocking_end_time,\n  cover_image_urls,\n  cherry,\n  grade,\n  \"user\".image_urls,\n  is_private,\n  is_verified_birthday,\n  is_verified_birthyear,\n  is_verified_sex,\n  name,\n  nickname,\n  sex,\n  sleeping_time,\n  town1_count,\n  town1_name,\n  town2_count,\n  town2_name,\n  COUNT(post.id) AS post_count,\n  COUNT(follower.leader_id) AS follower_count,\n  COUNT(\"following\".follower_id) AS following_count\nFROM \"user\"\n  LEFT JOIN post ON post.user_id = \"user\".id\n  LEFT JOIN user_x_user AS follower ON follower.leader_id = \"user\".id\n  LEFT JOIN user_x_user AS \"following\" ON \"following\".follower_id = \"user\".id\nWHERE \"user\".id = $1\nGROUP BY \"user\".id"};
+const meIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT \"user\".id,\n  \"user\".creation_time,\n  bio,\n  birthday,\n  birthyear,\n  blocking_start_time,\n  blocking_end_time,\n  cover_image_urls,\n  cherry,\n  grade,\n  \"user\".image_urls,\n  is_private,\n  is_verified_birthday,\n  is_verified_birthyear,\n  is_verified_sex,\n  name,\n  nickname,\n  sex,\n  sleeping_time,\n  town1_count,\n  town1_name,\n  town2_count,\n  town2_name,\n  COUNT(post.id) AS post_count,\n  (\n    SELECT COUNT(leader_id)\n    FROM user_x_user\n    WHERE user_x_user.leader_id = $1\n  ) AS follower_count,\n  (\n    SELECT COUNT(follower_id)\n    FROM user_x_user\n    WHERE user_x_user.follower_id = $1\n  ) AS following_count\nFROM \"user\"\n  LEFT JOIN post ON post.user_id = \"user\".id\nWHERE \"user\".id = $1\nGROUP BY \"user\".id"};
 
 /**
  * Query generated from SQL:
@@ -71,12 +71,18 @@ const meIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT \"user\".id
  *   town2_count,
  *   town2_name,
  *   COUNT(post.id) AS post_count,
- *   COUNT(follower.leader_id) AS follower_count,
- *   COUNT("following".follower_id) AS following_count
+ *   (
+ *     SELECT COUNT(leader_id)
+ *     FROM user_x_user
+ *     WHERE user_x_user.leader_id = $1
+ *   ) AS follower_count,
+ *   (
+ *     SELECT COUNT(follower_id)
+ *     FROM user_x_user
+ *     WHERE user_x_user.follower_id = $1
+ *   ) AS following_count
  * FROM "user"
  *   LEFT JOIN post ON post.user_id = "user".id
- *   LEFT JOIN user_x_user AS follower ON follower.leader_id = "user".id
- *   LEFT JOIN user_x_user AS "following" ON "following".follower_id = "user".id
  * WHERE "user".id = $1
  * GROUP BY "user".id
  * ```
