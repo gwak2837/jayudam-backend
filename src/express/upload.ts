@@ -1,5 +1,5 @@
 import { Storage } from '@google-cloud/storage'
-import { Express } from 'express'
+import { FastifyInstance } from 'fastify'
 import Multer from 'multer'
 import path from 'node:path'
 
@@ -9,8 +9,8 @@ import { GOOGLE_CLOUD_STORAGE_BUCKET } from '../utils/constants'
 // import sharp from 'sharp'
 
 // https://cloud.google.com/appengine/docs/flexible/nodejs/using-cloud-storage
-export function setUploadingFiles(app: Express) {
-  app.post('/upload', multer.array('file', 10), async (req, res) => {
+export function setUploadingFiles(app: any) {
+  app.post('/upload', multer.array('file', 10), async (req: any, res: any) => {
     const files = req.files
 
     if (!Array.isArray(files)) return res.status(400).send('Bad Request')
@@ -37,20 +37,20 @@ const allowedExtensions = ['image', 'video', 'audio', 'application/ogg']
 const multer = Multer({
   storage: Multer.memoryStorage(),
   limits: {
-    fileSize: 20_000_000, // no larger than 20 MB
+    fileSize: 15_000_000, // no larger than 15 MB
   },
 })
 
 const bucket = new Storage().bucket(GOOGLE_CLOUD_STORAGE_BUCKET)
 
-function isExtensionAllowed(file: Express.Multer.File) {
+function isExtensionAllowed(file: any) {
   for (const allowedExtension of allowedExtensions) {
     if (file.mimetype.startsWith(allowedExtension)) return true
   }
   return false
 }
 
-function uploadFileToCloudStorage(file: Express.Multer.File) {
+function uploadFileToCloudStorage(file: any) {
   return new Promise((resolve, reject) => {
     const fileName = `${Date.now()}-${sha128(file.originalname)}${path.extname(file.originalname)}`
     const blobStream = bucket.file(fileName).createWriteStream()

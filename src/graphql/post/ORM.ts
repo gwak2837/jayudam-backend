@@ -1,4 +1,4 @@
-import { Post } from '../generated/graphql'
+import type { Post } from '../generated/graphql'
 
 export function getPosts(postRows: Record<string, any>[]) {
   const posts: Post[] = []

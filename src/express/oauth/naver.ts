@@ -1,26 +1,25 @@
-import { Express } from 'express'
+import type { FastifyInstance } from 'fastify'
 import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
 import { FRONTEND_URL, NAVER_CLIENT_ID, NAVER_CLIENT_SECRET } from '../../utils/constants'
 import { signJWT, verifyJWT } from '../../utils/jwt'
-import { IGetNaverUserResult } from './sql/getNaverUser'
+import type { IGetNaverUserResult } from './sql/getNaverUser'
 import getNaverUser from './sql/getNaverUser.sql'
-import { IGetUserResult } from './sql/getUser'
+import type { IGetUserResult } from './sql/getUser'
 import getUser from './sql/getUser.sql'
-import { IUpdateNaverUserResult } from './sql/updateNaverUser'
+import type { IUpdateNaverUserResult } from './sql/updateNaverUser'
 import updateNaverUser from './sql/updateNaverUser.sql'
-import { encodeSex, getFrontendUrl } from '.'
+import { encodeSex, getFrontendUrl, QuerystringCodeState, querystringCodeState } from '.'
 
-export function setNaverOAuthStrategies(app: Express) {
+export function setNaverOAuthStrategies(app: FastifyInstance) {
   // Naver 계정으로 로그인하기
-  app.get('/oauth/naver', async (req, res) => {
-    // 입력값 검사
-    const code = req.query.code as string
-    const backendUrl = req.headers.host as string
-    const state = req.query.state as string
-    if (!code || !backendUrl || !state) return res.status(400).send('Bad Request')
+  app.get<QuerystringCodeState>('/oauth/naver', querystringCodeState, async (req, res) => {
+    const backendUrl = req.headers.host
+    const code = req.query.code
+    const state = req.query.state
+    if (!backendUrl) return res.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기
     const naverUserToken = await fetchNaverUserToken(code, `${req.protocol}://${backendUrl}`, state)
@@ -29,12 +28,13 @@ export function setNaverOAuthStrategies(app: Express) {
     const naverUser2 = await fetchNaverUser(naverUserToken.access_token)
     if (naverUser2.resultcode !== '00') return res.status(400).send('Bad Request')
 
-    const frontendUrl = getFrontendUrl(req.headers.referer)
     const naverUser = naverUser2.response
 
     // 자유담 사용자 정보 가져오기
     const { rowCount, rows } = await poolQuery<IGetNaverUserResult>(getNaverUser, [naverUser.id])
     const jayudamUser = rows[0]
+
+    const frontendUrl = getFrontendUrl(req.headers.referer)
 
     // 소셜 로그인 정보가 없는 경우
     if (rowCount === 0)
@@ -72,12 +72,11 @@ export function setNaverOAuthStrategies(app: Express) {
   })
 
   // Naver 계정 연결하기
-  app.get('/oauth/google/register', async (req, res) => {
-    // 입력값 검사
-    const code = req.query.code as string
-    const backendUrl = req.headers.host as string
-    const jwt = req.query.state as string
-    if (!code || !backendUrl || !jwt) return res.status(400).send('Bad Request')
+  app.get<QuerystringCodeState>('/oauth/naver/register', querystringCodeState, async (req, res) => {
+    const backendUrl = req.headers.host
+    const code = req.query.code
+    const jwt = req.query.state
+    if (!backendUrl) return res.status(400).send('Bad Request')
 
     const frontendUrl = getFrontendUrl(req.headers.referer)
 
