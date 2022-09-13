@@ -1,16 +1,16 @@
-import { NotFoundError } from '../../apollo/errors'
-import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
-import { QueryResolvers } from '../generated/graphql'
+import { NotFoundError } from '../../fastify/errors'
+import type { GraphQLContext } from '../../fastify/server'
+import type { QueryResolvers } from '../generated/graphql'
 import { getComments, getPosts, postORM } from './ORM'
-import { ICommentsResult } from './sql/comments'
+import type { ICommentsResult } from './sql/comments'
 import comments from './sql/comments.sql'
-import { IPostResult } from './sql/post'
+import type { IPostResult } from './sql/post'
 import post from './sql/post.sql'
-import { IPostsResult } from './sql/posts'
+import type { IPostsResult } from './sql/posts'
 import posts from './sql/posts.sql'
 
-export const Query: QueryResolvers<ApolloContext> = {
+export const Query: QueryResolvers<GraphQLContext> = {
   comments: async (_, { parentId, lastId, limit }, { userId }) => {
     const { rowCount, rows } = await poolQuery<ICommentsResult>(comments, [
       parentId,
@@ -27,7 +27,7 @@ export const Query: QueryResolvers<ApolloContext> = {
   post: async (_, { id }, { userId }) => {
     const { rowCount, rows } = await poolQuery<IPostResult>(post, [id, userId])
 
-    if (rowCount === 0) throw new NotFoundError('해당 글을 찾을 수 없어요')
+    if (rowCount === 0) throw NotFoundError('해당 글을 찾을 수 없어요')
 
     return postORM(rows[0])
   },

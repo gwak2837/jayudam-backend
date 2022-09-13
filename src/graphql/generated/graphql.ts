@@ -229,6 +229,7 @@ export type Query = {
   auth?: Maybe<User>
   certs?: Maybe<Certs>
   comments?: Maybe<Array<Post>>
+  hello: Scalars['String']
   isUniqueUsername: Scalars['Boolean']
   myCertAgreement?: Maybe<CertAgreement>
   myProfile?: Maybe<User>
@@ -244,6 +245,10 @@ export type QueryCommentsArgs = {
   lastId?: InputMaybe<Scalars['ID']>
   limit?: InputMaybe<Scalars['PositiveInt']>
   parentId: Scalars['ID']
+}
+
+export type QueryHelloArgs = {
+  name: Scalars['String']
 }
 
 export type QueryIsUniqueUsernameArgs = {
@@ -309,8 +314,8 @@ export type User = {
   coverImageUrls?: Maybe<Array<Scalars['String']>>
   creationTime?: Maybe<Scalars['DateTime']>
   email?: Maybe<Scalars['String']>
-  followerCount?: Maybe<Scalars['Int']>
-  followingCount?: Maybe<Scalars['Int']>
+  followerCount?: Maybe<Scalars['String']>
+  followingCount?: Maybe<Scalars['String']>
   grade?: Maybe<Grade>
   id: Scalars['UUID']
   imageUrl?: Maybe<Scalars['String']>
@@ -328,7 +333,7 @@ export type User = {
   name?: Maybe<Scalars['String']>
   nickname?: Maybe<Scalars['String']>
   oAuthProviders?: Maybe<Array<OAuthProvider>>
-  postCount?: Maybe<Scalars['Int']>
+  postCount?: Maybe<Scalars['String']>
   serviceAgreement?: Maybe<ServiceAgreement>
   sex?: Maybe<Sex>
   sleepingTime?: Maybe<Scalars['DateTime']>
@@ -732,6 +737,12 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryCommentsArgs, 'parentId'>
   >
+  hello?: Resolver<
+    ResolversTypes['String'],
+    ParentType,
+    ContextType,
+    RequireFields<QueryHelloArgs, 'name'>
+  >
   isUniqueUsername?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
@@ -805,8 +816,8 @@ export type UserResolvers<
   coverImageUrls?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>
   creationTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  followerCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
-  followingCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
+  followerCount?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  followingCount?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   grade?: Resolver<Maybe<ResolversTypes['Grade']>, ParentType, ContextType>
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>
   imageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
@@ -824,7 +835,7 @@ export type UserResolvers<
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   nickname?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   oAuthProviders?: Resolver<Maybe<Array<ResolversTypes['OAuthProvider']>>, ParentType, ContextType>
-  postCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
+  postCount?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   serviceAgreement?: Resolver<Maybe<ResolversTypes['ServiceAgreement']>, ParentType, ContextType>
   sex?: Resolver<Maybe<ResolversTypes['Sex']>, ParentType, ContextType>
   sleepingTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>

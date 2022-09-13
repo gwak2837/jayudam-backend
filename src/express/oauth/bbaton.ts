@@ -1,27 +1,33 @@
-import { Express } from 'express'
+import type { FastifyInstance } from 'fastify'
 import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
 import { BBATON_CLIENT_ID, BBATON_CLIENT_SECRET_KEY } from '../../utils/constants'
 import { signJWT } from '../../utils/jwt'
-import { IAwakeBBatonUserResult } from './sql/awakeBBatonUser'
+import type { IAwakeBBatonUserResult } from './sql/awakeBBatonUser'
 import awakeBBatonUser from './sql/awakeBBatonUser.sql'
-import { IGetBBatonUserResult } from './sql/getBBatonUser'
+import type { IGetBBatonUserResult } from './sql/getBBatonUser'
 import getBBatonUser from './sql/getBBatonUser.sql'
-import { IRegisterBBatonUserResult } from './sql/registerBBatonUser'
+import type { IRegisterBBatonUserResult } from './sql/registerBBatonUser'
 import registerBBatonUser from './sql/registerBBatonUser.sql'
-import { IUpdateBBatonUserResult } from './sql/updateBBatonUser'
+import type { IUpdateBBatonUserResult } from './sql/updateBBatonUser'
 import updateBBatonUser from './sql/updateBBatonUser.sql'
-import { BBatonUser, BBatonUserToken, encodeSex, getFrontendUrl } from '.'
+import {
+  BBatonUser,
+  BBatonUserToken,
+  QuerystringCode,
+  encodeSex,
+  getFrontendUrl,
+  querystringCode,
+} from '.'
 
-export function setBBatonOAuthStrategies(app: Express) {
+export function setBBatonOAuthStrategies(app: FastifyInstance) {
   // BBaton 계정으로 가입하기
-  app.get('/oauth/bbaton', async (req, res) => {
+  app.get<QuerystringCode>('/oauth/bbaton', querystringCode, async (req, res) => {
     // 입력값 검사
-    const code = req.query.code as string
+    const code = req.query.code
     const backendUrl = req.headers.host as string
-    const registerConfig = getRegisterConfig(req.query.state as string)
-    if (!code || !backendUrl) return res.status(400).send('Bad Request')
+    if (!backendUrl) return res.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기
     // const bBatonUserToken = await fetchBBatonUserToken(code, `${req.protocol}://${backendUrl}`)
@@ -48,7 +54,6 @@ export function setBBatonOAuthStrategies(app: Express) {
     if (rowCount === 0) {
       const { rows } = await poolQuery<IRegisterBBatonUserResult>(registerBBatonUser, [
         bBatonUser.user_id,
-        registerConfig?.personalDataStoringPeriod ?? 1,
         encodedBBatonUserSex,
       ])
 
@@ -88,14 +93,6 @@ export function setBBatonOAuthStrategies(app: Express) {
     })
     return res.redirect(`${frontendUrl}/oauth?${querystring}`)
   })
-}
-
-function getRegisterConfig(string: string) {
-  try {
-    return JSON.parse(string)
-  } catch (error) {
-    return null
-  }
 }
 
 async function fetchBBatonUserToken(code: string, backendUrl: string) {

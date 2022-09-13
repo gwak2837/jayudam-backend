@@ -1,4 +1,4 @@
-import { Express } from 'express'
+import type { FastifyInstance } from 'fastify'
 
 import { FRONTEND_URL } from '../../utils/constants'
 import { setBBatonOAuthStrategies } from './bbaton'
@@ -6,11 +6,11 @@ import { setGoogleOAuthStrategies } from './google'
 import { setKakaoOAuthStrategies } from './kakao'
 import { setNaverOAuthStrategies } from './naver'
 
-export function setOAuthStrategies(app: Express) {
-  setKakaoOAuthStrategies(app)
-  setNaverOAuthStrategies(app)
+export function setOAuthStrategies(app: FastifyInstance) {
   setBBatonOAuthStrategies(app)
   setGoogleOAuthStrategies(app)
+  setKakaoOAuthStrategies(app)
+  setNaverOAuthStrategies(app)
 }
 
 export type BBatonUserToken = {
@@ -33,29 +33,60 @@ export type BBatonUser = {
   error?: string
 }
 
-const urlRegex = /^https:\/\/jayudam-[-a-z0-9]{1,50}-gwak2837\.vercel\.app\//
+export type QuerystringCode = {
+  Querystring: {
+    code: string
+  }
+}
+
+export type QuerystringCodeState = {
+  Querystring: {
+    code: string
+    state: string
+  }
+}
+
+export const querystringCode = {
+  schema: {
+    querystring: {
+      type: 'object',
+      properties: {
+        code: { type: 'string' },
+      },
+      required: ['code'],
+    },
+  },
+}
+
+export const querystringCodeState = {
+  schema: {
+    querystring: {
+      type: 'object',
+      properties: {
+        code: { type: 'string' },
+        state: { type: 'string' },
+      },
+      required: ['code', 'state'],
+    },
+  },
+}
+
+export const vercelURLRegEx = /^https:\/\/jayudam-[-a-z0-9]{1,50}-gwak2837\.vercel\.app\//
 
 export function getFrontendUrl(referer?: string) {
-  console.log('👀 - referer', referer)
+  if (!referer) return FRONTEND_URL
+
+  // dev, feature, fix 브랜치 배포 주소
+  if (referer.match(vercelURLRegEx)) return referer.substring(0, referer.length - 1)
+
   switch (referer) {
     case 'http://localhost:3000/':
     case 'https://jayudam.app/':
     case 'https://jayudam.vercel.app/':
       return referer.substring(0, referer.length - 1)
-    case 'https://accounts.bbaton.com/':
-    case 'https://bauth.bbaton.com/':
-    case 'http://bauth.bbaton.com/':
-    case 'https://accounts.kakao.com/':
-    case 'https://kauth.kakao.com/':
-    case 'https://naver.com/':
-    case 'https://nid.naver.com/':
-    case 'https://googleapis.com/':
-    case undefined:
+    default:
       return FRONTEND_URL
   }
-
-  // dev, feature, fix 브랜치 배포 주소
-  if (referer.match(urlRegex)) return referer.substring(0, referer.length - 1)
 }
 
 export function encodeSex(sex: string) {

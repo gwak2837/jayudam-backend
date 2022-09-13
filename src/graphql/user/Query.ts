@@ -1,36 +1,35 @@
-import { AuthenticationError, UserInputError } from 'apollo-server-errors'
-
-import { NotFoundError } from '../../apollo/errors'
-import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
-import { QueryResolvers, User } from '../generated/graphql'
-import { IAuthResult } from './sql/auth'
+import { BadRequestError, NotFoundError, UnauthorizedError } from '../../fastify/errors'
+import type { GraphQLContext } from '../../fastify/server'
+import type { QueryResolvers } from '../generated/graphql'
+import { decodeGrade, decodeSex } from './Object'
+import type { IAuthResult } from './sql/auth'
 import auth from './sql/auth.sql'
-import { IGetMyCertAgreementResult } from './sql/getMyCertAgreement'
+import type { IGetMyCertAgreementResult } from './sql/getMyCertAgreement'
 import getMyCertAgreement from './sql/getMyCertAgreement.sql'
-import { IIsUniqueUsernameResult } from './sql/isUniqueUsername'
+import type { IIsUniqueUsernameResult } from './sql/isUniqueUsername'
 import isUniqueUsername from './sql/isUniqueUsername.sql'
-import { IMeResult } from './sql/me'
+import type { IMeResult } from './sql/me'
 import me from './sql/me.sql'
-import { IMyProfileResult } from './sql/myProfile'
+import type { IMyProfileResult } from './sql/myProfile'
 import myProfile from './sql/myProfile.sql'
-import { IUserByNameResult } from './sql/userByName'
+import type { IUserByNameResult } from './sql/userByName'
 import userByName from './sql/userByName.sql'
 
-export const Query: QueryResolvers<ApolloContext> = {
+export const Query: QueryResolvers<GraphQLContext> = {
   auth: async (_, __, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { rows } = await poolQuery<IAuthResult>(auth, [userId])
 
     return {
       id: rows[0].id,
       name: rows[0].name,
-    } as User
+    }
   },
 
   myCertAgreement: async (_, __, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { rows } = await poolQuery<IGetMyCertAgreementResult>(getMyCertAgreement, [userId])
     if (!rows[0].cert_agreement)
@@ -75,14 +74,13 @@ export const Query: QueryResolvers<ApolloContext> = {
   },
 
   myProfile: async (_, __, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { rowCount, rows } = await poolQuery<IMyProfileResult>(myProfile, [userId])
 
-    if (rowCount === 0) throw new NotFoundError('사용자를 찾을 수 없습니다')
+    if (rowCount === 0) throw NotFoundError('사용자를 찾을 수 없습니다')
 
     const myInfo = rows[0]
-    console.log('👀 - myInfo', myInfo)
 
     return {
       id: myInfo.id,
@@ -91,15 +89,14 @@ export const Query: QueryResolvers<ApolloContext> = {
   },
 
   user: async (_, { name }, { userId }) => {
-    if (!name && !userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!name && !userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
-    if (name === 'undefined' || name === 'null')
-      throw new UserInputError('허용되지 않는 닉네임입니다')
+    if (name === 'undefined' || name === 'null') throw BadRequestError('허용되지 않는 닉네임입니다')
 
     // 다른 사용자 정보
     if (name) {
       const { rowCount, rows } = await poolQuery<IUserByNameResult>(userByName, [name])
-      if (rowCount === 0) throw new NotFoundError(`\`${name}\` 사용자를 찾을 수 없습니다`)
+      if (rowCount === 0) throw NotFoundError(`\`${name}\` 사용자를 찾을 수 없습니다`)
 
       const otherUser = rows[0]
 
@@ -116,7 +113,7 @@ export const Query: QueryResolvers<ApolloContext> = {
           name: otherUser.name,
           nickname: otherUser.nickname,
           postCount: otherUser.post_count,
-        } as User
+        }
       }
 
       if (otherUser.sleeping_time) {
@@ -131,7 +128,7 @@ export const Query: QueryResolvers<ApolloContext> = {
           name: otherUser.name,
           nickname: otherUser.nickname,
           postCount: otherUser.post_count,
-        } as User
+        }
       }
 
       if (otherUser.blocking_start_time) {
@@ -142,6 +139,7 @@ export const Query: QueryResolvers<ApolloContext> = {
           blockingEndTime: otherUser.blocking_end_time,
           name: otherUser.name,
           nickname: otherUser.nickname,
+          postCount: otherUser.post_count,
         }
       }
 
@@ -153,24 +151,25 @@ export const Query: QueryResolvers<ApolloContext> = {
         blockingEndTime: otherUser.blocking_end_time,
         coverImageUrl: otherUser.cover_image_urls?.[0],
         coverImageUrls: otherUser.cover_image_urls,
-        grade: otherUser.grade,
+        grade: decodeGrade(otherUser.grade),
         imageUrl: otherUser.image_urls?.[0],
         imageUrls: otherUser.image_urls,
         isPrivate: otherUser.is_private,
         isVerifiedSex: otherUser.is_verified_sex,
         name: otherUser.name,
         nickname: otherUser.nickname,
-        sex: otherUser.sex,
+        postCount: otherUser.post_count,
+        sex: decodeSex(otherUser.sex),
         towns: [
           { count: otherUser.town1_count, name: otherUser.town1_name },
           { count: otherUser.town2_count, name: otherUser.town2_name },
         ],
-      } as User
+      }
     }
 
     // 내 정보
     const { rowCount, rows } = await poolQuery<IMeResult>(me, [userId])
-    if (rowCount === 0) throw new NotFoundError('탈퇴했거나 존재하지 않는 사용자입니다')
+    if (rowCount === 0) throw NotFoundError('탈퇴했거나 존재하지 않는 사용자입니다')
 
     const myInfo = rows[0]
 
@@ -187,7 +186,7 @@ export const Query: QueryResolvers<ApolloContext> = {
       cherry: myInfo.cherry,
       followerCount: myInfo.follower_count,
       followingCount: myInfo.following_count,
-      grade: myInfo.grade,
+      grade: decodeGrade(myInfo.grade),
       imageUrl: myInfo.image_urls?.[0],
       imageUrls: myInfo.image_urls,
       isPrivate: myInfo.is_private,
@@ -197,12 +196,12 @@ export const Query: QueryResolvers<ApolloContext> = {
       name: myInfo.name,
       nickname: myInfo.nickname,
       postCount: myInfo.post_count,
-      sex: myInfo.sex,
+      sex: decodeSex(myInfo.sex),
       sleepingTime: myInfo.sleeping_time,
       towns: [
         { count: myInfo.town1_count, name: myInfo.town1_name },
         { count: myInfo.town2_count, name: myInfo.town2_name },
       ],
-    } as User
+    }
   },
 }

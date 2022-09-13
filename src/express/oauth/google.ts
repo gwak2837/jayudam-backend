@@ -1,25 +1,30 @@
-import { Express } from 'express'
+import type { FastifyInstance } from 'fastify'
 import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../../utils/constants'
 import { signJWT, verifyJWT } from '../../utils/jwt'
-import { IGetGoogleUserResult } from './sql/getGoogleUser'
+import type { IGetGoogleUserResult } from './sql/getGoogleUser'
 import getGoogleUser from './sql/getGoogleUser.sql'
-import { IGetUserResult } from './sql/getUser'
+import type { IGetUserResult } from './sql/getUser'
 import getUser from './sql/getUser.sql'
-import { IUpdateGoogleUserResult } from './sql/updateGoogleUser'
+import type { IUpdateGoogleUserResult } from './sql/updateGoogleUser'
 import updateGoogleUser from './sql/updateGoogleUser.sql'
-import { getFrontendUrl } from '.'
+import {
+  getFrontendUrl,
+  querystringCode,
+  QuerystringCode,
+  querystringCodeState,
+  QuerystringCodeState,
+} from '.'
 
-export function setGoogleOAuthStrategies(app: Express) {
+export function setGoogleOAuthStrategies(app: FastifyInstance) {
   // Google 계정으로 로그인하기
-  app.get('/oauth/google', async (req, res) => {
-    // 입력값 검사
-    const code = req.query.code as string
-    const backendUrl = req.headers.host as string
-    if (!code || !backendUrl) return res.status(400).send('Bad Request')
+  app.get<QuerystringCode>('/oauth/google', querystringCode, async (req, res) => {
+    const code = req.query.code
+    const backendUrl = req.headers.host
+    if (!backendUrl) return res.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기
     const googleUserToken = await fetchGoogleUserToken(code, `${req.protocol}://${backendUrl}`)
@@ -28,11 +33,11 @@ export function setGoogleOAuthStrategies(app: Express) {
     const googleUser = await fetchGoogleUser(googleUserToken.access_token)
     if (googleUser.error) return res.status(400).send('Bad Request')
 
-    const frontendUrl = getFrontendUrl(req.headers.referer)
-
     // 자유담 사용자 정보 가져오기
     const { rowCount, rows } = await poolQuery<IGetGoogleUserResult>(getGoogleUser, [googleUser.id])
     const jayudamUser = rows[0]
+
+    const frontendUrl = getFrontendUrl(req.headers.referer)
 
     // 소셜 로그인 정보가 없는 경우
     if (rowCount === 0)
@@ -63,54 +68,57 @@ export function setGoogleOAuthStrategies(app: Express) {
   })
 
   // Google 계정 연결하기
-  app.get('/oauth/google/register', async (req, res) => {
-    // 입력값 검사
-    const code = req.query.code as string
-    const backendUrl = req.headers.host as string
-    const jwt = req.query.state as string
-    if (!code || !backendUrl || !jwt) return res.status(400).send('Bad Request')
+  app.get<QuerystringCodeState>(
+    '/oauth/google/register',
+    querystringCodeState,
+    async (req, res) => {
+      const code = req.query.code
+      const backendUrl = req.headers.host
+      const jwt = req.query.state
+      if (!backendUrl) return res.status(400).send('Bad Request')
 
-    const frontendUrl = getFrontendUrl(req.headers.referer)
+      const frontendUrl = getFrontendUrl(req.headers.referer)
 
-    // JWT 유효성 검사
-    const verifiedJwt = await verifyJWT(jwt)
-    if (!verifiedJwt.iat) return res.status(401).send('Not Unauthorized')
+      // JWT 유효성 검사
+      const verifiedJwt = await verifyJWT(jwt)
+      if (!verifiedJwt.iat) return res.status(401).send('Not Unauthorized')
 
-    const logoutTime = await redisClient.get(`${verifiedJwt.userId}:logoutTime`)
-    if (Number(logoutTime) > Number(verifiedJwt.iat))
-      return res.redirect(`${frontendUrl}/oauth?doesJWTExpired=true`)
+      const logoutTime = await redisClient.get(`${verifiedJwt.userId}:logoutTime`)
+      if (Number(logoutTime) > Number(verifiedJwt.iat))
+        return res.redirect(`${frontendUrl}/oauth?doesJWTExpired=true`)
 
-    // OAuth 사용자 정보 가져오기
-    const [{ rowCount, rows: userResult }, googleUser] = await Promise.all([
-      poolQuery<IGetUserResult>(getUser, [verifiedJwt.userId]),
-      fetchFromGoogle(code, `${req.protocol}://${backendUrl}`),
-    ])
-    if (rowCount === 0 || googleUser.error) return res.status(400).send('Bad Request') // user가 존재하지 않으면 JWT secret key가 유출됐다는 뜻
+      // OAuth 사용자 정보 가져오기
+      const [{ rowCount, rows: userResult }, googleUser] = await Promise.all([
+        poolQuery<IGetUserResult>(getUser, [verifiedJwt.userId]),
+        fetchFromGoogle(code, `${req.protocol}://${backendUrl}`),
+      ])
+      if (rowCount === 0 || googleUser.error) return res.status(400).send('Bad Request') // user가 존재하지 않으면 JWT secret key가 유출됐다는 뜻
 
-    const jayudamUser = userResult[0]
+      const jayudamUser = userResult[0]
 
-    // 이미 OAuth 연결되어 있으면
-    if (jayudamUser.oauth_google)
-      return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=true&oauth=google`)
+      // 이미 OAuth 연결되어 있으면
+      if (jayudamUser.oauth_google)
+        return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=true&oauth=google`)
 
-    // OAuth 사용자 정보와 자유담 사용자 정보 비교
-    if (jayudamUser.legal_name && jayudamUser.legal_name !== googleUser.name)
-      return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=google`)
+      // OAuth 사용자 정보와 자유담 사용자 정보 비교
+      if (jayudamUser.legal_name && jayudamUser.legal_name !== googleUser.name)
+        return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=google`)
 
-    await poolQuery<IUpdateGoogleUserResult>(updateGoogleUser, [
-      jayudamUser.id,
-      googleUser.email,
-      googleUser.picture ? [googleUser.picture] : null,
-      googleUser.id,
-    ])
+      await poolQuery<IUpdateGoogleUserResult>(updateGoogleUser, [
+        jayudamUser.id,
+        googleUser.email,
+        googleUser.picture ? [googleUser.picture] : null,
+        googleUser.id,
+      ])
 
-    return res.redirect(
-      `${frontendUrl}/oauth?${new URLSearchParams({
-        jwt: await signJWT({ userId: jayudamUser.id }),
-        ...(jayudamUser.name && { username: jayudamUser.name }),
-      })}`
-    )
-  })
+      return res.redirect(
+        `${frontendUrl}/oauth?${new URLSearchParams({
+          jwt: await signJWT({ userId: jayudamUser.id }),
+          ...(jayudamUser.name && { username: jayudamUser.name }),
+        })}`
+      )
+    }
+  )
 }
 
 async function fetchFromGoogle(code: string, backendUrl: string) {

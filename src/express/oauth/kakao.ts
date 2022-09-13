@@ -1,4 +1,4 @@
-import { Express } from 'express'
+import type { FastifyInstance } from 'fastify'
 import LunarJS from 'lunar-javascript'
 import fetch from 'node-fetch'
 
@@ -6,37 +6,42 @@ import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
 import { KAKAO_ADMIN_KEY, KAKAO_CLIENT_SECRET, KAKAO_REST_API_KEY } from '../../utils/constants'
 import { signJWT, verifyJWT } from '../../utils/jwt'
-import { IGetKakaoUserResult } from './sql/getKakaoUser'
+import type { IGetKakaoUserResult } from './sql/getKakaoUser'
 import getKakaoUser from './sql/getKakaoUser.sql'
-import { IGetUserResult } from './sql/getUser'
+import type { IGetUserResult } from './sql/getUser'
 import getUser from './sql/getUser.sql'
-import { IUpdateKakaoUserResult } from './sql/updateKakaoUser'
+import type { IUpdateKakaoUserResult } from './sql/updateKakaoUser'
 import updateKakaoUser from './sql/updateKakaoUser.sql'
-import { encodeSex, getFrontendUrl } from '.'
+import {
+  encodeSex,
+  getFrontendUrl,
+  QuerystringCode,
+  querystringCode,
+  QuerystringCodeState,
+  querystringCodeState,
+} from '.'
 
 const Lunar = LunarJS.Lunar
 
-export function setKakaoOAuthStrategies(app: Express) {
+export function setKakaoOAuthStrategies(fastify: FastifyInstance) {
   // Kakao 계정으로 로그인하기
-  app.get('/oauth/kakao', async (req, res) => {
-    // 입력값 검사
-    const code = req.query.code as string
-
-    if (!code) return res.status(400).send('Bad Request')
+  fastify.get<QuerystringCode>('/oauth/kakao', querystringCode, async (req, res) => {
+    const code = req.query.code
 
     // OAuth 사용자 정보 가져오기
-    const kakaoUserToken = await fetchKakaoUserToken(code as string)
+    const kakaoUserToken = await fetchKakaoUserToken(code)
     if (kakaoUserToken.error) return res.status(400).send('Bad Request')
 
     const kakaoUser = await fetchKakaoUser(kakaoUserToken.access_token)
     if (!kakaoUser.id) return res.status(400).send('Bad Request')
 
     const kakaoAccount = kakaoUser.kakao_account
-    const frontendUrl = getFrontendUrl(req.headers.referer)
 
     // 자유담 사용자 정보 가져오기
     const { rowCount, rows } = await poolQuery<IGetKakaoUserResult>(getKakaoUser, [kakaoUser.id])
     const jayudamUser = rows[0]
+
+    const frontendUrl = getFrontendUrl(req.headers.referer)
 
     // 소셜 로그인 정보가 없는 경우
     if (rowCount === 0) {
@@ -75,67 +80,89 @@ export function setKakaoOAuthStrategies(app: Express) {
   })
 
   // Kakao 계정 연결하기
-  app.get('/oauth/kakao/register', async (req, res) => {
-    // 입력값 검사
-    const code = req.query.code as string
-    const jwt = req.query.state as string
-    if (!code || !jwt) return res.status(400).send('Bad Request')
 
-    const frontendUrl = getFrontendUrl(req.headers.referer)
+  fastify.get<QuerystringCodeState>(
+    '/oauth/kakao/register',
+    querystringCodeState,
+    async (req, res) => {
+      const code = req.query.code
+      const jwt = req.query.state
+      const frontendUrl = getFrontendUrl(req.headers.referer)
 
-    // JWT 유효성 검사
-    const verifiedJwt = await verifyJWT(jwt)
-    if (!verifiedJwt.iat) return res.status(401).send('Not Unauthorized')
+      // JWT 유효성 검사
+      const verifiedJwt = await verifyJWT(jwt)
+      if (!verifiedJwt.iat) return res.status(401).send('Not Unauthorized')
 
-    const logoutTime = await redisClient.get(`${verifiedJwt.userId}:logoutTime`)
-    if (Number(logoutTime) > Number(verifiedJwt.iat))
-      return res.redirect(`${frontendUrl}/oauth?doesJWTExpired=true`)
+      const logoutTime = await redisClient.get(`${verifiedJwt.userId}:logoutTime`)
+      if (Number(logoutTime) > Number(verifiedJwt.iat))
+        return res.redirect(`${frontendUrl}/oauth?doesJWTExpired=true`)
 
-    // 자유담 사용자 정보, OAuth 사용자 정보 가져오기
-    const [{ rowCount, rows: userResult }, kakaoUser2] = await Promise.all([
-      poolQuery<IGetUserResult>(getUser, [verifiedJwt.userId]),
-      fetchFromKakao(code),
-    ])
-    if (rowCount === 0 || !kakaoUser2.id) return res.status(400).send('Bad Request') // user가 존재하지 않으면 JWT secret key가 유출됐다는 뜻
+      // 자유담 사용자 정보, OAuth 사용자 정보 가져오기
+      const [{ rowCount, rows: userResult }, kakaoUser2] = await Promise.all([
+        poolQuery<IGetUserResult>(getUser, [verifiedJwt.userId]),
+        fetchFromKakao(code),
+      ])
+      if (rowCount === 0 || !kakaoUser2.id) return res.status(400).send('Bad Request') // user가 존재하지 않으면 JWT secret key가 유출됐다는 뜻
 
-    const jayudamUser = userResult[0]
-    const kakaoUser = kakaoUser2.kakao_account
-    const kakaoUserBirthday = getKakaoSolarBirthday(kakaoUser)
+      const jayudamUser = userResult[0]
+      const kakaoUser = kakaoUser2.kakao_account
+      const kakaoUserBirthday = getKakaoSolarBirthday(kakaoUser)
 
-    // 이미 OAuth 연결되어 있으면
-    if (jayudamUser.oauth_kakao)
-      return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=true&oauth=kakao`)
+      // 이미 OAuth 연결되어 있으면
+      if (jayudamUser.oauth_kakao)
+        return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=true&oauth=kakao`)
 
-    // OAuth 사용자 정보와 자유담 사용자 정보 비교
-    if (
-      jayudamUser.sex !== encodeSex(kakaoUser.gender) ||
-      (jayudamUser.legal_name && jayudamUser.name !== kakaoUser.name) ||
-      (jayudamUser.birthyear && jayudamUser.birthyear !== kakaoUser.birthyear) ||
-      (jayudamUser.birthday && jayudamUser.birthday !== kakaoUserBirthday) ||
-      (jayudamUser.phone_number && jayudamUser.phone_number !== kakaoUser.phone_number)
-    ) {
-      unregisterKakaoUser(kakaoUser2.id)
-      return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=kakao`)
+      // OAuth 사용자 정보와 자유담 사용자 정보 비교
+      if (
+        jayudamUser.sex !== encodeSex(kakaoUser.gender) ||
+        (jayudamUser.legal_name && jayudamUser.name !== kakaoUser.name) ||
+        (jayudamUser.birthyear && jayudamUser.birthyear !== kakaoUser.birthyear) ||
+        (jayudamUser.birthday && jayudamUser.birthday !== kakaoUserBirthday) ||
+        (jayudamUser.phone_number && jayudamUser.phone_number !== kakaoUser.phone_number)
+      ) {
+        unregisterKakaoUser(kakaoUser2.id)
+        return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=kakao`)
+      }
+
+      await poolQuery<IUpdateKakaoUserResult>(updateKakaoUser, [
+        jayudamUser.id,
+        kakaoUser.email,
+        kakaoUser.profile.is_default_image ? null : [kakaoUser.profile.profile_image_url],
+        kakaoUser2.id,
+      ])
+
+      return res.redirect(
+        `${frontendUrl}/oauth?${new URLSearchParams({
+          jwt: await signJWT({ userId: jayudamUser.id }),
+          ...(jayudamUser.name && { username: jayudamUser.name }),
+        })}`
+      )
     }
+  )
 
-    await poolQuery<IUpdateKakaoUserResult>(updateKakaoUser, [
-      jayudamUser.id,
-      kakaoUser.email,
-      kakaoUser.profile.is_default_image ? null : [kakaoUser.profile.profile_image_url],
-      kakaoUser2.id,
-    ])
+  // Kakao 계정 해제하기
+  type OAuthKakaoUnregister = {
+    Querystring: {
+      user_id: string
+      referrer_type: string
+    }
+  }
 
-    return res.redirect(
-      `${frontendUrl}/oauth?${new URLSearchParams({
-        jwt: await signJWT({ userId: jayudamUser.id }),
-        ...(jayudamUser.name && { username: jayudamUser.name }),
-      })}`
-    )
-  })
+  const opts3 = {
+    schema: {
+      querystring: {
+        type: 'object',
+        properties: {
+          user_id: { type: 'string' },
+          referrer_type: { type: 'string' },
+        },
+        required: ['user_id', 'referrer_type'],
+      },
+    },
+  }
 
-  app.get('/oauth/kakao/unregister', async (req, res) => {
-    if (req.headers.Authorization !== KAKAO_ADMIN_KEY)
-      return res.status(400).send('400 Bad Request')
+  fastify.get<OAuthKakaoUnregister>('/oauth/kakao/unregister', opts3, async (req, res) => {
+    if (req.headers.Authorization !== KAKAO_ADMIN_KEY) return res.status(400).send('Bad Request')
 
     console.log('👀 - req.query.user_id', req.query.user_id)
     console.log('👀 - req.query.referrer_type', req.query.referrer_type)

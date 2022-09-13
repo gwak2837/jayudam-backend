@@ -31,9 +31,9 @@ type User {
   sleepingTime: DateTime
   towns: [Town!]
 
-  followerCount: Int
-  followingCount: Int
-  postCount: Int
+  followerCount: String
+  followingCount: String
+  postCount: String
 }
 
 type CertAgreement {

@@ -1,31 +1,30 @@
-import { AuthenticationError, ForbiddenError, UserInputError } from 'apollo-server-errors'
-
-import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
-import { MutationResolvers, Post, PostCreationResult } from '../generated/graphql'
-import { ICountCommentsResult } from './sql/countComments'
+import { BadRequestError, ForbiddenError, UnauthorizedError } from '../../fastify/errors'
+import type { GraphQLContext } from '../../fastify/server'
+import type { MutationResolvers, Post, PostCreationResult } from '../generated/graphql'
+import type { ICountCommentsResult } from './sql/countComments'
 import countComments from './sql/countComments.sql'
 import countSharingPosts from './sql/countSharingPosts.sql'
-import { ICreatePostResult } from './sql/createPost'
+import type { ICreatePostResult } from './sql/createPost'
 import createPost from './sql/createPost.sql'
-import { IDeletePostResult } from './sql/deletePost'
+import type { IDeletePostResult } from './sql/deletePost'
 import deletePost from './sql/deletePost.sql'
-import { ISharingPostResult } from './sql/sharingPost'
+import type { ISharingPostResult } from './sql/sharingPost'
 import sharingPost from './sql/sharingPost.sql'
-import { IToggleLikingPostResult } from './sql/toggleLikingPost'
+import type { IToggleLikingPostResult } from './sql/toggleLikingPost'
 import toggleLikingPost from './sql/toggleLikingPost.sql'
 
-export const Mutation: MutationResolvers<ApolloContext> = {
+export const Mutation: MutationResolvers<GraphQLContext> = {
   createPost: async (_, { input }, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { content, imageUrls, parentPostId, sharingPostId } = input
 
     if (parentPostId && sharingPostId)
-      throw new UserInputError('parentPostId, sharingPostId 중 하나만 입력해주세요')
+      throw BadRequestError('parentPostId, sharingPostId 중 하나만 입력해주세요')
 
     if (!sharingPostId && (!content || content.length === 0))
-      throw new UserInputError('content를 입력해주세요')
+      throw BadRequestError('content를 입력해주세요')
 
     const { rows } = await poolQuery<ICreatePostResult>(createPost, [
       content,
@@ -36,7 +35,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
     ])
     const failedReason = rows[0].reason
 
-    if (failedReason) throw new UserInputError(getPostCreationFailedReason(failedReason))
+    if (failedReason) throw BadRequestError(getPostCreationFailedReason(failedReason))
 
     const newPost = (rows[0].new_post as string).slice(1, -1).split(',')
     const result: PostCreationResult = {
@@ -81,14 +80,14 @@ export const Mutation: MutationResolvers<ApolloContext> = {
   },
 
   deletePost: async (_, { id }, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { rows } = await poolQuery<IDeletePostResult>(deletePost, [id, userId])
 
     const deletedPost = rows[0]
 
     if (!deletedPost.has_authorized)
-      throw new ForbiddenError('존재하지 않는 이야기거나 자신의 이야기가 아닙니다')
+      throw ForbiddenError('존재하지 않는 이야기거나 자신의 이야기가 아닙니다')
 
     if (deletedPost.is_deleted)
       return {
@@ -102,22 +101,21 @@ export const Mutation: MutationResolvers<ApolloContext> = {
   },
 
   deleteSharingPost: async (_, { sharedPostId }, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { rowCount, rows: rows2 } = await poolQuery<ISharingPostResult>(sharingPost, [
       sharedPostId,
       userId,
     ])
 
-    if (rowCount === 0)
-      throw new ForbiddenError('존재하지 않는 이야기거나 자신의 이야기가 아닙니다')
+    if (rowCount === 0) throw ForbiddenError('존재하지 않는 이야기거나 자신의 이야기가 아닙니다')
 
     const { rows } = await poolQuery<IDeletePostResult>(deletePost, [rows2[0].id, userId])
 
     const deletedPost = rows[0]
 
     if (!deletedPost.has_authorized)
-      throw new ForbiddenError('존재하지 않는 이야기거나 자신의 이야기가 아닙니다')
+      throw ForbiddenError('존재하지 않는 이야기거나 자신의 이야기가 아닙니다')
 
     const { rows: rows3 } = await poolQuery<ICountCommentsResult>(countSharingPosts, [sharedPostId])
 
@@ -149,11 +147,11 @@ export const Mutation: MutationResolvers<ApolloContext> = {
   },
 
   toggleLikingPost: async (_, { id }, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { rows } = await poolQuery<IToggleLikingPostResult>(toggleLikingPost, [userId, id])
 
-    if (rows[0].like === null) throw new UserInputError('삭제된 글은 좋아할 수 없습니다')
+    if (rows[0].like === null) throw BadRequestError('삭제된 글은 좋아할 수 없습니다')
 
     return {
       id,

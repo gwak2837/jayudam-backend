@@ -169,6 +169,7 @@ type Query {
   auth: User
   certs: Certs
   comments(lastId: ID, limit: PositiveInt, parentId: ID!): [Post!]
+  hello(name: String!): String!
   isUniqueUsername(username: NonEmptyString!): Boolean!
   myCertAgreement: CertAgreement
   myProfile: User
@@ -227,8 +228,8 @@ type User {
   coverImageUrls: [String!]
   creationTime: DateTime
   email: String
-  followerCount: Int
-  followingCount: Int
+  followerCount: String
+  followingCount: String
   grade: Grade
   id: UUID!
   imageUrl: String
@@ -246,7 +247,7 @@ type User {
   name: String
   nickname: String
   oAuthProviders: [OAuthProvider!]
-  postCount: Int
+  postCount: String
   serviceAgreement: ServiceAgreement
   sex: Sex
   sleepingTime: DateTime
