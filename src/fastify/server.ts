@@ -24,7 +24,10 @@ export async function startGraphQLServer() {
     // logger: true,
 
     ...(NODE_ENV.startsWith('local') && {
-      https: { key: LOCALHOST_HTTPS_KEY, cert: LOCALHOST_HTTPS_CERT },
+      https: {
+        key: `-----BEGIN PRIVATE KEY-----\n${LOCALHOST_HTTPS_KEY}\n-----END PRIVATE KEY-----`,
+        cert: LOCALHOST_HTTPS_CERT,
+      },
     }),
   })
 
@@ -82,5 +85,5 @@ export async function startGraphQLServer() {
   })
   // //////////////////////////////////////////////
 
-  return fastify.listen({ port: +PORT })
+  return fastify.listen({ host: '0.0.0.0', port: +PORT })
 }
