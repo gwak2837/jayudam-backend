@@ -1,4 +1,3 @@
-import type { FastifyInstance } from 'fastify'
 import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
@@ -20,13 +19,14 @@ import {
   getFrontendUrl,
   querystringCode,
 } from '.'
+import { FastifyHttp2 } from '../../fastify/server'
 
-export function setBBatonOAuthStrategies(app: FastifyInstance) {
+export function setBBatonOAuthStrategies(app: FastifyHttp2) {
   // BBaton 계정으로 가입하기
   app.get<QuerystringCode>('/oauth/bbaton', querystringCode, async (req, res) => {
     // 입력값 검사
     const code = req.query.code
-    const backendUrl = req.headers.host as string
+    const backendUrl = req.headers.host
     if (!backendUrl) return res.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기

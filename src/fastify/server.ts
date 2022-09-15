@@ -1,13 +1,15 @@
 import cors from '@fastify/cors'
+import FastifyWebSocket from '@fastify/websocket'
 import Fastify, { FastifyInstance } from 'fastify'
 import { NoSchemaIntrospectionCustomRule } from 'graphql'
+import { Http2Server, Http2ServerRequest, Http2ServerResponse } from 'http2'
 import mercurius, { IResolvers, MercuriusContext } from 'mercurius'
 
 import { redisClient } from '../database/redis'
 import { setOAuthStrategies, vercelURLRegEx } from '../express/oauth'
 import { resolvers } from '../graphql'
 import schema from '../graphql/generated/schema.graphql'
-import { NODE_ENV, PORT } from '../utils/constants'
+import { LOCALHOST_HTTPS_CERT, LOCALHOST_HTTPS_KEY, NODE_ENV, PORT } from '../utils/constants'
 import { verifyJWT } from '../utils/jwt'
 import { UnauthorizedError } from './errors'
 
@@ -15,10 +17,19 @@ export type GraphQLContext = MercuriusContext & {
   userId?: string
 }
 
-export async function startGraphQLServer() {
-  const fastify: FastifyInstance = Fastify()
+export type FastifyHttp2 = FastifyInstance<Http2Server, Http2ServerRequest, Http2ServerResponse>
 
-  await fastify.register(cors, {
+export async function startGraphQLServer() {
+  const fastify: FastifyHttp2 = Fastify({
+    http2: true,
+    // logger: true,
+
+    ...(NODE_ENV && {
+      https: { key: LOCALHOST_HTTPS_KEY, cert: LOCALHOST_HTTPS_CERT },
+    }),
+  })
+
+  fastify.register(cors, {
     origin: [
       'http://localhost:3000',
       vercelURLRegEx,
@@ -67,7 +78,7 @@ export async function startGraphQLServer() {
     },
   }
 
-  fastify.get('/test', opts, async (request) => {
+  fastify.get('/hello', opts, async (request) => {
     return { hello: request.query }
   })
   // //////////////////////////////////////////////

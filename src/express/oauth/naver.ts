@@ -1,9 +1,8 @@
-import type { FastifyInstance } from 'fastify'
 import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
-import { FRONTEND_URL, NAVER_CLIENT_ID, NAVER_CLIENT_SECRET } from '../../utils/constants'
+import { NAVER_CLIENT_ID, NAVER_CLIENT_SECRET } from '../../utils/constants'
 import { signJWT, verifyJWT } from '../../utils/jwt'
 import type { IGetNaverUserResult } from './sql/getNaverUser'
 import getNaverUser from './sql/getNaverUser.sql'
@@ -12,8 +11,9 @@ import getUser from './sql/getUser.sql'
 import type { IUpdateNaverUserResult } from './sql/updateNaverUser'
 import updateNaverUser from './sql/updateNaverUser.sql'
 import { encodeSex, getFrontendUrl, QuerystringCodeState, querystringCodeState } from '.'
+import { FastifyHttp2 } from '../../fastify/server'
 
-export function setNaverOAuthStrategies(app: FastifyInstance) {
+export function setNaverOAuthStrategies(app: FastifyHttp2) {
   // Naver 계정으로 로그인하기
   app.get<QuerystringCodeState>('/oauth/naver', querystringCodeState, async (req, res) => {
     const backendUrl = req.headers.host
