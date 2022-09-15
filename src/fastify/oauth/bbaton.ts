@@ -19,7 +19,7 @@ import {
   getFrontendUrl,
   querystringCode,
 } from '.'
-import { FastifyHttp2 } from '../../fastify/server'
+import { FastifyHttp2 } from '../server'
 
 export function setBBatonOAuthStrategies(app: FastifyHttp2) {
   // BBaton 계정으로 가입하기

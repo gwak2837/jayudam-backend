@@ -1,4 +1,4 @@
-import { FastifyHttp2 } from '../../fastify/server'
+import { FastifyHttp2 } from '../server'
 
 import { FRONTEND_URL } from '../../utils/constants'
 import { setBBatonOAuthStrategies } from './bbaton'

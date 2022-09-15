@@ -19,7 +19,7 @@ import {
   QuerystringCodeState,
   querystringCodeState,
 } from '.'
-import { FastifyHttp2 } from '../../fastify/server'
+import { FastifyHttp2 } from '../server'
 
 const Lunar = LunarJS.Lunar
 
