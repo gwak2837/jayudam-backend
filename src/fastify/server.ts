@@ -23,7 +23,7 @@ export async function startGraphQLServer() {
     http2: true,
     // logger: true,
 
-    ...(NODE_ENV && {
+    ...(NODE_ENV.startsWith('local') && {
       https: { key: LOCALHOST_HTTPS_KEY, cert: LOCALHOST_HTTPS_CERT },
     }),
   })
