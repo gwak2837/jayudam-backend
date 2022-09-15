@@ -1,6 +1,5 @@
 import { Storage } from '@google-cloud/storage'
 import { FastifyInstance } from 'fastify'
-import Multer from 'multer'
 import path from 'node:path'
 
 import { sha128 } from '../utils'
@@ -33,13 +32,6 @@ export function setUploadingFiles(app: any) {
 }
 
 const allowedExtensions = ['image', 'video', 'audio', 'application/ogg']
-
-const multer = Multer({
-  storage: Multer.memoryStorage(),
-  limits: {
-    fileSize: 15_000_000, // no larger than 15 MB
-  },
-})
 
 const bucket = new Storage().bucket(GOOGLE_CLOUD_STORAGE_BUCKET)
 

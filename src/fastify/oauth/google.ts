@@ -17,7 +17,7 @@ import {
   querystringCodeState,
   QuerystringCodeState,
 } from '.'
-import { FastifyHttp2 } from '../../fastify/server'
+import { FastifyHttp2 } from '../server'
 
 export function setGoogleOAuthStrategies(app: FastifyHttp2) {
   // Google 계정으로 로그인하기

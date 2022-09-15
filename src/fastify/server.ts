@@ -5,7 +5,7 @@ import { Http2Server, Http2ServerRequest, Http2ServerResponse } from 'http2'
 import mercurius, { IResolvers, MercuriusContext } from 'mercurius'
 
 import { redisClient } from '../database/redis'
-import { setOAuthStrategies } from '../express/oauth'
+import { setOAuthStrategies } from './oauth'
 import { resolvers } from '../graphql'
 import schema from '../graphql/generated/schema.graphql'
 import { LOCALHOST_HTTPS_CERT, LOCALHOST_HTTPS_KEY, NODE_ENV, PORT } from '../utils/constants'
@@ -26,7 +26,7 @@ export async function startGraphQLServer() {
     ...(NODE_ENV.startsWith('local') && {
       https: {
         key: `-----BEGIN PRIVATE KEY-----\n${LOCALHOST_HTTPS_KEY}\n-----END PRIVATE KEY-----`,
-        cert: LOCALHOST_HTTPS_CERT,
+        cert: `-----BEGIN PRIVATE KEY-----\n${LOCALHOST_HTTPS_CERT}\n-----END PRIVATE KEY-----`,
       },
     }),
   })

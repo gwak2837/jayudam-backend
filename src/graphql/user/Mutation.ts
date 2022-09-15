@@ -3,7 +3,7 @@ import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
-import { unregisterKakaoUser } from '../../express/oauth/kakao'
+import { unregisterKakaoUser } from '../../fastify/oauth/kakao'
 import { BadGatewayError, BadRequestError, UnauthorizedError } from '../../fastify/errors'
 import type { GraphQLContext } from '../../fastify/server'
 import { KAKAO_REST_API_KEY } from '../../utils/constants'

@@ -11,7 +11,7 @@ import getUser from './sql/getUser.sql'
 import type { IUpdateNaverUserResult } from './sql/updateNaverUser'
 import updateNaverUser from './sql/updateNaverUser.sql'
 import { encodeSex, getFrontendUrl, QuerystringCodeState, querystringCodeState } from '.'
-import { FastifyHttp2 } from '../../fastify/server'
+import { FastifyHttp2 } from '../server'
 
 export function setNaverOAuthStrategies(app: FastifyHttp2) {
   // Naver 계정으로 로그인하기
