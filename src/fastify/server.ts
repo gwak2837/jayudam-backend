@@ -1,5 +1,4 @@
 import cors from '@fastify/cors'
-import FastifyWebSocket from '@fastify/websocket'
 import Fastify, { FastifyInstance } from 'fastify'
 import { NoSchemaIntrospectionCustomRule } from 'graphql'
 import { Http2Server, Http2ServerRequest, Http2ServerResponse } from 'http2'

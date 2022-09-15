@@ -4,7 +4,6 @@ export const FRONTEND_URL = process.env.FRONTEND_URL as string
 export const PROJECT_ENV = process.env.PROJECT_ENV as string
 export const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as string
 export const LOCALHOST_HTTPS_KEY = process.env.LOCALHOST_HTTPS_KEY as string
-console.log('👀 - LOCALHOST_HTTPS_KEY', LOCALHOST_HTTPS_KEY)
 export const LOCALHOST_HTTPS_CERT = process.env.LOCALHOST_HTTPS_CERT as string
 
 export const PGURI = process.env.PGURI as string
