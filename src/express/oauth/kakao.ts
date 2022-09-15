@@ -1,4 +1,3 @@
-import type { FastifyInstance } from 'fastify'
 import LunarJS from 'lunar-javascript'
 import fetch from 'node-fetch'
 
@@ -20,10 +19,11 @@ import {
   QuerystringCodeState,
   querystringCodeState,
 } from '.'
+import { FastifyHttp2 } from '../../fastify/server'
 
 const Lunar = LunarJS.Lunar
 
-export function setKakaoOAuthStrategies(fastify: FastifyInstance) {
+export function setKakaoOAuthStrategies(fastify: FastifyHttp2) {
   // Kakao 계정으로 로그인하기
   fastify.get<QuerystringCode>('/oauth/kakao', querystringCode, async (req, res) => {
     const code = req.query.code

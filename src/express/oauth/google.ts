@@ -1,4 +1,3 @@
-import type { FastifyInstance } from 'fastify'
 import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
@@ -18,8 +17,9 @@ import {
   querystringCodeState,
   QuerystringCodeState,
 } from '.'
+import { FastifyHttp2 } from '../../fastify/server'
 
-export function setGoogleOAuthStrategies(app: FastifyInstance) {
+export function setGoogleOAuthStrategies(app: FastifyHttp2) {
   // Google 계정으로 로그인하기
   app.get<QuerystringCode>('/oauth/google', querystringCode, async (req, res) => {
     const code = req.query.code

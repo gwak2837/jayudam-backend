@@ -1,4 +1,4 @@
-import type { FastifyInstance } from 'fastify'
+import { FastifyHttp2 } from '../../fastify/server'
 
 import { FRONTEND_URL } from '../../utils/constants'
 import { setBBatonOAuthStrategies } from './bbaton'
@@ -6,7 +6,7 @@ import { setGoogleOAuthStrategies } from './google'
 import { setKakaoOAuthStrategies } from './kakao'
 import { setNaverOAuthStrategies } from './naver'
 
-export function setOAuthStrategies(app: FastifyInstance) {
+export function setOAuthStrategies(app: FastifyHttp2) {
   setBBatonOAuthStrategies(app)
   setGoogleOAuthStrategies(app)
   setKakaoOAuthStrategies(app)
