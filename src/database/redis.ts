@@ -10,8 +10,8 @@ import {
 
 export const redisClient = new Redis(REDIS_CONNECTION_STRING, {
   ...((PROJECT_ENV === 'cloud-dev' ||
-    PROJECT_ENV === 'cloud-production' ||
-    PROJECT_ENV === 'local-production') && {
+    PROJECT_ENV === 'cloud-prod' ||
+    PROJECT_ENV === 'local-prod') && {
     tls: {
       ca: `-----BEGIN CERTIFICATE-----\n${REDIS_CA}\n-----END CERTIFICATE-----`,
       key: `-----BEGIN PRIVATE KEY-----\n${REDIS_CLIENT_KEY}\n-----END PRIVATE KEY-----`,
