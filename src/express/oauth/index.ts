@@ -71,7 +71,7 @@ export const querystringCodeState = {
   },
 }
 
-export const vercelURLRegEx = /^https:\/\/jayudam-[-a-z0-9]{1,50}-gwak2837\.vercel\.app\//
+const vercelURLRegEx = /^https:\/\/jayudam-[-a-z0-9]{1,20}-gwak2837\.vercel\.app\//
 
 export function getFrontendUrl(referer?: string) {
   if (!referer) return FRONTEND_URL

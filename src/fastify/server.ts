@@ -5,7 +5,7 @@ import { Http2Server, Http2ServerRequest, Http2ServerResponse } from 'http2'
 import mercurius, { IResolvers, MercuriusContext } from 'mercurius'
 
 import { redisClient } from '../database/redis'
-import { setOAuthStrategies, vercelURLRegEx } from '../express/oauth'
+import { setOAuthStrategies } from '../express/oauth'
 import { resolvers } from '../graphql'
 import schema from '../graphql/generated/schema.graphql'
 import { LOCALHOST_HTTPS_CERT, LOCALHOST_HTTPS_KEY, NODE_ENV, PORT } from '../utils/constants'
@@ -34,9 +34,10 @@ export async function startGraphQLServer() {
   fastify.register(cors, {
     origin: [
       'http://localhost:3000',
-      vercelURLRegEx,
-      'https://jayudam.app/',
-      'https://jayudam.vercel.app/',
+      'https://jayudam.app',
+      'https://jayudam.vercel.app',
+      'https://jayudam-git-dev-gwak2837.vercel.app',
+      /^https:\/\/jayudam-[a-z0-9]{1,20}-gwak2837\.vercel\.app/,
     ],
   })
 
@@ -85,5 +86,5 @@ export async function startGraphQLServer() {
   })
   // //////////////////////////////////////////////
 
-  return fastify.listen({ host: '0.0.0.0', port: +PORT })
+  return fastify.listen({ host: process.env.K_SERVICE ? '0.0.0.0' : 'localhost', port: +PORT })
 }
