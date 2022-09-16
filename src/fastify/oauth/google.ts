@@ -4,6 +4,7 @@ import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../../utils/constants'
 import { signJWT, verifyJWT } from '../../utils/jwt'
+import { FastifyHttp2 } from '../server'
 import type { IGetGoogleUserResult } from './sql/getGoogleUser'
 import getGoogleUser from './sql/getGoogleUser.sql'
 import type { IGetUserResult } from './sql/getUser'
@@ -11,23 +12,22 @@ import getUser from './sql/getUser.sql'
 import type { IUpdateGoogleUserResult } from './sql/updateGoogleUser'
 import updateGoogleUser from './sql/updateGoogleUser.sql'
 import {
+  QuerystringCode,
+  QuerystringCodeState,
   getFrontendUrl,
   querystringCode,
-  QuerystringCode,
   querystringCodeState,
-  QuerystringCodeState,
 } from '.'
-import { FastifyHttp2 } from '../server'
 
 export function setGoogleOAuthStrategies(app: FastifyHttp2) {
   // Google 계정으로 로그인하기
   app.get<QuerystringCode>('/oauth/google', querystringCode, async (req, res) => {
     const code = req.query.code
-    const backendUrl = req.headers.host
+    const backendUrl = req.headers[':authority']
     if (!backendUrl) return res.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기
-    const googleUserToken = await fetchGoogleUserToken(code, `${req.protocol}://${backendUrl}`)
+    const googleUserToken = await fetchGoogleUserToken(code, `https://${backendUrl}`)
     if (googleUserToken.error) return res.status(400).send('Bad Request')
 
     const googleUser = await fetchGoogleUser(googleUserToken.access_token)
@@ -104,7 +104,7 @@ export function setGoogleOAuthStrategies(app: FastifyHttp2) {
       if (jayudamUser.legal_name && jayudamUser.legal_name !== googleUser.name)
         return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=google`)
 
-      await poolQuery<IUpdateGoogleUserResult>(updateGoogleUser, [
+      await poolQuery(updateGoogleUser, [
         jayudamUser.id,
         googleUser.email,
         googleUser.picture ? [googleUser.picture] : null,

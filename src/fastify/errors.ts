@@ -17,3 +17,5 @@ export const NotImplementedError = (message: string) =>
   new ErrorWithProps(message, { code: '501_NOT_IMPLEMENTED_ERROR' }, 501)
 export const BadGatewayError = (message: string) =>
   new ErrorWithProps(message, { code: '502_BAD_GATEWAY' }, 502)
+export const ServiceUnavailableError = (message: string) =>
+  new ErrorWithProps(message, { code: '503_SERVICE_UNAVAILABLE' }, 503)

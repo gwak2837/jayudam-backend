@@ -4,25 +4,25 @@ import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
 import { NAVER_CLIENT_ID, NAVER_CLIENT_SECRET } from '../../utils/constants'
 import { signJWT, verifyJWT } from '../../utils/jwt'
+import { FastifyHttp2 } from '../server'
 import type { IGetNaverUserResult } from './sql/getNaverUser'
 import getNaverUser from './sql/getNaverUser.sql'
 import type { IGetUserResult } from './sql/getUser'
 import getUser from './sql/getUser.sql'
 import type { IUpdateNaverUserResult } from './sql/updateNaverUser'
 import updateNaverUser from './sql/updateNaverUser.sql'
-import { encodeSex, getFrontendUrl, QuerystringCodeState, querystringCodeState } from '.'
-import { FastifyHttp2 } from '../server'
+import { QuerystringCodeState, encodeSex, getFrontendUrl, querystringCodeState } from '.'
 
 export function setNaverOAuthStrategies(app: FastifyHttp2) {
   // Naver 계정으로 로그인하기
   app.get<QuerystringCodeState>('/oauth/naver', querystringCodeState, async (req, res) => {
-    const backendUrl = req.headers.host
     const code = req.query.code
     const state = req.query.state
+    const backendUrl = req.headers[':authority']
     if (!backendUrl) return res.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기
-    const naverUserToken = await fetchNaverUserToken(code, `${req.protocol}://${backendUrl}`, state)
+    const naverUserToken = await fetchNaverUserToken(code, `https://${backendUrl}`, state)
     if (naverUserToken.error) return res.status(400).send('Bad Request')
 
     const naverUser2 = await fetchNaverUser(naverUserToken.access_token)
@@ -73,9 +73,9 @@ export function setNaverOAuthStrategies(app: FastifyHttp2) {
 
   // Naver 계정 연결하기
   app.get<QuerystringCodeState>('/oauth/naver/register', querystringCodeState, async (req, res) => {
-    const backendUrl = req.headers.host
     const code = req.query.code
     const jwt = req.query.state
+    const backendUrl = req.headers[':authority']
     if (!backendUrl) return res.status(400).send('Bad Request')
 
     const frontendUrl = getFrontendUrl(req.headers.referer)
@@ -111,7 +111,7 @@ export function setNaverOAuthStrategies(app: FastifyHttp2) {
     )
       return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=naver`)
 
-    await poolQuery<IUpdateNaverUserResult>(updateNaverUser, [
+    await poolQuery(updateNaverUser, [
       jayudamUser.id,
       naverUser.email,
       naverUser.profile_image ? [naverUser.profile_image] : null,

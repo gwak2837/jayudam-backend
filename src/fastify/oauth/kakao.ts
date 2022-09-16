@@ -5,6 +5,7 @@ import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
 import { KAKAO_ADMIN_KEY, KAKAO_CLIENT_SECRET, KAKAO_REST_API_KEY } from '../../utils/constants'
 import { signJWT, verifyJWT } from '../../utils/jwt'
+import { FastifyHttp2 } from '../server'
 import type { IGetKakaoUserResult } from './sql/getKakaoUser'
 import getKakaoUser from './sql/getKakaoUser.sql'
 import type { IGetUserResult } from './sql/getUser'
@@ -12,14 +13,13 @@ import getUser from './sql/getUser.sql'
 import type { IUpdateKakaoUserResult } from './sql/updateKakaoUser'
 import updateKakaoUser from './sql/updateKakaoUser.sql'
 import {
+  QuerystringCode,
+  QuerystringCodeState,
   encodeSex,
   getFrontendUrl,
-  QuerystringCode,
   querystringCode,
-  QuerystringCodeState,
   querystringCodeState,
 } from '.'
-import { FastifyHttp2 } from '../server'
 
 const Lunar = LunarJS.Lunar
 
@@ -124,7 +124,7 @@ export function setKakaoOAuthStrategies(fastify: FastifyHttp2) {
         return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=kakao`)
       }
 
-      await poolQuery<IUpdateKakaoUserResult>(updateKakaoUser, [
+      await poolQuery(updateKakaoUser, [
         jayudamUser.id,
         kakaoUser.email,
         kakaoUser.profile.is_default_image ? null : [kakaoUser.profile.profile_image_url],

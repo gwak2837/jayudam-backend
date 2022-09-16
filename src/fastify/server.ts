@@ -17,6 +17,7 @@ import {
 } from '../utils/constants'
 import { verifyJWT } from '../utils/jwt'
 import { UnauthorizedError } from './errors'
+import { setUploadingFiles } from './upload'
 
 export type GraphQLContext = MercuriusContext & {
   userId?: string
@@ -47,9 +48,6 @@ export async function startGraphQLServer() {
     ],
   })
 
-  setOAuthStrategies(fastify)
-  // setUploadingFiles(app)
-
   fastify.register(import('@fastify/rate-limit'), {
     allowList: ['127.0.0.1'],
   })
@@ -77,6 +75,9 @@ export async function startGraphQLServer() {
     schema,
     validationRules: NODE_ENV === 'production' ? [NoSchemaIntrospectionCustomRule] : undefined,
   })
+
+  setOAuthStrategies(fastify)
+  setUploadingFiles(fastify)
 
   // //////////////////////////////////////////////
   const opts = {

@@ -14,7 +14,7 @@
   "scripts": {
     "dev": "src/dev.sh",
     "build": "NODE_ENV=production node esbuild.js",
-    "start": "NODE_ENV=production node -r dotenv/config out/index.cjs dotenv_config_path=.env.local",
+    "start": "NODE_ENV=production node -r dotenv/config dist/index.js dotenv_config_path=.env.local",
     "test": "NODE_ENV=test jest",
     "clean": "rm -rf .yarn/cache .yarn/unplugged .yarn/install-state.gz out .pnp.*",
     "lint": "eslint . --fix --ignore-path .gitignore",
@@ -29,12 +29,12 @@
   },
   "dependencies": {
     "@fastify/cors": "^8.1.0",
-    "@fastify/multipart": "^7.1.2",
+    "@fastify/multipart": "^7.2.0",
     "@fastify/rate-limit": "^7.4.0",
-    "@google-cloud/storage": "^6.4.2",
+    "@google-cloud/storage": "^6.5.0",
     "@graphql-tools/merge": "^8.3.6",
     "dotenv": "^16.0.2",
-    "fastify": "^4.5.3",
+    "fastify": "^4.6.0",
     "graphql": "^16.6.0",
     "graphql-scalars": "^1.18.0",
     "ioredis": "^5.2.3",
@@ -43,7 +43,7 @@
     "mercurius": "^11.0.0",
     "node-fetch": "^3.2.10",
     "pg": "^8.8.0",
-    "telegraf": "^4.9.1"
+    "telegraf": "^4.9.2"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "2.12.0",
@@ -52,37 +52,40 @@
     "@graphql-codegen/typescript-resolvers": "2.7.3",
     "@pgtyped/cli": "^1.0.2",
     "@pgtyped/query": "^1.0.1",
-    "@types/jest": "^29.0.1",
+    "@types/jest": "^29.0.3",
     "@types/jsonwebtoken": "^8.5.9",
     "@types/multer": "^1.4.7",
-    "@types/node": "^18.7.16",
+    "@types/node": "^18.7.18",
     "@types/pg": "^8.6.5",
     "@types/pg-copy-streams": "^1.2.1",
     "@types/sharp": "^0.30.5",
-    "@typescript-eslint/eslint-plugin": "^5.31.0",
-    "@typescript-eslint/parser": "^5.31.0",
+    "@typescript-eslint/eslint-plugin": "^5.37.0",
+    "@typescript-eslint/parser": "^5.37.0",
     "@yarnpkg/esbuild-plugin-pnp": "^3.0.0-rc.15",
     "esbuild": "^0.15.7",
     "esbuild-node-externals": "^1.5.0",
-    "eslint": "^8.20.0",
+    "eslint": "^8.23.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jest": "^26.6.0",
-    "eslint-plugin-n": "^15.2.4",
-    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-jest": "^27.0.4",
+    "eslint-plugin-n": "^15.2.5",
+    "eslint-plugin-promise": "^6.0.1",
     "husky": "^8.0.1",
-    "jest": "^29.0.2",
+    "jest": "^29.0.3",
     "nodemon": "^2.0.19",
     "pg-copy-streams": "^6.0.4",
-    "prettier": "^2.7.0",
-    "ts-jest": "^28.0.8",
-    "typescript": "^4.7.4"
+    "prettier": "^2.7.1",
+    "ts-jest": "^29.0.1",
+    "typescript": "^4.8.3"
   },
   "engines": {
     "node": ">=18.2.0"
   },
   "private": true,
-  "packageManager": "yarn@3.2.1",
+  "packageManager": "yarn@3.2.3",
+  "resolutions": {
+    "gaxios/node-fetch": "^3.2.10"
+  },
   "type": "module"
 }

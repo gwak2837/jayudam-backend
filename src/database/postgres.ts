@@ -1,6 +1,6 @@
 import pg from 'pg'
 
-import { BadGatewayError } from '../fastify/errors'
+import { ServiceUnavailableError } from '../fastify/errors'
 import { formatDate } from '../utils'
 import { NODE_ENV, PGURI, POSTGRES_CA, PROJECT_ENV } from '../utils/constants'
 
@@ -22,7 +22,10 @@ export const pool = new Pool({
   }),
 })
 
-export async function poolQuery<Results>(sql: string, values?: unknown[]) {
+export async function poolQuery<Results extends pg.QueryResultRow>(
+  sql: string,
+  values?: unknown[]
+) {
   if (PROJECT_ENV.startsWith('local')) {
     // eslint-disable-next-line no-console
     console.log(formatDate(new Date()), '-', sql, values)
@@ -31,9 +34,9 @@ export async function poolQuery<Results>(sql: string, values?: unknown[]) {
   return pool.query<Results>(sql, values).catch((error) => {
     if (NODE_ENV === 'production') {
       console.error(error.message, sql, values)
-      throw BadGatewayError('Database query error')
+      throw ServiceUnavailableError('Database query error')
     } else {
-      throw BadGatewayError(error)
+      throw ServiceUnavailableError(error)
     }
   })
 }
