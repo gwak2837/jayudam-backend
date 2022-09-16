@@ -50,6 +50,10 @@ export async function startGraphQLServer() {
   setOAuthStrategies(fastify)
   // setUploadingFiles(app)
 
+  fastify.register(import('@fastify/rate-limit'), {
+    allowList: ['127.0.0.1'],
+  })
+
   fastify.register(mercurius, {
     // cache: new BaseRedisCache({
     //   client: redisClient as RedisClient,

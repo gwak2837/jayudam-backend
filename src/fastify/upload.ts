@@ -5,7 +5,7 @@ import multipart from '@fastify/multipart'
 
 import { sha128 } from '../utils'
 import { GOOGLE_CLOUD_STORAGE_BUCKET } from '../utils/constants'
-import { FastifyHttp2 } from '../fastify/server'
+import { FastifyHttp2 } from './server'
 
 // import sharp from 'sharp'
 
