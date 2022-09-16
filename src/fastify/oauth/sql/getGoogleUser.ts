@@ -1,4 +1,4 @@
-/** Types generated for queries found in "src/express/oauth/sql/getGoogleUser.sql" */
+/** Types generated for queries found in "src/fastify/oauth/sql/getGoogleUser.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
 /** 'GetGoogleUser' parameters type */

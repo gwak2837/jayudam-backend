@@ -1,4 +1,4 @@
-/** Types generated for queries found in "src/express/oauth/sql/awakeBBatonUser.sql" */
+/** Types generated for queries found in "src/fastify/oauth/sql/awakeBBatonUser.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
 /** 'AwakeBBatonUser' parameters type */

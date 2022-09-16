@@ -1,4 +1,4 @@
-/** Types generated for queries found in "src/express/oauth/sql/getNaverUser.sql" */
+/** Types generated for queries found in "src/fastify/oauth/sql/getNaverUser.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
 /** 'GetNaverUser' parameters type */
