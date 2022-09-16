@@ -1,40 +1,41 @@
-import { AuthenticationError, UserInputError } from 'apollo-server-errors'
-
-import { NotFoundError } from '../../apollo/errors'
-import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
-import { QueryResolvers, User } from '../generated/graphql'
-import { IGetMyCertAgreementResult } from './sql/getMyCertAgreement'
+import { BadRequestError, NotFoundError, UnauthorizedError } from '../../fastify/errors'
+import type { GraphQLContext } from '../../fastify/server'
+import type { QueryResolvers } from '../generated/graphql'
+import { decodeGrade, decodeSex } from './Object'
+import type { IAuthResult } from './sql/auth'
+import auth from './sql/auth.sql'
+import type { IGetMyCertAgreementResult } from './sql/getMyCertAgreement'
 import getMyCertAgreement from './sql/getMyCertAgreement.sql'
-import { IIsUniqueNicknameResult } from './sql/isUniqueNickname'
-import isUniqueNickname from './sql/isUniqueNickname.sql'
-import { IMeResult } from './sql/me'
+import type { IIsUniqueUsernameResult } from './sql/isUniqueUsername'
+import isUniqueUsername from './sql/isUniqueUsername.sql'
+import type { IMeResult } from './sql/me'
 import me from './sql/me.sql'
-import { IMyNicknameResult } from './sql/myNickname'
-import myNickname from './sql/myNickname.sql'
-import { IUserByNicknameResult } from './sql/userByNickname'
-import userByNickname from './sql/userByNickname.sql'
+import type { IMyProfileResult } from './sql/myProfile'
+import myProfile from './sql/myProfile.sql'
+import type { IUserByNameResult } from './sql/userByName'
+import userByName from './sql/userByName.sql'
 
-export const Query: QueryResolvers<ApolloContext> = {
+export const Query: QueryResolvers<GraphQLContext> = {
   auth: async (_, __, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
-    const { rows } = await poolQuery<IMyNicknameResult>(myNickname, [userId])
+    const { rows } = await poolQuery<IAuthResult>(auth, [userId])
 
     return {
       id: rows[0].id,
-      nickname: rows[0].nickname,
-    } as User
+      name: rows[0].name,
+    }
   },
 
   myCertAgreement: async (_, __, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { rows } = await poolQuery<IGetMyCertAgreementResult>(getMyCertAgreement, [userId])
     if (!rows[0].cert_agreement)
       return {
         showBirthdate: false,
-        showName: false,
+        showLegalName: false,
         showSex: false,
         showSTDTest: false,
         showImmunization: false,
@@ -43,7 +44,7 @@ export const Query: QueryResolvers<ApolloContext> = {
 
     const {
       showBirthdate,
-      showName,
+      showLegalName,
       showSex,
       showSTDTest,
       stdTestSince,
@@ -55,7 +56,7 @@ export const Query: QueryResolvers<ApolloContext> = {
 
     return {
       showBirthdate: showBirthdate ?? false,
-      showName: showName ?? false,
+      showLegalName: showLegalName ?? false,
       showSex: showSex ?? false,
       showSTDTest: showSTDTest ?? false,
       ...(showSTDTest && stdTestSince && { stdTestSince }),
@@ -66,56 +67,141 @@ export const Query: QueryResolvers<ApolloContext> = {
     }
   },
 
-  isUniqueNickname: async (_, { nickname }) => {
-    const { rowCount } = await poolQuery<IIsUniqueNicknameResult>(isUniqueNickname, [nickname])
+  isUniqueUsername: async (_, { username }) => {
+    const { rowCount } = await poolQuery<IIsUniqueUsernameResult>(isUniqueUsername, [username])
 
     return rowCount === 0
   },
 
-  user: async (_, { nickname }, { userId }) => {
-    if (!nickname && !userId) throw new UserInputError('잘못된 요청입니다')
+  myProfile: async (_, __, { userId }) => {
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
-    if (nickname === 'undefined' || nickname === 'null')
-      throw new UserInputError('허용되지 않는 닉네임입니다')
+    const { rowCount, rows } = await poolQuery<IMyProfileResult>(myProfile, [userId])
 
-    if (nickname) {
-      const { rowCount, rows } = await poolQuery<IUserByNicknameResult>(userByNickname, [nickname])
-      if (rowCount === 0) throw new NotFoundError(`\`${nickname}\` 사용자를 찾을 수 없습니다`)
+    if (rowCount === 0) throw NotFoundError('사용자를 찾을 수 없습니다')
+
+    const myInfo = rows[0]
+
+    return {
+      id: myInfo.id,
+      imageUrl: myInfo.image_urls,
+    }
+  },
+
+  user: async (_, { name }, { userId }) => {
+    if (!name && !userId) throw UnauthorizedError('로그인 후 시도해주세요')
+
+    if (name === 'undefined' || name === 'null') throw BadRequestError('허용되지 않는 닉네임입니다')
+
+    // 다른 사용자 정보
+    if (name) {
+      const { rowCount, rows } = await poolQuery<IUserByNameResult>(userByName, [name])
+      if (rowCount === 0) throw NotFoundError(`\`${name}\` 사용자를 찾을 수 없습니다`)
+
+      const otherUser = rows[0]
+
+      if (otherUser.is_private) {
+        return {
+          id: otherUser.id,
+          creationTime: otherUser.creation_time,
+          bio: otherUser.bio,
+          coverImageUrl: otherUser.cover_image_urls?.[0],
+          coverImageUrls: otherUser.cover_image_urls,
+          imageUrl: otherUser.image_urls?.[0],
+          imageUrls: otherUser.image_urls,
+          isPrivate: otherUser.is_private,
+          name: otherUser.name,
+          nickname: otherUser.nickname,
+          postCount: otherUser.post_count,
+        }
+      }
+
+      if (otherUser.sleeping_time) {
+        return {
+          id: otherUser.id,
+          creationTime: otherUser.creation_time,
+          bio: otherUser.bio,
+          coverImageUrl: otherUser.cover_image_urls?.[0],
+          coverImageUrls: otherUser.cover_image_urls,
+          imageUrl: otherUser.image_urls?.[0],
+          imageUrls: otherUser.image_urls,
+          name: otherUser.name,
+          nickname: otherUser.nickname,
+          postCount: otherUser.post_count,
+        }
+      }
+
+      if (otherUser.blocking_start_time) {
+        return {
+          id: otherUser.id,
+          creationTime: otherUser.creation_time,
+          blockingStartTime: otherUser.blocking_start_time,
+          blockingEndTime: otherUser.blocking_end_time,
+          name: otherUser.name,
+          nickname: otherUser.nickname,
+          postCount: otherUser.post_count,
+        }
+      }
 
       return {
-        bio: rows[0].bio,
-        blockingStartTime: rows[0].blocking_start_time,
-        blockingEndTime: rows[0].blocking_end_time,
-        grade: rows[0].grade,
-        imageUrls: rows[0].image_urls,
-        isVerifiedSex: rows[0].is_verified_sex,
-        nickname: rows[0].nickname,
-        sex: rows[0].sex,
+        id: otherUser.id,
+        creationTime: otherUser.creation_time,
+        bio: otherUser.bio,
+        blockingStartTime: otherUser.blocking_start_time,
+        blockingEndTime: otherUser.blocking_end_time,
+        coverImageUrl: otherUser.cover_image_urls?.[0],
+        coverImageUrls: otherUser.cover_image_urls,
+        grade: decodeGrade(otherUser.grade),
+        imageUrl: otherUser.image_urls?.[0],
+        imageUrls: otherUser.image_urls,
+        isPrivate: otherUser.is_private,
+        isVerifiedSex: otherUser.is_verified_sex,
+        name: otherUser.name,
+        nickname: otherUser.nickname,
+        postCount: otherUser.post_count,
+        sex: decodeSex(otherUser.sex),
         towns: [
-          { count: rows[0].town1_count, name: rows[0].town1_name },
-          { count: rows[0].town2_count, name: rows[0].town2_name },
+          { count: otherUser.town1_count, name: otherUser.town1_name },
+          { count: otherUser.town2_count, name: otherUser.town2_name },
         ],
-      } as User
-    } else {
-      const { rowCount, rows } = await poolQuery<IMeResult>(me, [userId])
-      if (rowCount === 0) throw new NotFoundError('탈퇴했거나 존재하지 않는 사용자입니다')
+      }
+    }
 
-      return {
-        id: rows[0].id,
-        bio: rows[0].bio,
-        blockingStartTime: rows[0].blocking_start_time,
-        blockingEndTime: rows[0].blocking_end_time,
-        cherry: rows[0].cherry,
-        grade: rows[0].grade,
-        imageUrls: rows[0].image_urls,
-        isVerifiedSex: rows[0].is_verified_sex,
-        nickname: rows[0].nickname,
-        sex: rows[0].sex,
-        towns: [
-          { count: rows[0].town1_count, name: rows[0].town1_name },
-          { count: rows[0].town2_count, name: rows[0].town2_name },
-        ],
-      } as User
+    // 내 정보
+    const { rowCount, rows } = await poolQuery<IMeResult>(me, [userId])
+    if (rowCount === 0) throw NotFoundError('탈퇴했거나 존재하지 않는 사용자입니다')
+
+    const myInfo = rows[0]
+
+    return {
+      id: myInfo.id,
+      creationTime: myInfo.creation_time,
+      bio: myInfo.bio,
+      birthday: myInfo.birthday,
+      birthyear: myInfo.birthyear,
+      blockingStartTime: myInfo.blocking_start_time,
+      blockingEndTime: myInfo.blocking_end_time,
+      coverImageUrl: myInfo.cover_image_urls?.[0],
+      coverImageUrls: myInfo.cover_image_urls,
+      cherry: myInfo.cherry,
+      followerCount: myInfo.follower_count,
+      followingCount: myInfo.following_count,
+      grade: decodeGrade(myInfo.grade),
+      imageUrl: myInfo.image_urls?.[0],
+      imageUrls: myInfo.image_urls,
+      isPrivate: myInfo.is_private,
+      isVerifiedBirthday: myInfo.is_verified_birthday,
+      isVerifiedBirthyear: myInfo.is_verified_birthyear,
+      isVerifiedSex: myInfo.is_verified_sex,
+      name: myInfo.name,
+      nickname: myInfo.nickname,
+      postCount: myInfo.post_count,
+      sex: decodeSex(myInfo.sex),
+      sleepingTime: myInfo.sleeping_time,
+      towns: [
+        { count: myInfo.town1_count, name: myInfo.town1_name },
+        { count: myInfo.town2_count, name: myInfo.town2_name },
+      ],
     }
   },
 }

@@ -5,7 +5,7 @@ services:
     depends_on:
       - redis
       - postgres
-    env_file: .env.local.docker
+    env_file: .env.docker.local
     image: jayudam-api:latest
     restart: on-failure
     ports:

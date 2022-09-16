@@ -16,6 +16,7 @@ input UserUpdate {
   certAgreement: CertAgreementInput
   email: EmailAddress
   imageUrls: [URL!]
+  name: NonEmptyString
   nickname: NonEmptyString
   serviceAgreement: ServiceAgreementInput
   town1Name: NonEmptyString

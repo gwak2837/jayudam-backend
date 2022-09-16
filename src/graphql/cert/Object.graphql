@@ -2,7 +2,7 @@ type Certs {
   id: ID!
   creationTime: DateTime!
   birthdate: DateTime
-  name: String
+  legalName: String
   sex: Sex
   stdTestCerts: [Cert!]
   immunizationCerts: [Cert!]

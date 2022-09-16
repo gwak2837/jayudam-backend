@@ -1,6 +1,6 @@
 import pg from 'pg'
 
-import { DatabaseQueryError } from '../apollo/errors'
+import { BadGatewayError } from '../fastify/errors'
 import { formatDate } from '../utils'
 import { NODE_ENV, PGURI, POSTGRES_CA, PROJECT_ENV } from '../utils/constants'
 
@@ -11,8 +11,8 @@ export const pool = new Pool({
   connectionString: PGURI,
 
   ...((PROJECT_ENV === 'cloud-dev' ||
-    PROJECT_ENV === 'cloud-production' ||
-    PROJECT_ENV === 'local-production') && {
+    PROJECT_ENV === 'cloud-prod' ||
+    PROJECT_ENV === 'local-prod') && {
     ssl: {
       ca: `-----BEGIN CERTIFICATE-----\n${POSTGRES_CA}\n-----END CERTIFICATE-----`,
       checkServerIdentity: () => {
@@ -31,9 +31,9 @@ export async function poolQuery<Results>(sql: string, values?: unknown[]) {
   return pool.query<Results>(sql, values).catch((error) => {
     if (NODE_ENV === 'production') {
       console.error(error.message, sql, values)
-      throw new DatabaseQueryError('Database query error')
+      throw BadGatewayError('Database query error')
     } else {
-      throw new DatabaseQueryError(error)
+      throw BadGatewayError(error)
     }
   })
 }

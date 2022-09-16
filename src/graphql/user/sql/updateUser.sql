@@ -6,16 +6,17 @@ SET update_time = CURRENT_TIMESTAMP,
   cert_agreement = COALESCE($3, cert_agreement),
   email = COALESCE($4, email),
   image_urls = COALESCE($5, image_urls),
-  nickname = COALESCE($6, nickname),
-  service_agreement = COALESCE($7, service_agreement),
-  town1_name = COALESCE($8, town1_name),
+  name = COALESCE($6, name),
+  nickname = COALESCE($7, nickname),
+  service_agreement = COALESCE($8, service_agreement),
+  town1_name = COALESCE($9, town1_name),
   town1_count = CASE
-    WHEN $8 IS NULL THEN town1_count
+    WHEN $9 IS NULL THEN town1_count
     ELSE 0
   END,
-  town2_name = COALESCE($9, town2_name),
+  town2_name = COALESCE($10, town2_name),
   town2_count = CASE
-    WHEN $9 IS NULL THEN town2_count
+    WHEN $10 IS NULL THEN town2_count
     ELSE 0
   END
 WHERE id = $1
@@ -23,6 +24,7 @@ RETURNING bio,
   cert_agreement,
   email,
   image_urls,
+  name,
   nickname,
   service_agreement,
   town1_name,

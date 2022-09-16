@@ -73,28 +73,31 @@ $$ language plpgsql;
 CREATE TABLE "user" (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   creation_time timestamptz DEFAULT CURRENT_TIMESTAMP,
-  update_time timestamptz DEFAULT CURRENT_TIMESTAMP,
+  update_time timestamptz,
   bio varchar(100),
   birthyear int,
   birthday char(4),
   blocking_start_time timestamptz,
   blocking_end_time timestamptz,
+  cover_image_urls text [],
   cert_agreement text,
   cherry int NOT NULL DEFAULT 10 CHECK (cherry >= 0),
   deactivation_time timestamptz,
   email varchar(50) UNIQUE,
   grade int DEFAULT 0,
+  legal_name varchar(30),
   image_urls text [],
   invitation_code char(8) UNIQUE DEFAULT unique_random(8, 'user', 'invitation_code'),
+  is_private boolean NOT NULL DEFAULT FALSE,
   is_verified_birthyear boolean NOT NULL DEFAULT FALSE,
   is_verified_birthday boolean NOT NULL DEFAULT FALSE,
   is_verified_email boolean NOT NULL DEFAULT FALSE,
-  is_verified_name boolean NOT NULL DEFAULT FALSE,
+  is_verified_legal_name boolean NOT NULL DEFAULT FALSE,
   is_verified_phone_number boolean NOT NULL DEFAULT FALSE,
   is_verified_sex boolean NOT NULL DEFAULT FALSE,
   last_attendance timestamptz,
-  name varchar(50),
-  nickname varchar(20) UNIQUE,
+  name varchar(30),
+  nickname varchar(30) UNIQUE,
   oauth_bbaton varchar(100) NOT NULL UNIQUE,
   oauth_google varchar(100) UNIQUE,
   oauth_kakao varchar(100) UNIQUE,
@@ -117,7 +120,7 @@ CREATE TABLE cert_pending (
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   birthdate timestamptz NOT NULL,
   issue_date timestamptz NOT NULL,
-  name varchar(50) NOT NULL,
+  legal_name varchar(30) NOT NULL,
   sex int NOT NULL,
   verification_code varchar(100) NOT NULL,
   --
@@ -129,10 +132,10 @@ CREATE TABLE cert (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   birthdate timestamptz NOT NULL,
-  cert_name varchar(50) NOT NULL,
   content text NOT NULL,
   effective_date timestamptz NOT NULL,
   issue_date timestamptz NOT NULL,
+  legal_name varchar(30) NOT NULL,
   location varchar(100) NOT NULL,
   name varchar(50) NOT NULL,
   sex int NOT NULL,
@@ -164,12 +167,14 @@ CREATE TABLE notification (
 CREATE TABLE post (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   creation_time timestamptz DEFAULT CURRENT_TIMESTAMP,
-  update_time timestamptz DEFAULT CURRENT_TIMESTAMP,
+  update_time timestamptz,
   deletion_time timestamptz,
-  content varchar(500),
+  content varchar(200),
   image_urls text [],
   --
   parent_post_id bigint REFERENCES post ON DELETE
+  SET NULL,
+    sharing_post_id bigint REFERENCES post ON DELETE
   SET NULL,
     user_id uuid REFERENCES "user" ON DELETE
   SET NULL
@@ -182,6 +187,7 @@ CREATE TABLE verification_history (
   user_id uuid REFERENCES "user" ON DELETE CASCADE
 );
 
+-- post에 있는 해시태그
 CREATE TABLE hashtag_x_post (
   hashtag_id bigint REFERENCES hashtag ON DELETE CASCADE,
   post_id bigint REFERENCES post ON DELETE CASCADE,
@@ -189,6 +195,7 @@ CREATE TABLE hashtag_x_post (
   PRIMARY KEY (hashtag_id, post_id)
 );
 
+-- bio에 있는 해시태그
 CREATE TABLE hashtag_x_user (
   hashtag_id bigint REFERENCES hashtag ON DELETE CASCADE,
   user_id uuid REFERENCES "user" ON DELETE CASCADE,
@@ -203,3 +210,183 @@ CREATE TABLE post_x_user (
   --
   PRIMARY KEY (post_id, user_id)
 );
+
+CREATE TABLE post_x_mentioned_user (
+  post_id bigint REFERENCES post ON DELETE CASCADE,
+  user_id uuid REFERENCES "user" ON DELETE CASCADE,
+  --
+  PRIMARY KEY (post_id, user_id)
+);
+
+CREATE TABLE user_x_user (
+  leader_id uuid REFERENCES "user" ON DELETE CASCADE,
+  follower_id uuid REFERENCES "user" ON DELETE CASCADE,
+  --
+  PRIMARY KEY (leader_id, follower_id)
+);
+
+CREATE FUNCTION toggle_liking_post (
+  _user_id uuid,
+  _post_id bigint,
+  out "like" boolean,
+  out like_count int
+) LANGUAGE plpgsql AS $$ BEGIN
+/* 삭제된 글엔 좋아요 하기/취소 불가 */
+PERFORM
+FROM post
+WHERE id = _post_id
+  AND deletion_time IS NOT NULL;
+
+IF found THEN RETURN;
+
+END IF;
+
+/* 좋아요 하기/취소 */
+PERFORM
+FROM post_x_user
+WHERE user_id = _user_id
+  AND post_id = _post_id;
+
+IF FOUND THEN
+DELETE FROM post_x_user
+WHERE user_id = _user_id
+  AND post_id = _post_id;
+
+"like" = FALSE;
+
+ELSE
+INSERT INTO post_x_user (user_id, post_id)
+VALUES (_user_id, _post_id);
+
+"like" = TRUE;
+
+END IF;
+
+/* 좋아요 개수 갱신 */
+SELECT COUNT(user_id) INTO like_count
+FROM post_x_user
+WHERE post_id = _post_id;
+
+END $$;
+
+CREATE FUNCTION create_post (
+  _content varchar(200),
+  _image_urls text [],
+  _parent_post_id bigint,
+  _shared_post_id bigint,
+  _user_id uuid,
+  out reason int,
+  out new_post record
+) LANGUAGE plpgsql AS $$ BEGIN
+/* 댓글 달기 검사 */
+IF _parent_post_id IS NOT NULL THEN PERFORM
+FROM post
+WHERE id = _parent_post_id
+  AND deletion_time IS NOT NULL;
+
+IF found THEN reason = 1;
+
+RETURN;
+
+END IF;
+
+END IF;
+
+/* 공유하기 검사 */
+IF _shared_post_id IS NOT NULL THEN PERFORM
+FROM post
+WHERE user_id = _user_id
+  AND sharing_post_id = _shared_post_id;
+
+IF found THEN reason = 2;
+
+RETURN;
+
+END IF;
+
+PERFORM
+FROM post
+WHERE id = _shared_post_id
+  AND deletion_time IS NOT NULL;
+
+IF found THEN reason = 3;
+
+RETURN;
+
+END IF;
+
+END IF;
+
+/* 글쓰기 */
+INSERT INTO post (
+    content,
+    image_urls,
+    parent_post_id,
+    sharing_post_id,
+    user_id
+  )
+VALUES (
+    _content,
+    _image_urls,
+    _parent_post_id,
+    _shared_post_id,
+    _user_id
+  )
+RETURNING id,
+  creation_time INTO new_post;
+
+END $$;
+
+CREATE FUNCTION delete_post (
+  _post_id bigint,
+  _user_id uuid,
+  out has_authorized boolean,
+  out is_deleted boolean,
+  out deletion_time timestamptz
+) LANGUAGE plpgsql AS $$ BEGIN PERFORM
+FROM post
+WHERE parent_post_id = _post_id
+  OR sharing_post_id = _post_id;
+
+/* 댓글이 있거나 공유됐을 경우 내용만 삭제 */
+IF FOUND THEN
+UPDATE post
+SET deletion_time = CURRENT_TIMESTAMP,
+  content = NULL,
+  image_urls = NULL,
+  parent_post_id = NULL,
+  sharing_post_id = NULL
+WHERE id = _post_id
+  AND user_id = _user_id
+  AND post.deletion_time IS NULL
+RETURNING post.deletion_time INTO delete_post.deletion_time;
+
+IF FOUND THEN has_authorized = TRUE;
+
+is_deleted = FALSE;
+
+ELSE has_authorized = FALSE;
+
+delete_post.deletion_time = NULL;
+
+END IF;
+
+/* 그외 경우 레코드를 삭제 */
+ELSE
+DELETE FROM post
+WHERE id = _post_id
+  AND user_id = _user_id;
+
+IF FOUND THEN has_authorized = TRUE;
+
+is_deleted = TRUE;
+
+delete_post.deletion_time = CURRENT_TIMESTAMP;
+
+ELSE has_authorized = FALSE;
+
+END IF;
+
+END IF;
+
+END $$;

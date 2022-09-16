@@ -1,29 +1,31 @@
-import { ApolloError, AuthenticationError, UserInputError } from 'apollo-server-express'
+import { MercuriusContext } from 'mercurius'
+import fetch from 'node-fetch'
 
-import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
-import { unregisterKakaoUser } from '../../express/oauth/kakao'
+import { unregisterKakaoUser } from '../../fastify/oauth/kakao'
+import { BadGatewayError, BadRequestError, UnauthorizedError } from '../../fastify/errors'
+import type { GraphQLContext } from '../../fastify/server'
 import { KAKAO_REST_API_KEY } from '../../utils/constants'
-import { MutationResolvers, User } from '../generated/graphql'
-import { IDeleteUserResult } from './sql/deleteUser'
+import type { MutationResolvers, User } from '../generated/graphql'
+import type { IDeleteUserResult } from './sql/deleteUser'
 import deleteUser from './sql/deleteUser.sql'
-import { IDeleteUserInfoResult } from './sql/deleteUserInfo'
+import type { IDeleteUserInfoResult } from './sql/deleteUserInfo'
 import deleteUserInfo from './sql/deleteUserInfo.sql'
-import { IGetUserInfoResult } from './sql/getUserInfo'
+import type { IGetUserInfoResult } from './sql/getUserInfo'
 import getUserInfo from './sql/getUserInfo.sql'
-import { IUpdateUserResult } from './sql/updateUser'
+import type { IUpdateUserResult } from './sql/updateUser'
 import updateUser from './sql/updateUser.sql'
-import { IVerifyTownResult } from './sql/verifyTown'
+import type { IVerifyTownResult } from './sql/verifyTown'
 import verifyTown from './sql/verifyTown.sql'
 
-export const Mutation: MutationResolvers<ApolloContext> = {
+export const Mutation: MutationResolvers<GraphQLContext & MercuriusContext> = {
   logout: async (_, __, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const logoutTime = Date.now()
     const result = await redisClient.set(`${userId}:logoutTime`, logoutTime)
-    if (result !== 'OK') throw new ApolloError('Redis error')
+    if (result !== 'OK') throw BadGatewayError('Redis error')
 
     return {
       id: userId,
@@ -32,7 +34,7 @@ export const Mutation: MutationResolvers<ApolloContext> = {
   },
 
   unregister: async (_, __, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { rows } = await poolQuery<IGetUserInfoResult>(getUserInfo, [userId])
 
@@ -61,17 +63,25 @@ export const Mutation: MutationResolvers<ApolloContext> = {
   },
 
   updateUser: async (_, { input }, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
-    if (Object.keys(input).length === 0) throw new UserInputError('하나 이상 입력해주세요')
+    if (Object.keys(input).length === 0) throw BadRequestError('하나 이상 입력해주세요')
 
+    const name = input.name
+    const nickname = input.nickname
     if (
-      illegalNickname.has(input.nickname) ||
-      !nicknameRegex.test(input.nickname) ||
-      input.nickname.length > 20 ||
-      input.nickname.length < 2
+      (nickname &&
+        (illegalNickname.has(nickname) ||
+          !nicknameRegex.test(nickname) ||
+          nickname.length > 30 ||
+          nickname.length < 2)) ||
+      (name &&
+        (illegalNickname.has(name) ||
+          !nicknameRegex.test(name) ||
+          name.length > 30 ||
+          name.length < 2))
     )
-      throw new UserInputError('허용되지 않는 이름입니다')
+      throw BadRequestError('허용되지 않는 이름입니다')
 
     const { rows } = await poolQuery<IUpdateUserResult>(updateUser, [
       userId,
@@ -79,7 +89,8 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       JSON.stringify(input.certAgreement),
       input.email,
       input.imageUrls?.map((imageUrl) => imageUrl.href),
-      input.nickname,
+      name,
+      nickname,
       JSON.stringify({
         ...input.serviceAgreement,
         termsAgreementTime: Date.now(),
@@ -99,7 +110,8 @@ export const Mutation: MutationResolvers<ApolloContext> = {
       }),
       ...(input.email && { email: rows[0].email }),
       ...(input.imageUrls && { imageUrls: rows[0].image_urls }),
-      ...(input.nickname && { nickname: rows[0].nickname }),
+      ...(name && { name: rows[0].name }),
+      ...(nickname && { nickname: rows[0].nickname }),
       ...(input.serviceAgreement && {
         serviceAgreement: rows[0].service_agreement ? JSON.parse(rows[0].service_agreement) : null,
       }),
@@ -109,13 +121,13 @@ export const Mutation: MutationResolvers<ApolloContext> = {
   },
 
   verifyTown: async (_, { lat, lon }, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { documents } = await getLegalTown(lat, lon)
-    if (!documents) throw new UserInputError('해당 주소를 찾을 수 없습니다')
+    if (!documents) throw BadRequestError('해당 주소를 찾을 수 없습니다')
 
     const legalTown = documents.find((document) => document.region_type === 'B')
-    if (!legalTown?.region_3depth_name) throw new UserInputError('해당 주소를 찾을 수 없습니다')
+    if (!legalTown?.region_3depth_name) throw BadRequestError('해당 주소를 찾을 수 없습니다')
 
     const { rows } = await poolQuery<IVerifyTownResult>(verifyTown, [
       userId,

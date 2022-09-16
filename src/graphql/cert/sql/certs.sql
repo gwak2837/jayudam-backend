@@ -1,11 +1,11 @@
 /* @name certs */
 SELECT id,
   birthdate,
-  cert_name,
   content,
   effective_date,
   issue_date,
   location,
+  legal_name,
   name,
   sex,
   "type"

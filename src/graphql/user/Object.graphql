@@ -1,32 +1,44 @@
 type User {
   id: UUID!
-  creationTime: DateTime!
+  creationTime: DateTime
   bio: String
   birthyear: Int
+  birthday: String
   blockingStartTime: DateTime
   blockingEndTime: DateTime
   certAgreement: CertAgreement
-  cherry: NonNegativeInt!
+  coverImageUrls: [String!]
+  cherry: Int
+  email: String
   grade: Grade
-  email: EmailAddress
-  imageUrls: [URL!]
-  isVerifiedBirthyear: Boolean!
-  isVerifiedBirthday: Boolean!
-  isVerifiedEmail: Boolean!
-  isVerifiedName: Boolean!
-  isVerifiedPhoneNumber: Boolean!
-  isVerifiedSex: Boolean!
+  imageUrl: String
+  imageUrls: [String!]
+  isPrivate: Boolean
+  isSleeping: Boolean
+  isVerifiedBirthyear: Boolean
+  isVerifiedBirthday: Boolean
+  isVerifiedEmail: Boolean
+  isVerifiedName: Boolean
+  isVerifiedPhoneNumber: Boolean
+  isVerifiedSex: Boolean
+  legalName: String
   logoutTime: DateTime
+  name: String
   nickname: String
   oAuthProviders: [OAuthProvider!]
   serviceAgreement: ServiceAgreement
   sex: Sex
+  sleepingTime: DateTime
   towns: [Town!]
+
+  followerCount: String
+  followingCount: String
+  postCount: String
 }
 
 type CertAgreement {
   showBirthdate: Boolean!
-  showName: Boolean!
+  showLegalName: Boolean!
   showSex: Boolean!
   showSTDTest: Boolean!
   stdTestSince: DateTime
@@ -45,11 +57,11 @@ type ServiceAgreement {
   locationAgreementTime: DateTime
   adAgreement: Boolean!
   adAgreementTime: DateTime
-  personalDataStoringYear: NonNegativeInt!
+  personalDataStoringYear: Int!
 }
 
 type Town {
-  count: NonNegativeInt!
+  count: Int!
   name: String
 }
 

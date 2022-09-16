@@ -1,0 +1,33 @@
+{
+  "GraphQL Query": {
+    "prefix": "query",
+    "body": [
+      "import type { GraphQLContext } from '../../fastify/server'",
+      "import type { QueryResolvers } from '../generated/graphql'",
+      "",
+      "export const Query: QueryResolvers<GraphQLContext> = {",
+      "  $1: async (_, __, { userId }) => {",
+      "    return {} as $2",
+      "  },",
+      "}",
+      ""
+    ],
+    "description": "GraphQL Query"
+  },
+
+  "GraphQL Mutation": {
+    "prefix": "mutation",
+    "body": [
+      "import type { GraphQLContext } from '../../fastify/server'",
+      "import type { MutationResolvers } from '../generated/graphql'",
+      "",
+      "export const Mutation: MutationResolvers<GraphQLContext> = {",
+      "  $1: async (_, __, { userId }) => {",
+      "    return {} as $2",
+      "  },",
+      "}",
+      ""
+    ],
+    "description": "GraphQL Mutation"
+  }
+}

@@ -1,5 +1,0 @@
-type VerificationHistory {
-  id: Int!
-  creationTime: DateTime!
-  content: NonEmptyString!
-}

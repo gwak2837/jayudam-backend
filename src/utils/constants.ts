@@ -1,9 +1,10 @@
+export const NODE_ENV = process.env.NODE_ENV as string
 export const PORT = process.env.PORT as string
 export const FRONTEND_URL = process.env.FRONTEND_URL as string
-
-export const NODE_ENV = process.env.NODE_ENV as string
 export const PROJECT_ENV = process.env.PROJECT_ENV as string
 export const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as string
+export const LOCALHOST_HTTPS_KEY = process.env.LOCALHOST_HTTPS_KEY as string
+export const LOCALHOST_HTTPS_CERT = process.env.LOCALHOST_HTTPS_CERT as string
 
 export const PGURI = process.env.PGURI as string
 export const POSTGRES_CA = process.env.POSTGRES_CA as string
@@ -30,15 +31,18 @@ export const BBATON_CLIENT_SECRET_KEY = process.env.BBATON_CLIENT_SECRET_KEY as 
 
 export const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN as string
 
+if (!NODE_ENV) throw new Error('`NODE_ENV` 환경 변수를 설정해주세요.')
 if (!PORT) throw new Error('`PORT` 환경 변수를 설정해주세요.')
 if (!FRONTEND_URL) throw new Error('`FRONTEND_URL` 환경 변수를 설정해주세요.')
-
-if (!NODE_ENV) throw new Error('`NODE_ENV` 환경 변수를 설정해주세요.')
 if (!PROJECT_ENV) throw new Error('`PROJECT_ENV` 환경 변수를 설정해주세요.')
 if (!JWT_SECRET_KEY) throw new Error('`JWT_SECRET_KEY` 환경 변수를 설정해주세요.')
+if (NODE_ENV.startsWith('local') && !LOCALHOST_HTTPS_KEY)
+  throw new Error('`LOCALHOST_HTTPS_KEY` 환경 변수를 설정해주세요.')
+if (NODE_ENV.startsWith('local') && !LOCALHOST_HTTPS_CERT)
+  throw new Error('`LOCALHOST_HTTPS_CERT` 환경 변수를 설정해주세요.')
 
 if (!PGURI) throw new Error('`PGURI` 환경 변수를 설정해주세요.')
-if (!POSTGRES_CA) throw new Error('`POSTGRES_CERTIFICATE_AUTHORITY` 환경 변수를 설정해주세요.')
+if (!POSTGRES_CA) throw new Error('`POSTGRES_CA` 환경 변수를 설정해주세요.')
 
 if (!REDIS_CONNECTION_STRING) throw new Error('`REDIS_CONNECTION_STRING` 환경 변수를 설정해주세요.')
 if (!REDIS_CA) throw new Error('`REDIS_CA` 환경 변수를 설정해주세요.')

@@ -1,15 +1,14 @@
-import { AuthenticationError } from 'apollo-server-errors'
-
-import type { ApolloContext } from '../../apollo/server'
 import { poolQuery } from '../../database/postgres'
+import { UnauthorizedError } from '../../fastify/errors'
+import type { GraphQLContext } from '../../fastify/server'
 import { signJWT } from '../../utils/jwt'
-import { Certs, QueryResolvers } from '../generated/graphql'
-import { IVerificationHistoriesResult } from './sql/verificationHistories'
+import type { QueryResolvers } from '../generated/graphql'
+import type { IVerificationHistoriesResult } from './sql/verificationHistories'
 import verificationHistories from './sql/verificationHistories.sql'
 
-export const Query: QueryResolvers<ApolloContext> = {
+export const Query: QueryResolvers<GraphQLContext> = {
   sampleCertJWT: async (_, __, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     return await signJWT(
       {
@@ -17,7 +16,7 @@ export const Query: QueryResolvers<ApolloContext> = {
         forTest: true,
         userId: '00000000-0000-0000-0000-000000000000',
         showBirthdate: true,
-        showName: true,
+        showLegalName: true,
         showSex: true,
         showSTDTest: true,
         showImmunization: true,
@@ -28,7 +27,7 @@ export const Query: QueryResolvers<ApolloContext> = {
   },
 
   verificationHistories: async (_, __, { userId }) => {
-    if (!userId) throw new AuthenticationError('로그인 후 시도해주세요')
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { rows } = await poolQuery<IVerificationHistoriesResult>(verificationHistories, [userId])
 

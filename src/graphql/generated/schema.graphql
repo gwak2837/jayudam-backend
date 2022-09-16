@@ -15,7 +15,7 @@ type CertAgreement {
   sexualCrimeSince: DateTime
   showBirthdate: Boolean!
   showImmunization: Boolean!
-  showName: Boolean!
+  showLegalName: Boolean!
   showSTDTest: Boolean!
   showSex: Boolean!
   showSexualCrime: Boolean!
@@ -27,7 +27,7 @@ input CertAgreementInput {
   sexualCrimeSince: DateTime
   showBirthdate: Boolean
   showImmunization: Boolean
-  showName: Boolean
+  showLegalName: Boolean
   showSTDTest: Boolean
   showSex: Boolean
   showSexualCrime: Boolean
@@ -37,7 +37,7 @@ input CertAgreementInput {
 input CertCreation {
   birthdate: DateTime!
   issueDate: DateTime!
-  name: NonEmptyString!
+  legalName: NonEmptyString!
   sex: Sex!
   verificationCode: NonEmptyString!
 }
@@ -54,7 +54,7 @@ type Certs {
   creationTime: DateTime!
   id: ID!
   immunizationCerts: [Cert!]
-  name: String
+  legalName: String
   sex: Sex
   sexualCrimeCerts: [Cert!]
   stdTestCerts: [Cert!]
@@ -77,16 +77,18 @@ scalar Latitude
 scalar Longitude
 
 type Mutation {
-  createPost(input: PostCreationInput!): Post
+  certJWT(input: CertAgreementInput!): JWT!
+  createPost(input: PostCreationInput!): PostCreationResult
   deletePost(id: ID!): Post
+  deleteSharingPost(sharedPostId: ID!): PostDeletionResult
   disconnectFromGoogleOAuth: Boolean
   disconnectFromKakaoOAuth: Boolean
   disconnectFromNaverOAuth: Boolean
   logout: User
   submitCert(input: CertCreation!): Cert
   takeAttendance: User
+  toggleLikingPost(id: ID!): Post
   unregister: User
-  updateCertAgreement(input: CertAgreementInput!): JWT!
   updateMyCertAgreement(input: CertAgreementInput): CertAgreement
   updatePost(input: PostUpdateInput!): Post
   updateUser(input: UserUpdate!): User
@@ -122,19 +124,39 @@ scalar PositiveInt
 
 type Post {
   author: User
-  content: NonEmptyString
+  commentCount: Int
+  comments: [Post!]
+  content: String
   creationTime: DateTime
   deletionTime: DateTime
+  doIComment: Boolean!
+  doIShare: Boolean!
   id: ID!
   imageUrls: [URL]
-  likeCount: NonNegativeInt
-  modificationTime: DateTime
+  isLiked: Boolean!
+  likeCount: Int
+  parentPost: Post
+  sharedCount: Int
+  sharingPost: Post
+  updateTime: DateTime
 }
 
 input PostCreationInput {
-  content: NonEmptyString!
+  content: String
   imageUrls: [URL!]
   parentPostId: ID
+  sharingPostId: ID
+}
+
+type PostCreationResult {
+  newPost: Post!
+  parentPost: Post
+  sharedPost: Post
+}
+
+type PostDeletionResult {
+  deletedPost: Post
+  sharedPost: Post
 }
 
 input PostUpdateInput {
@@ -146,14 +168,16 @@ input PostUpdateInput {
 type Query {
   auth: User
   certs: Certs
-  isUniqueNickname(nickname: NonEmptyString!): Boolean!
+  comments(lastId: ID, limit: PositiveInt, parentId: ID!): [Post!]
+  hello(name: String!): String!
+  isUniqueUsername(username: NonEmptyString!): Boolean!
   myCertAgreement: CertAgreement
-  myVerificationHistories: [VerificationHistory!]
+  myProfile: User
   pendingCerts: [Cert!]
   post(id: ID!): Post
-  posts: [Post!]
+  posts(lastId: ID, limit: PositiveInt): [Post!]
   sampleCertJWT: JWT!
-  user(nickname: NonEmptyString): User
+  user(name: NonEmptyString): User
   verificationHistories: [Certs!]
 }
 
@@ -162,7 +186,7 @@ type ServiceAgreement {
   adAgreementTime: DateTime
   locationAgreement: Boolean!
   locationAgreementTime: DateTime
-  personalDataStoringYear: NonNegativeInt!
+  personalDataStoringYear: Int!
   privacyAgreement: Boolean!
   privacyAgreementTime: DateTime
   termsAgreement: Boolean!
@@ -185,7 +209,7 @@ enum Sex {
 }
 
 type Town {
-  count: NonNegativeInt!
+  count: Int!
   name: String
 }
 
@@ -195,27 +219,38 @@ scalar UUID
 
 type User {
   bio: String
+  birthday: String
   birthyear: Int
   blockingEndTime: DateTime
   blockingStartTime: DateTime
   certAgreement: CertAgreement
-  cherry: NonNegativeInt!
-  creationTime: DateTime!
-  email: EmailAddress
+  cherry: Int
+  coverImageUrls: [String!]
+  creationTime: DateTime
+  email: String
+  followerCount: String
+  followingCount: String
   grade: Grade
   id: UUID!
-  imageUrls: [URL!]
-  isVerifiedBirthday: Boolean!
-  isVerifiedBirthyear: Boolean!
-  isVerifiedEmail: Boolean!
-  isVerifiedName: Boolean!
-  isVerifiedPhoneNumber: Boolean!
-  isVerifiedSex: Boolean!
+  imageUrl: String
+  imageUrls: [String!]
+  isPrivate: Boolean
+  isSleeping: Boolean
+  isVerifiedBirthday: Boolean
+  isVerifiedBirthyear: Boolean
+  isVerifiedEmail: Boolean
+  isVerifiedName: Boolean
+  isVerifiedPhoneNumber: Boolean
+  isVerifiedSex: Boolean
+  legalName: String
   logoutTime: DateTime
+  name: String
   nickname: String
   oAuthProviders: [OAuthProvider!]
+  postCount: String
   serviceAgreement: ServiceAgreement
   sex: Sex
+  sleepingTime: DateTime
   towns: [Town!]
 }
 
@@ -224,14 +259,9 @@ input UserUpdate {
   certAgreement: CertAgreementInput
   email: EmailAddress
   imageUrls: [URL!]
+  name: NonEmptyString
   nickname: NonEmptyString
   serviceAgreement: ServiceAgreementInput
   town1Name: NonEmptyString
   town2Name: NonEmptyString
-}
-
-type VerificationHistory {
-  content: NonEmptyString!
-  creationTime: DateTime!
-  id: Int!
 }
