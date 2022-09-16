@@ -26,15 +26,11 @@ export function setBBatonOAuthStrategies(app: FastifyHttp2) {
   app.get<QuerystringCode>('/oauth/bbaton', querystringCode, async (req, res) => {
     // 입력값 검사
     const code = req.query.code
-    const backendUrl = req.headers.host
+    const backendUrl = req.headers[':authority']
     if (!backendUrl) return res.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기
-    // const bBatonUserToken = await fetchBBatonUserToken(code, `${req.protocol}://${backendUrl}`)
-    const bBatonUserToken = await fetchBBatonUserToken(
-      code,
-      backendUrl === 'localhost:4000' ? 'http://localhost:4000' : `https://${backendUrl}`
-    )
+    const bBatonUserToken = await fetchBBatonUserToken(code, `https://${backendUrl}`)
     if (bBatonUserToken.error) return res.status(400).send('Bad Request2')
 
     const bBatonUser = await fetchBBatonUser(bBatonUserToken.access_token)
