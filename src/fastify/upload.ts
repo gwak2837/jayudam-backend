@@ -1,13 +1,19 @@
+import fs from 'fs'
+import path from 'path'
+import stream, { pipeline } from 'stream'
+import util from 'util'
+
+import multipart, { MultipartFile } from '@fastify/multipart'
 import { Storage } from '@google-cloud/storage'
 import { FastifyInstance } from 'fastify'
-import path from 'node:path'
-import multipart from '@fastify/multipart'
 
 import { sha128 } from '../utils'
 import { GOOGLE_CLOUD_STORAGE_BUCKET } from '../utils/constants'
 import { FastifyHttp2 } from './server'
 
 // import sharp from 'sharp'
+
+const pipe = util.promisify(pipeline)
 
 // https://cloud.google.com/appengine/docs/flexible/nodejs/using-cloud-storage
 export function setUploadingFiles(fastify: FastifyHttp2) {
@@ -17,17 +23,46 @@ export function setUploadingFiles(fastify: FastifyHttp2) {
       // fieldSize: 100, // Max field value size in bytes
       // fields: 10, // Max number of non-file fields
       fileSize: 10_000_000, // For multipart forms, the max file size in bytes
-      // files: 1, // Max number of file fields
+      files: 10, // Max number of file fields
       // headerPairs: 2000, // Max number of header key=>value pairs
     },
   })
 
-  fastify.post('/upload', async function (req, reply) {
-    // process a single file
-    // also, consider that if you allow to upload multiple files
-    // you must consume all files otherwise the promise will never fulfill
-    const data = await req.file()
-    console.log('👀 - data', data)
+  fastify.post('/upload', async function (req, res) {
+    // files
+    const files = req.files()
+    const uploadedFiles: Record<string, string>[] = []
+
+    for await (const file of files) {
+      if (file.file) {
+        const fileName = `${Date.now()}-${sha128(file.filename)}${path.extname(file.filename)}`
+        const blobStream = bucket.file(fileName).createWriteStream()
+        // const passthroughStream = new stream.PassThrough()
+        // passthroughStream.write(contents)
+        // passthroughStream.end()
+
+        // passthroughStream.pipe(file.createWriteStream()).on('finish', () => {
+        //   // The file upload is complete
+        // })
+
+        blobStream.on('error', (err) => {
+          console.error(err)
+        })
+
+        blobStream.on('finish', () => {
+          uploadedFiles.push({
+            fileName: file.fieldname,
+            url: `https://storage.googleapis.com/${bucket.name}/${fileName}`,
+          })
+        })
+
+        await pipe(file.file, blobStream)
+      }
+    }
+
+    res.send(uploadedFiles)
+
+    // blobStream.end(file.buffer)
 
     // data.file // stream
     // data.fields // other parsed parts
@@ -48,8 +83,6 @@ export function setUploadingFiles(fastify: FastifyHttp2) {
     // sensitive files that could cause security risks
 
     // also, consider that if the file stream is not consumed, the promise will never fulfill
-
-    reply.send()
   })
 
   // app.post('/upload', multer.array('file', 10), async (req: any, res: any) => {
@@ -75,15 +108,14 @@ export function setUploadingFiles(fastify: FastifyHttp2) {
 }
 
 const allowedExtensions = ['image', 'video', 'audio', 'application/ogg']
-
-const bucket = new Storage().bucket(GOOGLE_CLOUD_STORAGE_BUCKET)
-
 function isExtensionAllowed(file: any) {
   for (const allowedExtension of allowedExtensions) {
     if (file.mimetype.startsWith(allowedExtension)) return true
   }
   return false
 }
+
+const bucket = new Storage().bucket(GOOGLE_CLOUD_STORAGE_BUCKET)
 
 function uploadFileToCloudStorage(file: any) {
   return new Promise((resolve, reject) => {

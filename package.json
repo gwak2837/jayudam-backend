@@ -85,7 +85,7 @@
   "private": true,
   "packageManager": "yarn@3.2.3",
   "resolutions": {
-    "gaxios/**/node-fetch": "3.2.10"
+    "gaxios/node-fetch": "3.2.10"
   },
   "type": "module"
 }
