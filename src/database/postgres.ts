@@ -22,7 +22,10 @@ export const pool = new Pool({
   }),
 })
 
-export async function poolQuery<Results>(sql: string, values?: unknown[]) {
+export async function poolQuery<Results extends pg.QueryResultRow>(
+  sql: string,
+  values?: unknown[]
+) {
   if (PROJECT_ENV.startsWith('local')) {
     // eslint-disable-next-line no-console
     console.log(formatDate(new Date()), '-', sql, values)

@@ -3,6 +3,7 @@ import fetch from 'node-fetch'
 import { poolQuery } from '../../database/postgres'
 import { BBATON_CLIENT_ID, BBATON_CLIENT_SECRET_KEY } from '../../utils/constants'
 import { signJWT } from '../../utils/jwt'
+import { FastifyHttp2 } from '../server'
 import type { IAwakeBBatonUserResult } from './sql/awakeBBatonUser'
 import awakeBBatonUser from './sql/awakeBBatonUser.sql'
 import type { IGetBBatonUserResult } from './sql/getBBatonUser'
@@ -19,7 +20,6 @@ import {
   getFrontendUrl,
   querystringCode,
 } from '.'
-import { FastifyHttp2 } from '../server'
 
 export function setBBatonOAuthStrategies(app: FastifyHttp2) {
   // BBaton 계정으로 가입하기
@@ -29,11 +29,8 @@ export function setBBatonOAuthStrategies(app: FastifyHttp2) {
     const backendUrl = req.headers[':authority']
     if (!backendUrl) return res.status(400).send('Bad Request')
 
-    console.log('👀 - backendUrl', backendUrl)
-
     // OAuth 사용자 정보 가져오기
     const bBatonUserToken = await fetchBBatonUserToken(code, `https://${backendUrl}`)
-    console.log('👀 - bBatonUserToken', bBatonUserToken)
     if (bBatonUserToken.error) return res.status(400).send('Bad Request2')
 
     const bBatonUser = await fetchBBatonUser(bBatonUserToken.access_token)
@@ -64,10 +61,7 @@ export function setBBatonOAuthStrategies(app: FastifyHttp2) {
 
     // BBaton 사용자 정보가 달라진 경우
     if (jayudamUser.sex !== encodedBBatonUserSex) {
-      await poolQuery<IUpdateBBatonUserResult>(updateBBatonUser, [
-        jayudamUser.id,
-        encodedBBatonUserSex,
-      ])
+      await poolQuery(updateBBatonUser, [jayudamUser.id, encodedBBatonUserSex])
     }
 
     // 정지된 계정인 경우
@@ -79,10 +73,7 @@ export function setBBatonOAuthStrategies(app: FastifyHttp2) {
     // 휴먼 계정인 경우
     if (jayudamUser.sleeping_time) {
       // WIP: 개인정보보호법에 따라 컨테이너로 분리된 DB에서 데이터 가져오는 로직 필요
-      await poolQuery<IAwakeBBatonUserResult>(awakeBBatonUser, [
-        jayudamUser.id,
-        encodedBBatonUserSex,
-      ])
+      await poolQuery(awakeBBatonUser, [jayudamUser.id, encodedBBatonUserSex])
     }
 
     // 이미 가입된 경우

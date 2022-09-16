@@ -3,8 +3,8 @@ import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
-import { unregisterKakaoUser } from '../../fastify/oauth/kakao'
 import { BadGatewayError, BadRequestError, UnauthorizedError } from '../../fastify/errors'
+import { unregisterKakaoUser } from '../../fastify/oauth/kakao'
 import type { GraphQLContext } from '../../fastify/server'
 import { KAKAO_REST_API_KEY } from '../../utils/constants'
 import type { MutationResolvers, User } from '../generated/graphql'
@@ -55,7 +55,7 @@ export const Mutation: MutationResolvers<GraphQLContext & MercuriusContext> = {
     // if (rows[0].oauth____) unregister___User(rows[0].oauth____)
     // if (rows[0].oauth____) unregister___User(rows[0].oauth____)
 
-    await poolQuery<IDeleteUserResult>(deleteUser, [userId])
+    await poolQuery(deleteUser, [userId])
 
     return {
       id: userId,
