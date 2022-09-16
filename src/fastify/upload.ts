@@ -14,11 +14,11 @@ export function setUploadingFiles(fastify: FastifyHttp2) {
   fastify.register(multipart, {
     limits: {
       fieldNameSize: 100, // Max field name size in bytes
-      fieldSize: 100, // Max field value size in bytes
-      fields: 10, // Max number of non-file fields
+      // fieldSize: 100, // Max field value size in bytes
+      // fields: 10, // Max number of non-file fields
       fileSize: 10_000_000, // For multipart forms, the max file size in bytes
-      files: 1, // Max number of file fields
-      headerPairs: 2000, // Max number of header key=>value pairs
+      // files: 1, // Max number of file fields
+      // headerPairs: 2000, // Max number of header key=>value pairs
     },
   })
 
@@ -27,6 +27,7 @@ export function setUploadingFiles(fastify: FastifyHttp2) {
     // also, consider that if you allow to upload multiple files
     // you must consume all files otherwise the promise will never fulfill
     const data = await req.file()
+    console.log('👀 - data', data)
 
     // data.file // stream
     // data.fields // other parsed parts

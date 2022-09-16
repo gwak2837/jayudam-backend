@@ -29,6 +29,8 @@ export function setBBatonOAuthStrategies(app: FastifyHttp2) {
     const backendUrl = req.headers[':authority']
     if (!backendUrl) return res.status(400).send('Bad Request')
 
+    console.log('👀 - backendUrl', backendUrl)
+
     // OAuth 사용자 정보 가져오기
     const bBatonUserToken = await fetchBBatonUserToken(code, `https://${backendUrl}`)
     if (bBatonUserToken.error) return res.status(400).send('Bad Request2')
