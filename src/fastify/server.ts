@@ -47,9 +47,6 @@ export async function startGraphQLServer() {
     ],
   })
 
-  setOAuthStrategies(fastify)
-  // setUploadingFiles(app)
-
   fastify.register(import('@fastify/rate-limit'), {
     allowList: ['127.0.0.1'],
   })
@@ -77,6 +74,9 @@ export async function startGraphQLServer() {
     schema,
     validationRules: NODE_ENV === 'production' ? [NoSchemaIntrospectionCustomRule] : undefined,
   })
+
+  setOAuthStrategies(fastify)
+  // setUploadingFiles(app)
 
   // //////////////////////////////////////////////
   const opts = {
