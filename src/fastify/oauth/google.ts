@@ -23,11 +23,11 @@ export function setGoogleOAuthStrategies(app: FastifyHttp2) {
   // Google 계정으로 로그인하기
   app.get<QuerystringCode>('/oauth/google', querystringCode, async (req, res) => {
     const code = req.query.code
-    const backendUrl = req.headers.host
+    const backendUrl = req.headers[':authority']
     if (!backendUrl) return res.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기
-    const googleUserToken = await fetchGoogleUserToken(code, `${req.protocol}://${backendUrl}`)
+    const googleUserToken = await fetchGoogleUserToken(code, `https://${backendUrl}`)
     if (googleUserToken.error) return res.status(400).send('Bad Request')
 
     const googleUser = await fetchGoogleUser(googleUserToken.access_token)
