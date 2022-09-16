@@ -8,7 +8,13 @@ import { redisClient } from '../database/redis'
 import { setOAuthStrategies } from './oauth'
 import { resolvers } from '../graphql'
 import schema from '../graphql/generated/schema.graphql'
-import { LOCALHOST_HTTPS_CERT, LOCALHOST_HTTPS_KEY, NODE_ENV, PORT } from '../utils/constants'
+import {
+  LOCALHOST_HTTPS_CERT,
+  LOCALHOST_HTTPS_KEY,
+  NODE_ENV,
+  PORT,
+  PROJECT_ENV,
+} from '../utils/constants'
 import { verifyJWT } from '../utils/jwt'
 import { UnauthorizedError } from './errors'
 
@@ -23,10 +29,10 @@ export async function startGraphQLServer() {
     http2: true,
     // logger: true,
 
-    ...(NODE_ENV.startsWith('local') && {
+    ...(PROJECT_ENV.startsWith('local') && {
       https: {
         key: `-----BEGIN PRIVATE KEY-----\n${LOCALHOST_HTTPS_KEY}\n-----END PRIVATE KEY-----`,
-        cert: `-----BEGIN PRIVATE KEY-----\n${LOCALHOST_HTTPS_CERT}\n-----END PRIVATE KEY-----`,
+        cert: `-----BEGIN CERTIFICATE-----\n${LOCALHOST_HTTPS_CERT}\n-----END CERTIFICATE-----`,
       },
     }),
   })

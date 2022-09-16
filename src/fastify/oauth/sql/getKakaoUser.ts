@@ -1,4 +1,4 @@
-/** Types generated for queries found in "src/express/oauth/sql/getKakaoUser.sql" */
+/** Types generated for queries found in "src/fastify/oauth/sql/getKakaoUser.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
 /** 'GetKakaoUser' parameters type */
