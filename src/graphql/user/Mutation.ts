@@ -3,7 +3,7 @@ import fetch from 'node-fetch'
 
 import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
-import { BadGatewayError, BadRequestError, UnauthorizedError } from '../../fastify/errors'
+import { BadRequestError, ServiceUnavailableError, UnauthorizedError } from '../../fastify/errors'
 import { unregisterKakaoUser } from '../../fastify/oauth/kakao'
 import type { GraphQLContext } from '../../fastify/server'
 import { KAKAO_REST_API_KEY } from '../../utils/constants'
@@ -25,7 +25,7 @@ export const Mutation: MutationResolvers<GraphQLContext & MercuriusContext> = {
 
     const logoutTime = Date.now()
     const result = await redisClient.set(`${userId}:logoutTime`, logoutTime)
-    if (result !== 'OK') throw BadGatewayError('Redis error')
+    if (result !== 'OK') throw ServiceUnavailableError('Redis error')
 
     return {
       id: userId,
