@@ -5469,11 +5469,11 @@ __metadata:
   linkType: hard
 
 "graphql-ws@npm:^5.4.1":
-  version: 5.10.2
-  resolution: "graphql-ws@npm:5.10.2"
+  version: 5.11.0
+  resolution: "graphql-ws@npm:5.11.0"
   peerDependencies:
     graphql: ">=0.11 <=16"
-  checksum: 7a2cdcb0e960da37fcc56eee5dffef5318eb0ec8bc426441f79557bb7d69a96b49c51ec07cb9255e5ee0770a727ce7588c9add47a1812577b254b977282c1e5b
+  checksum: 846751b6fe308d91572d2a1b236404071243486ed2a7c88d6b455aa79f73db75e29da4bca2408d9f6047d8f0a9483bf5e623ac08e5adb119ed8a24a7a8630c2a
   languageName: node
   linkType: hard
 
@@ -7683,13 +7683,13 @@ __metadata:
   linkType: hard
 
 "nodemon@npm:^2.0.19":
-  version: 2.0.19
-  resolution: "nodemon@npm:2.0.19"
+  version: 2.0.20
+  resolution: "nodemon@npm:2.0.20"
   dependencies:
     chokidar: ^3.5.2
     debug: ^3.2.7
     ignore-by-default: ^1.0.1
-    minimatch: ^3.0.4
+    minimatch: ^3.1.2
     pstree.remy: ^1.1.8
     semver: ^5.7.1
     simple-update-notifier: ^1.0.7
@@ -7698,7 +7698,7 @@ __metadata:
     undefsafe: ^2.0.5
   bin:
     nodemon: bin/nodemon.js
-  checksum: c6cf89435a8945693fac2701285eb1f539b5003d943a1be89a9ffbfc9d0275aa7779f85a9eee509e9f19a988d53ce293266d8b35b91010e36ad9e78683f8eb07
+  checksum: 9fe858682414fe703179f4fe36c86e71f40d2693b5345c09803d7b191816a6589c5df8f1f9873bffee92893880183b95a031c86340e46b364ef1b0b7f619edbf
   languageName: node
   linkType: hard
 
