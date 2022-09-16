@@ -4,6 +4,7 @@ import { poolQuery } from '../../database/postgres'
 import { redisClient } from '../../database/redis'
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../../utils/constants'
 import { signJWT, verifyJWT } from '../../utils/jwt'
+import { FastifyHttp2 } from '../server'
 import type { IGetGoogleUserResult } from './sql/getGoogleUser'
 import getGoogleUser from './sql/getGoogleUser.sql'
 import type { IGetUserResult } from './sql/getUser'
@@ -11,13 +12,12 @@ import getUser from './sql/getUser.sql'
 import type { IUpdateGoogleUserResult } from './sql/updateGoogleUser'
 import updateGoogleUser from './sql/updateGoogleUser.sql'
 import {
+  QuerystringCode,
+  QuerystringCodeState,
   getFrontendUrl,
   querystringCode,
-  QuerystringCode,
   querystringCodeState,
-  QuerystringCodeState,
 } from '.'
-import { FastifyHttp2 } from '../server'
 
 export function setGoogleOAuthStrategies(app: FastifyHttp2) {
   // Google 계정으로 로그인하기
@@ -104,7 +104,7 @@ export function setGoogleOAuthStrategies(app: FastifyHttp2) {
       if (jayudamUser.legal_name && jayudamUser.legal_name !== googleUser.name)
         return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=google`)
 
-      await poolQuery<IUpdateGoogleUserResult>(updateGoogleUser, [
+      await poolQuery(updateGoogleUser, [
         jayudamUser.id,
         googleUser.email,
         googleUser.picture ? [googleUser.picture] : null,

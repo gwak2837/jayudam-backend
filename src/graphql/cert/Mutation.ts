@@ -48,7 +48,7 @@ export const Mutation: MutationResolvers<GraphQLContext> = {
       ...(showSexualCrime && sexualCrimeSince && { sexualCrimeSince }),
     }
 
-    await poolQuery<IUpdateCertAgreementResult>(updateCertAgreement, [
+    await poolQuery(updateCertAgreement, [
       userId,
       Object.keys(certAgreement).length === 0 ? null : JSON.stringify(certAgreement),
     ])
@@ -155,7 +155,7 @@ export const Mutation: MutationResolvers<GraphQLContext> = {
         ...results,
       }
 
-    await poolQuery<IUseCherryResult>(useCherry, [userId]).catch(() => {
+    await poolQuery(useCherry, [userId]).catch(() => {
       throw ForbiddenError('체리를 사용할 수 없습니다')
     })
 

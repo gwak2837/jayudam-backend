@@ -17,6 +17,7 @@ import {
 } from '../utils/constants'
 import { verifyJWT } from '../utils/jwt'
 import { UnauthorizedError } from './errors'
+import { setUploadingFiles } from './upload'
 
 export type GraphQLContext = MercuriusContext & {
   userId?: string
@@ -72,11 +73,11 @@ export async function startGraphQLServer() {
     persistedQueryProvider: mercurius.persistedQueryDefaults.automatic(5000),
     resolvers: resolvers as IResolvers,
     schema,
-    // validationRules: NODE_ENV === 'production' ? [NoSchemaIntrospectionCustomRule] : undefined,
+    validationRules: NODE_ENV === 'production' ? [NoSchemaIntrospectionCustomRule] : undefined,
   })
 
   setOAuthStrategies(fastify)
-  // setUploadingFiles(app)
+  setUploadingFiles(fastify)
 
   // //////////////////////////////////////////////
   const opts = {
