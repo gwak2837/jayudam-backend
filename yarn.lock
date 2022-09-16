@@ -7619,7 +7619,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:3.2.10, node-fetch@npm:^3.2.10":
+"node-fetch@npm:^3.2.10":
   version: 3.2.10
   resolution: "node-fetch@npm:3.2.10"
   dependencies:

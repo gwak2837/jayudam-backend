@@ -1,6 +1,6 @@
 import pg from 'pg'
 
-import { BadGatewayError } from '../fastify/errors'
+import { ServiceUnavailableError } from '../fastify/errors'
 import { formatDate } from '../utils'
 import { NODE_ENV, PGURI, POSTGRES_CA, PROJECT_ENV } from '../utils/constants'
 
@@ -34,9 +34,9 @@ export async function poolQuery<Results extends pg.QueryResultRow>(
   return pool.query<Results>(sql, values).catch((error) => {
     if (NODE_ENV === 'production') {
       console.error(error.message, sql, values)
-      throw BadGatewayError('Database query error')
+      throw ServiceUnavailableError('Database query error')
     } else {
-      throw BadGatewayError(error)
+      throw ServiceUnavailableError(error)
     }
   })
 }
