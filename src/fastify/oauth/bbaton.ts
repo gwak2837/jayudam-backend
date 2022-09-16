@@ -33,6 +33,7 @@ export function setBBatonOAuthStrategies(app: FastifyHttp2) {
 
     // OAuth 사용자 정보 가져오기
     const bBatonUserToken = await fetchBBatonUserToken(code, `https://${backendUrl}`)
+    console.log('👀 - bBatonUserToken', bBatonUserToken)
     if (bBatonUserToken.error) return res.status(400).send('Bad Request2')
 
     const bBatonUser = await fetchBBatonUser(bBatonUserToken.access_token)
