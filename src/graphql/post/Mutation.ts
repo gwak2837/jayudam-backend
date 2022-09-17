@@ -1,5 +1,11 @@
+import { bucket } from '../../database/google-storage'
 import { poolQuery } from '../../database/postgres'
-import { BadRequestError, ForbiddenError, UnauthorizedError } from '../../fastify/errors'
+import {
+  BadRequestError,
+  ForbiddenError,
+  ServiceUnavailableError,
+  UnauthorizedError,
+} from '../../fastify/errors'
 import type { GraphQLContext } from '../../fastify/server'
 import type { MutationResolvers, Post, PostCreationResult } from '../generated/graphql'
 import type { ICountCommentsResult } from './sql/countComments'
@@ -19,6 +25,7 @@ export const Mutation: MutationResolvers<GraphQLContext> = {
     if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { content, imageUrls, parentPostId, sharingPostId } = input
+    console.log('👀 - imageUrls', imageUrls)
 
     if (parentPostId && sharingPostId)
       throw BadRequestError('parentPostId, sharingPostId 중 하나만 입력해주세요')
@@ -88,6 +95,11 @@ export const Mutation: MutationResolvers<GraphQLContext> = {
 
     if (!deletedPost.has_authorized)
       throw ForbiddenError('존재하지 않는 이야기거나 자신의 이야기가 아닙니다')
+
+    await bucket.deleteFiles({ prefix: `${id}-` }).catch((err) => {
+      console.error(err)
+      throw ServiceUnavailableError('Error from Google Cloud Storage')
+    })
 
     if (deletedPost.is_deleted)
       return {

@@ -1,12 +1,11 @@
+import { randomUUID } from 'crypto'
 import path from 'path'
 import { pipeline } from 'stream'
 import { promisify } from 'util'
 
 import multipart from '@fastify/multipart'
-import { Storage } from '@google-cloud/storage'
 
-import { sha128 } from '../utils'
-import { GOOGLE_CLOUD_STORAGE_BUCKET } from '../utils/constants'
+import { bucket } from '../database/google-storage'
 import { FastifyHttp2 } from './server'
 
 // import sharp from 'sharp'
@@ -26,13 +25,34 @@ export function setUploadingFiles(fastify: FastifyHttp2) {
     },
   })
 
-  fastify.post('/upload', async function (req, res) {
+  type HeadersFileId = {
+    Headers: {
+      'x-file-id': string
+    }
+  }
+
+  const headerFileId = {
+    schema: {
+      headers: {
+        type: 'object',
+        properties: {
+          'x-file-id': { type: 'string', pattern: '^[A-Za-z0-9]+$' },
+        },
+        required: ['x-file-id'],
+      },
+    },
+  }
+
+  fastify.post<HeadersFileId>('/upload', headerFileId, async function (req, res) {
     const files = req.files()
     const uploadedFiles: Record<string, string>[] = []
 
     for await (const file of files) {
       if (file.file) {
-        const fileName = `${Date.now()}-${sha128(file.filename)}${path.extname(file.filename)}`
+        const fileId = req.headers['x-file-id']
+        const timestamp = ~~(Date.now() / 1000)
+        const fileExtension = path.extname(file.filename)
+        const fileName = `${fileId}-${timestamp}-${randomUUID()}${fileExtension}`
         const blobStream = bucket.file(fileName).createWriteStream()
 
         blobStream.on('error', (err) => {
@@ -42,19 +62,19 @@ export function setUploadingFiles(fastify: FastifyHttp2) {
 
         blobStream.on('finish', () => {
           uploadedFiles.push({
-            fileName: file.fieldname,
+            fileName: file.filename,
             url: `https://storage.googleapis.com/${bucket.name}/${fileName}`,
           })
         })
 
         // Stream
-        await pipe(file.file, blobStream)
+        // await pipe(file.file, blobStream)
 
         // Buffer
-        // const buffer = await file.toBuffer()
-        // await new Promise((resolve) => {
-        //   blobStream.end(buffer, () => resolve(''))
-        // })
+        const buffer = await file.toBuffer()
+        await new Promise((resolve) => {
+          blobStream.end(buffer, () => resolve(''))
+        })
       }
     }
 
@@ -62,21 +82,10 @@ export function setUploadingFiles(fastify: FastifyHttp2) {
   })
 }
 
-const bucket = new Storage().bucket(GOOGLE_CLOUD_STORAGE_BUCKET)
-
 // const allowedExtensions = ['image', 'video', 'audio', 'application/ogg']
 // function isExtensionAllowed(file: any) {
 //   for (const allowedExtension of allowedExtensions) {
 //     if (file.mimetype.startsWith(allowedExtension)) return true
 //   }
 //   return false
-// }
-
-// async function optimizeIfImage(file: Express.Multer.File, height: number) {
-//   if (file.mimetype.startsWith('image')) {
-//     return await sharp(file.path)
-//       .resize({ height })
-//       .withMetadata() // 이미지의 exif 데이터 유지
-//       .toBuffer()
-//   }
 // }
