@@ -25,7 +25,6 @@ export const Mutation: MutationResolvers<GraphQLContext> = {
     if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { content, imageUrls, parentPostId, sharingPostId } = input
-    console.log('👀 - imageUrls', imageUrls)
 
     if (parentPostId && sharingPostId)
       throw BadRequestError('parentPostId, sharingPostId 중 하나만 입력해주세요')
