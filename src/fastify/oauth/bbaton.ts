@@ -4,13 +4,11 @@ import { poolQuery } from '../../database/postgres'
 import { BBATON_CLIENT_ID, BBATON_CLIENT_SECRET_KEY } from '../../utils/constants'
 import { signJWT } from '../../utils/jwt'
 import { FastifyHttp2 } from '../server'
-import type { IAwakeBBatonUserResult } from './sql/awakeBBatonUser'
 import awakeBBatonUser from './sql/awakeBBatonUser.sql'
 import type { IGetBBatonUserResult } from './sql/getBBatonUser'
 import getBBatonUser from './sql/getBBatonUser.sql'
 import type { IRegisterBBatonUserResult } from './sql/registerBBatonUser'
 import registerBBatonUser from './sql/registerBBatonUser.sql'
-import type { IUpdateBBatonUserResult } from './sql/updateBBatonUser'
 import updateBBatonUser from './sql/updateBBatonUser.sql'
 import {
   BBatonUser,

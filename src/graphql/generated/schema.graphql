@@ -171,7 +171,7 @@ type Query {
   comments(lastId: ID, limit: PositiveInt, parentId: ID!): [Post!]
   hello(name: String!): String!
   isUniqueUsername(username: NonEmptyString!): Boolean!
-  myCertAgreement: CertAgreement
+  myCertAgreement: User
   myProfile: User
   pendingCerts: [Cert!]
   post(id: ID!): Post

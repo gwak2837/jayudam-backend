@@ -49,12 +49,6 @@ POSTGRES_PASSWORD=DB계정암호
 POSTGRES_DB=DB이름
 POSTGRES_DOCKER_VOLUME_NAME=DB도커볼륨이름
 
- 
- 
- 
- 
- 
-
 # https://www.postgresql.org/docs/14/ssl-tcp.html
 openssl req -new -nodes -text -out root.csr \
   -keyout root.key -subj "/CN=$POSTGRES_USER"
@@ -239,7 +233,7 @@ redis-cli \
 
 - `.env.development.local`: `yarn dev` 실행 시 필요
 - `.env.local`: `yarn start` 실행 시 필요
-- `.env.local.docker`: `docker-compose up` 실행 시 필요
+- `.env.docker.local`: `docker-compose up` 실행 시 필요
 - `.env.test`: `yarn test` 실행 시 필요 (예정)
 
 ### Start Node.js server
@@ -261,7 +255,7 @@ yarn build && yarn start
 3. Docker 환경에서 Node.js 서버, PostgreSQL 서버, Redis 서버를 실행합니다.
 
 ```
-docker-compose --env-file .env.local.docker up --detach --build --force-recreate
+docker-compose --env-file .env.docker.local up --detach --build --force-recreate
 ```
 
 ### CI/CD

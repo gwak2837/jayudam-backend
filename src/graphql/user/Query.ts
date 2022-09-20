@@ -32,14 +32,21 @@ export const Query: QueryResolvers<GraphQLContext> = {
     if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { rows } = await poolQuery<IGetMyCertAgreementResult>(getMyCertAgreement, [userId])
-    if (!rows[0].cert_agreement)
+
+    const me = rows[0]
+
+    if (!me.cert_agreement)
       return {
-        showBirthdate: false,
-        showLegalName: false,
-        showSex: false,
-        showSTDTest: false,
-        showImmunization: false,
-        showSexualCrime: false,
+        id: userId,
+        certAgreement: {
+          showBirthdate: false,
+          showLegalName: false,
+          showSex: false,
+          showSTDTest: false,
+          showImmunization: false,
+          showSexualCrime: false,
+        },
+        cherry: me.cherry,
       }
 
     const {
@@ -52,18 +59,22 @@ export const Query: QueryResolvers<GraphQLContext> = {
       immunizationSince,
       showSexualCrime,
       sexualCrimeSince,
-    } = JSON.parse(rows[0].cert_agreement)
+    } = JSON.parse(me.cert_agreement)
 
     return {
-      showBirthdate: showBirthdate ?? false,
-      showLegalName: showLegalName ?? false,
-      showSex: showSex ?? false,
-      showSTDTest: showSTDTest ?? false,
-      ...(showSTDTest && stdTestSince && { stdTestSince }),
-      showImmunization: showImmunization ?? false,
-      ...(showImmunization && immunizationSince && { immunizationSince }),
-      showSexualCrime: showSexualCrime ?? false,
-      ...(showSexualCrime && sexualCrimeSince && { sexualCrimeSince }),
+      id: userId,
+      certAgreement: {
+        showBirthdate: showBirthdate ?? false,
+        showLegalName: showLegalName ?? false,
+        showSex: showSex ?? false,
+        showSTDTest: showSTDTest ?? false,
+        ...(showSTDTest && stdTestSince && { stdTestSince }),
+        showImmunization: showImmunization ?? false,
+        ...(showImmunization && immunizationSince && { immunizationSince }),
+        showSexualCrime: showSexualCrime ?? false,
+        ...(showSexualCrime && sexualCrimeSince && { sexualCrimeSince }),
+      },
+      cherry: me.cherry,
     }
   },
 

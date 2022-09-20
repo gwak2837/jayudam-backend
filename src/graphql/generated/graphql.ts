@@ -231,7 +231,7 @@ export type Query = {
   comments?: Maybe<Array<Post>>
   hello: Scalars['String']
   isUniqueUsername: Scalars['Boolean']
-  myCertAgreement?: Maybe<CertAgreement>
+  myCertAgreement?: Maybe<User>
   myProfile?: Maybe<User>
   pendingCerts?: Maybe<Array<Cert>>
   post?: Maybe<Post>
@@ -749,7 +749,7 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryIsUniqueUsernameArgs, 'username'>
   >
-  myCertAgreement?: Resolver<Maybe<ResolversTypes['CertAgreement']>, ParentType, ContextType>
+  myCertAgreement?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   myProfile?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>
   pendingCerts?: Resolver<Maybe<Array<ResolversTypes['Cert']>>, ParentType, ContextType>
   post?: Resolver<

@@ -1,5 +1,11 @@
+import { bucket } from '../../database/google-storage'
 import { poolQuery } from '../../database/postgres'
-import { BadRequestError, ForbiddenError, UnauthorizedError } from '../../fastify/errors'
+import {
+  BadRequestError,
+  ForbiddenError,
+  ServiceUnavailableError,
+  UnauthorizedError,
+} from '../../fastify/errors'
 import type { GraphQLContext } from '../../fastify/server'
 import type { MutationResolvers, Post, PostCreationResult } from '../generated/graphql'
 import type { ICountCommentsResult } from './sql/countComments'
@@ -88,6 +94,16 @@ export const Mutation: MutationResolvers<GraphQLContext> = {
 
     if (!deletedPost.has_authorized)
       throw ForbiddenError('존재하지 않는 이야기거나 자신의 이야기가 아닙니다')
+
+    const imageUrls = deletedPost.image_urls
+
+    if (imageUrls) {
+      const deleteImagesInGCP = imageUrls.map((imageUrl) => bucket.file(imageUrl).delete())
+      await Promise.all(deleteImagesInGCP).catch((err) => {
+        console.error(err)
+        throw ServiceUnavailableError('Error from Google Cloud Storage')
+      })
+    }
 
     if (deletedPost.is_deleted)
       return {

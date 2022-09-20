@@ -342,7 +342,8 @@ CREATE FUNCTION delete_post (
   _user_id uuid,
   out has_authorized boolean,
   out is_deleted boolean,
-  out deletion_time timestamptz
+  out deletion_time timestamptz,
+  out image_urls text []
 ) LANGUAGE plpgsql AS $$ BEGIN PERFORM
 FROM post
 WHERE parent_post_id = _post_id
@@ -356,10 +357,14 @@ SET deletion_time = CURRENT_TIMESTAMP,
   image_urls = NULL,
   parent_post_id = NULL,
   sharing_post_id = NULL
-WHERE id = _post_id
-  AND user_id = _user_id
+FROM post AS old_post
+WHERE post.id = old_post.id
+  AND post.id = _post_id
+  AND post.user_id = _user_id
   AND post.deletion_time IS NULL
-RETURNING post.deletion_time INTO delete_post.deletion_time;
+RETURNING post.deletion_time,
+  old_post.image_urls INTO delete_post.deletion_time,
+  delete_post.image_urls;
 
 IF FOUND THEN has_authorized = TRUE;
 
@@ -375,7 +380,8 @@ END IF;
 ELSE
 DELETE FROM post
 WHERE id = _post_id
-  AND user_id = _user_id;
+  AND user_id = _user_id
+RETURNING image_urls INTO delete_post.image_urls;
 
 IF FOUND THEN has_authorized = TRUE;
 

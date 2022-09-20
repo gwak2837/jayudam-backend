@@ -7,6 +7,7 @@ export type IGetMyCertAgreementParams = void;
 /** 'GetMyCertAgreement' return type */
 export interface IGetMyCertAgreementResult {
   cert_agreement: string | null;
+  cherry: number;
 }
 
 /** 'GetMyCertAgreement' query type */
@@ -15,12 +16,13 @@ export interface IGetMyCertAgreementQuery {
   result: IGetMyCertAgreementResult;
 }
 
-const getMyCertAgreementIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT cert_agreement\nFROM \"user\"\nWHERE id = $1"};
+const getMyCertAgreementIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT cert_agreement,\n  cherry\nFROM \"user\"\nWHERE id = $1"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT cert_agreement
+ * SELECT cert_agreement,
+ *   cherry
  * FROM "user"
  * WHERE id = $1
  * ```

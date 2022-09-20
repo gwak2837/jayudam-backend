@@ -13,7 +13,7 @@ COPY esbuild.js tsconfig.json ./
 COPY src src
 RUN yarn build
 
-# Install only dependency packages
+# Copy bundle only
 FROM node:18-alpine AS runner
 
 EXPOSE $PORT

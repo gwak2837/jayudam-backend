@@ -1,82 +1,69 @@
+import { randomUUID } from 'crypto'
 import path from 'path'
 import { pipeline } from 'stream'
-import { promisify } from 'util'
 
 import multipart from '@fastify/multipart'
-import { Storage } from '@google-cloud/storage'
 
-import { sha128 } from '../utils'
-import { GOOGLE_CLOUD_STORAGE_BUCKET } from '../utils/constants'
+import { bucket } from '../database/google-storage'
+import { BadRequestError, ServiceUnavailableError } from './errors'
 import { FastifyHttp2 } from './server'
 
 // import sharp from 'sharp'
 
-const pipe = promisify(pipeline)
+type UploadResult = {
+  fileName: string
+  url: string
+}
 
-// https://cloud.google.com/appengine/docs/flexible/nodejs/using-cloud-storage
 export function setUploadingFiles(fastify: FastifyHttp2) {
   fastify.register(multipart, {
     limits: {
       fieldNameSize: 100, // Max field name size in bytes
       // fieldSize: 100, // Max field value size in bytes
-      fields: 10, // Max number of non-file fields
+      fields: 4, // Max number of non-file fields
       fileSize: 10_000_000, // For multipart forms, the max file size in bytes
-      files: 10, // Max number of file fields
+      files: 4, // Max number of file fields
       // headerPairs: 2000, // Max number of header key=>value pairs
     },
   })
 
-  fastify.post('/upload', async function (req, res) {
+  fastify.post('/upload/images', async function (req, res) {
     const files = req.files()
-    const uploadedFiles: Record<string, string>[] = []
+    const result: UploadResult[] = []
 
     for await (const file of files) {
       if (file.file) {
-        const fileName = `${Date.now()}-${sha128(file.filename)}${path.extname(file.filename)}`
+        if (!file.mimetype.startsWith('image/'))
+          throw BadRequestError('이미지 파일만 업로드할 수 있습니다')
+
+        const timestamp = ~~(Date.now() / 1000)
+        const fileExtension = path.extname(file.filename)
+        const fileName = `${timestamp}-${randomUUID()}${fileExtension}`
         const blobStream = bucket.file(fileName).createWriteStream()
 
         blobStream.on('error', (err) => {
           console.error(err)
-          res.code(503).send('File upload to Google Cloud failed')
+          throw ServiceUnavailableError('File upload to Google Cloud failed')
         })
 
         blobStream.on('finish', () => {
-          uploadedFiles.push({
-            fileName: file.fieldname,
+          result.push({
+            fileName: file.filename,
             url: `https://storage.googleapis.com/${bucket.name}/${fileName}`,
           })
         })
 
-        // Stream
-        await pipe(file.file, blobStream)
+        // 1. Stream
+        // pipeline(file.file, blobStream)
 
-        // Buffer
-        // const buffer = await file.toBuffer()
-        // await new Promise((resolve) => {
-        //   blobStream.end(buffer, () => resolve(''))
-        // })
+        // 2. Buffer
+        const buffer = await file.toBuffer()
+        await new Promise((resolve) => {
+          blobStream.end(buffer, () => resolve(''))
+        })
       }
     }
 
-    res.send(uploadedFiles)
+    res.send(result)
   })
 }
-
-const bucket = new Storage().bucket(GOOGLE_CLOUD_STORAGE_BUCKET)
-
-// const allowedExtensions = ['image', 'video', 'audio', 'application/ogg']
-// function isExtensionAllowed(file: any) {
-//   for (const allowedExtension of allowedExtensions) {
-//     if (file.mimetype.startsWith(allowedExtension)) return true
-//   }
-//   return false
-// }
-
-// async function optimizeIfImage(file: Express.Multer.File, height: number) {
-//   if (file.mimetype.startsWith('image')) {
-//     return await sharp(file.path)
-//       .resize({ height })
-//       .withMetadata() // 이미지의 exif 데이터 유지
-//       .toBuffer()
-//   }
-// }
