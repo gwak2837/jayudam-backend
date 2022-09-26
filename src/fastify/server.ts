@@ -1,11 +1,12 @@
+import { Http2Server, Http2ServerRequest, Http2ServerResponse } from 'http2'
+
 import cors from '@fastify/cors'
 import Fastify, { FastifyInstance } from 'fastify'
+import { FastifySSEPlugin } from 'fastify-sse-v2'
 import { NoSchemaIntrospectionCustomRule } from 'graphql'
-import { Http2Server, Http2ServerRequest, Http2ServerResponse } from 'http2'
 import mercurius, { IResolvers, MercuriusContext } from 'mercurius'
 
 import { redisClient } from '../database/redis'
-import { setOAuthStrategies } from './oauth'
 import { resolvers } from '../graphql'
 import schema from '../graphql/generated/schema.graphql'
 import {
@@ -17,6 +18,7 @@ import {
 } from '../utils/constants'
 import { verifyJWT } from '../utils/jwt'
 import { UnauthorizedError } from './errors'
+import { setOAuthStrategies } from './oauth'
 import { setUploadingFiles } from './upload'
 
 export type GraphQLContext = MercuriusContext & {
@@ -76,8 +78,46 @@ export async function startGraphQLServer() {
     validationRules: NODE_ENV === 'production' ? [NoSchemaIntrospectionCustomRule] : undefined,
   })
 
+  fastify.register(FastifySSEPlugin)
+
   setOAuthStrategies(fastify)
   setUploadingFiles(fastify)
+
+  fastify.get('/chat', (request, reply) => {
+    console.log('👀 - connect')
+
+    // reply.sent = true
+
+    const headers = reply.getHeaders()
+
+    for (const key in headers) {
+      const value = headers[key]
+      if (value) {
+        reply.raw.setHeader(key, value)
+      }
+    }
+
+    reply.raw.setHeader('Content-Type', 'text/event-stream')
+    reply.raw.setHeader('content-encoding', 'identity')
+    reply.raw.setHeader('Cache-Control', 'no-cache,no-transform')
+    reply.raw.setHeader('x-no-compression', 1)
+
+    const a = setInterval(() => {
+      const time = new Date().toISOString()
+      console.log('👀 - message', time)
+      reply.raw.write(`time: ${time}`)
+    }, 1000)
+
+    request.raw.addListener('close', () => {
+      console.log('👀 - close2')
+      clearInterval(a)
+    })
+
+    request.raw.on('close', () => {
+      console.log('👀 - close')
+      clearInterval(a)
+    })
+  })
 
   // //////////////////////////////////////////////
   const opts = {

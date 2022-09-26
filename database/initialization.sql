@@ -381,7 +381,7 @@ ELSE
 DELETE FROM post
 WHERE id = _post_id
   AND user_id = _user_id
-RETURNING image_urls INTO delete_post.image_urls;
+RETURNING post.image_urls INTO delete_post.image_urls;
 
 IF FOUND THEN has_authorized = TRUE;
 

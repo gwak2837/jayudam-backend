@@ -4,6 +4,7 @@ import type { GraphQLContext } from '../../fastify/server'
 import { defaultDate } from '../../utils'
 import { signJWT, verifyJWT } from '../../utils/jwt'
 import { Cert, CertType, MutationResolvers } from '../generated/graphql'
+import { decodeSex } from '../user/Object'
 import { decodeCertType } from './Object'
 import type { ICertsResult } from './sql/certs'
 import certs from './sql/certs.sql'
@@ -121,7 +122,7 @@ export const Mutation: MutationResolvers<GraphQLContext> = {
     const results = {
       ...(showBirthdate && { birthdate: rows[0].birthdate }),
       ...(showLegalName && { legalName: rows[0].legal_name }),
-      ...(showSex && { sex: rows[0].sex }),
+      ...(showSex && { sex: decodeSex(rows[0].sex) }),
       ...(showSTDTest && {
         stdTestCerts: allCerts.filter(
           (cert) => cert.type === CertType.ClinicalLaboratoryTest || cert.type === CertType.StdTest
