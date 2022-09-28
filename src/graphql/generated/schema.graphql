@@ -132,7 +132,7 @@ type Post {
   doIComment: Boolean!
   doIShare: Boolean!
   id: ID!
-  imageUrls: [URL]
+  imageUrls: [URL!]
   isLiked: Boolean!
   likeCount: Int
   parentPost: Post
