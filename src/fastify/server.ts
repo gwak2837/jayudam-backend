@@ -86,8 +86,6 @@ export async function startGraphQLServer() {
   fastify.get('/chat', (request, reply) => {
     console.log('👀 - connect')
 
-    // reply.sent = true
-
     const headers = reply.getHeaders()
 
     for (const key in headers) {
