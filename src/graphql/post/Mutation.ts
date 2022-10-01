@@ -38,9 +38,10 @@ export const Mutation: MutationResolvers<GraphQLContext> = {
       parentPostId,
       sharingPostId,
       userId,
+      content?.match(/#\S+/g),
     ])
-    const failedReason = rows[0].reason
 
+    const failedReason = rows[0].reason
     if (failedReason) throw BadRequestError(getPostCreationFailedReason(failedReason))
 
     const newPost = (rows[0].new_post as string).slice(1, -1).split(',')

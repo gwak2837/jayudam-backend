@@ -148,7 +148,7 @@ CREATE TABLE cert (
 
 CREATE TABLE hashtag (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  name varchar(50) NOT NULL
+  name varchar(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE notification (
@@ -169,7 +169,8 @@ CREATE TABLE post (
   creation_time timestamptz DEFAULT CURRENT_TIMESTAMP,
   update_time timestamptz,
   deletion_time timestamptz,
-  content varchar(200),
+  content varchar(300),
+  for_adult boolean NOT NULL DEFAULT FALSE,
   image_urls text [],
   --
   parent_post_id bigint REFERENCES post ON DELETE
@@ -270,11 +271,12 @@ WHERE post_id = _post_id;
 END $$;
 
 CREATE FUNCTION create_post (
-  _content varchar(200),
+  _content varchar(300),
   _image_urls text [],
   _parent_post_id bigint,
   _shared_post_id bigint,
   _user_id uuid,
+  _hashtags varchar(100) [] DEFAULT NULL,
   out reason int,
   out new_post record
 ) LANGUAGE plpgsql AS $$ BEGIN
@@ -335,6 +337,28 @@ VALUES (
 RETURNING id,
   creation_time INTO new_post;
 
+WITH hashtag_input (name) AS (
+  SELECT unnest(_hashtags)
+),
+inserted AS (
+  INSERT INTO hashtag (name)
+  SELECT *
+  FROM hashtag_input ON CONFLICT (name) DO NOTHING
+  RETURNING id
+),
+hashtag_ids AS (
+  SELECT id
+  FROM inserted
+  UNION ALL
+  SELECT hashtag.id
+  FROM hashtag_input
+    JOIN hashtag ON hashtag.name = hashtag_input.name
+)
+INSERT INTO hashtag_x_post (hashtag_id, post_id)
+SELECT hashtag_ids.id,
+  new_post.id
+FROM hashtag_ids;
+
 END $$;
 
 CREATE FUNCTION delete_post (
@@ -381,7 +405,7 @@ ELSE
 DELETE FROM post
 WHERE id = _post_id
   AND user_id = _user_id
-RETURNING image_urls INTO delete_post.image_urls;
+RETURNING post.image_urls INTO delete_post.image_urls;
 
 IF FOUND THEN has_authorized = TRUE;
 

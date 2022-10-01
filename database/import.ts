@@ -14,8 +14,8 @@ const { from } = pgCopy
   const client = await pool.connect()
 
   try {
-    await client.query('BEGIN')
     console.log('BEGIN')
+    await client.query('BEGIN')
 
     const initialization = readFileSync('database/initialization.sql', 'utf8').toString()
     await client.query(initialization)
@@ -65,11 +65,11 @@ const { from } = pgCopy
       )
     }
 
-    await client.query('COMMIT')
     console.log('COMMIT')
+    await client.query('COMMIT')
   } catch (error) {
-    await client.query('ROLLBACK')
     console.log('ROLLBACK')
+    await client.query('ROLLBACK')
     throw error
   } finally {
     client.release()

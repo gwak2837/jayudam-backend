@@ -4,7 +4,7 @@ type Post {
   updateTime: DateTime
   deletionTime: DateTime
   content: String
-  imageUrls: [URL]
+  imageUrls: [URL!]
 
   # from other table
   isLiked: Boolean!

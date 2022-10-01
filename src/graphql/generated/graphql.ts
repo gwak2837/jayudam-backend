@@ -189,7 +189,7 @@ export type Post = {
   doIComment: Scalars['Boolean']
   doIShare: Scalars['Boolean']
   id: Scalars['ID']
-  imageUrls?: Maybe<Array<Maybe<Scalars['URL']>>>
+  imageUrls?: Maybe<Array<Scalars['URL']>>
   isLiked: Scalars['Boolean']
   likeCount?: Maybe<Scalars['Int']>
   parentPost?: Maybe<Post>
@@ -696,7 +696,7 @@ export type PostResolvers<
   doIComment?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   doIShare?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>
-  imageUrls?: Resolver<Maybe<Array<Maybe<ResolversTypes['URL']>>>, ParentType, ContextType>
+  imageUrls?: Resolver<Maybe<Array<ResolversTypes['URL']>>, ParentType, ContextType>
   isLiked?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>
   likeCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
   parentPost?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>
