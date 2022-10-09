@@ -9,6 +9,8 @@ import {
 } from '../utils/constants'
 
 export const redisClient = new Redis(REDIS_CONNECTION_STRING, {
+  retryStrategy: (times) => Math.min(times * 1000, 15_000),
+
   ...((PROJECT_ENV === 'cloud-dev' ||
     PROJECT_ENV === 'cloud-prod' ||
     PROJECT_ENV === 'local-prod') && {

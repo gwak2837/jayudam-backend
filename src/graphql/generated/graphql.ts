@@ -94,11 +94,18 @@ export enum Grade {
   Pro = 'PRO',
 }
 
+export type Keys = {
+  auth: Scalars['NonEmptyString']
+  p256dh: Scalars['NonEmptyString']
+}
+
 export type Mutation = {
   __typename?: 'Mutation'
   certJWT: Scalars['JWT']
   createPost?: Maybe<PostCreationResult>
+  createPushSubscription?: Maybe<Scalars['Boolean']>
   deletePost?: Maybe<Post>
+  deletePushSubscription?: Maybe<Scalars['Boolean']>
   deleteSharingPost?: Maybe<PostDeletionResult>
   disconnectFromGoogleOAuth?: Maybe<Scalars['Boolean']>
   disconnectFromKakaoOAuth?: Maybe<Scalars['Boolean']>
@@ -122,6 +129,10 @@ export type MutationCertJwtArgs = {
 
 export type MutationCreatePostArgs = {
   input: PostCreationInput
+}
+
+export type MutationCreatePushSubscriptionArgs = {
+  input: PushSubscription
 }
 
 export type MutationDeletePostArgs = {
@@ -222,6 +233,22 @@ export type PostUpdateInput = {
   content: Scalars['NonEmptyString']
   id: Scalars['ID']
   imageUrls?: InputMaybe<Array<Scalars['URL']>>
+}
+
+export type Push = {
+  __typename?: 'Push'
+  content?: Maybe<Scalars['String']>
+  creationTime?: Maybe<Scalars['DateTime']>
+  deletionTime?: Maybe<Scalars['DateTime']>
+  id: Scalars['ID']
+  imageUrls?: Maybe<Array<Scalars['URL']>>
+  updateTime?: Maybe<Scalars['DateTime']>
+}
+
+export type PushSubscription = {
+  endpoint: Scalars['URL']
+  expirationTime?: InputMaybe<Scalars['NonNegativeInt']>
+  keys: Keys
 }
 
 export type Query = {
@@ -453,6 +480,7 @@ export type ResolversTypes = ResolversObject<{
   ID: ResolverTypeWrapper<Scalars['ID']>
   Int: ResolverTypeWrapper<Scalars['Int']>
   JWT: ResolverTypeWrapper<Scalars['JWT']>
+  Keys: Keys
   Latitude: ResolverTypeWrapper<Scalars['Latitude']>
   Longitude: ResolverTypeWrapper<Scalars['Longitude']>
   Mutation: ResolverTypeWrapper<{}>
@@ -467,6 +495,8 @@ export type ResolversTypes = ResolversObject<{
   PostCreationResult: ResolverTypeWrapper<PostCreationResult>
   PostDeletionResult: ResolverTypeWrapper<PostDeletionResult>
   PostUpdateInput: PostUpdateInput
+  Push: ResolverTypeWrapper<Push>
+  PushSubscription: PushSubscription
   Query: ResolverTypeWrapper<{}>
   ServiceAgreement: ResolverTypeWrapper<ServiceAgreement>
   ServiceAgreementInput: ServiceAgreementInput
@@ -493,6 +523,7 @@ export type ResolversParentTypes = ResolversObject<{
   ID: Scalars['ID']
   Int: Scalars['Int']
   JWT: Scalars['JWT']
+  Keys: Keys
   Latitude: Scalars['Latitude']
   Longitude: Scalars['Longitude']
   Mutation: {}
@@ -505,6 +536,8 @@ export type ResolversParentTypes = ResolversObject<{
   PostCreationResult: PostCreationResult
   PostDeletionResult: PostDeletionResult
   PostUpdateInput: PostUpdateInput
+  Push: Push
+  PushSubscription: PushSubscription
   Query: {}
   ServiceAgreement: ServiceAgreement
   ServiceAgreementInput: ServiceAgreementInput
@@ -605,12 +638,19 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationCreatePostArgs, 'input'>
   >
+  createPushSubscription?: Resolver<
+    Maybe<ResolversTypes['Boolean']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationCreatePushSubscriptionArgs, 'input'>
+  >
   deletePost?: Resolver<
     Maybe<ResolversTypes['Post']>,
     ParentType,
     ContextType,
     RequireFields<MutationDeletePostArgs, 'id'>
   >
+  deletePushSubscription?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
   deleteSharingPost?: Resolver<
     Maybe<ResolversTypes['PostDeletionResult']>,
     ParentType,
@@ -722,6 +762,19 @@ export type PostDeletionResultResolvers<
 > = ResolversObject<{
   deletedPost?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>
   sharedPost?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
+}>
+
+export type PushResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Push'] = ResolversParentTypes['Push']
+> = ResolversObject<{
+  content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  creationTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
+  deletionTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>
+  imageUrls?: Resolver<Maybe<Array<ResolversTypes['URL']>>, ParentType, ContextType>
+  updateTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>
 }>
 
@@ -860,6 +913,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Post?: PostResolvers<ContextType>
   PostCreationResult?: PostCreationResultResolvers<ContextType>
   PostDeletionResult?: PostDeletionResultResolvers<ContextType>
+  Push?: PushResolvers<ContextType>
   Query?: QueryResolvers<ContextType>
   ServiceAgreement?: ServiceAgreementResolvers<ContextType>
   Town?: TownResolvers<ContextType>

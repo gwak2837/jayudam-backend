@@ -2,7 +2,6 @@ import { Http2Server, Http2ServerRequest, Http2ServerResponse } from 'http2'
 
 import cors from '@fastify/cors'
 import Fastify, { FastifyInstance } from 'fastify'
-import { FastifySSEPlugin } from 'fastify-sse-v2'
 import { NoSchemaIntrospectionCustomRule } from 'graphql'
 import mercurius, { IResolvers, MercuriusContext } from 'mercurius'
 
@@ -17,6 +16,7 @@ import {
   PROJECT_ENV,
 } from '../utils/constants'
 import { verifyJWT } from '../utils/jwt'
+import setServerPush from './chat'
 import { UnauthorizedError } from './errors'
 import { setOAuthStrategies } from './oauth'
 import { setUploadingFiles } from './upload'
@@ -27,7 +27,7 @@ export type GraphQLContext = MercuriusContext & {
 
 export type FastifyHttp2 = FastifyInstance<Http2Server, Http2ServerRequest, Http2ServerResponse>
 
-export async function startGraphQLServer() {
+export async function startFastifyServer() {
   const fastify: FastifyHttp2 = Fastify({
     http2: true,
     // logger: true,
@@ -40,6 +40,7 @@ export async function startGraphQLServer() {
     }),
   })
 
+  // CORS
   fastify.register(cors, {
     origin: [
       'http://localhost:3000',
@@ -50,10 +51,12 @@ export async function startGraphQLServer() {
     ],
   })
 
+  // Prevent DoS
   fastify.register(import('@fastify/rate-limit'), {
     allowList: ['127.0.0.1'],
   })
 
+  // GraphQL API
   fastify.register(mercurius, {
     // cache: new BaseRedisCache({
     //   client: redisClient as RedisClient,
@@ -78,62 +81,48 @@ export async function startGraphQLServer() {
     validationRules: NODE_ENV === 'production' ? [NoSchemaIntrospectionCustomRule] : undefined,
   })
 
-  fastify.register(FastifySSEPlugin)
+  type QuerystringJWT = {
+    Querystring: {
+      jwt: string
+    }
+  }
+
+  // REST API Authentication
+  fastify.decorateRequest('userId', null)
+
+  fastify.addHook<QuerystringJWT>('onRequest', async (req) => {
+    const jwt = req.headers.authorization ?? req.query.jwt
+    if (!jwt) return
+
+    const verifiedJwt = await verifyJWT(jwt)
+    if (!verifiedJwt.iat) throw UnauthorizedError('다시 로그인 해주세요')
+
+    const logoutTime = await redisClient.get(`${verifiedJwt.userId}:logoutTime`)
+    if (Number(logoutTime) > Number(verifiedJwt.iat) * 1000)
+      throw UnauthorizedError('다시 로그인 해주세요')
+
+    req.userId = verifiedJwt.userId
+  })
 
   setOAuthStrategies(fastify)
   setUploadingFiles(fastify)
-
-  fastify.get('/chat', (request, reply) => {
-    console.log('👀 - connect')
-
-    const headers = reply.getHeaders()
-
-    for (const key in headers) {
-      const value = headers[key]
-      if (value) {
-        reply.raw.setHeader(key, value)
-      }
-    }
-
-    reply.raw.setHeader('Content-Type', 'text/event-stream')
-    reply.raw.setHeader('content-encoding', 'identity')
-    reply.raw.setHeader('Cache-Control', 'no-cache,no-transform')
-    reply.raw.setHeader('x-no-compression', 1)
-
-    const a = setInterval(() => {
-      const time = new Date().toISOString()
-      console.log('👀 - message', time)
-      reply.raw.write(`time: ${time}`)
-    }, 1000)
-
-    request.raw.addListener('close', () => {
-      console.log('👀 - close2')
-      clearInterval(a)
-    })
-
-    request.raw.on('close', () => {
-      console.log('👀 - close')
-      clearInterval(a)
-    })
-  })
-
-  // //////////////////////////////////////////////
-  const opts = {
-    schema: {
-      querystring: {
-        type: 'object',
-        properties: {
-          code: { type: 'string' },
-        },
-        required: ['code'],
-      },
-    },
-  }
-
-  fastify.get('/hello', opts, async (request) => {
-    return { hello: request.query }
-  })
-  // //////////////////////////////////////////////
+  setServerPush(fastify)
 
   return fastify.listen({ host: process.env.K_SERVICE ? '0.0.0.0' : 'localhost', port: +PORT })
 }
+
+// const opts = {
+//   schema: {
+//     querystring: {
+//       type: 'object',
+//       properties: {
+//         code: { type: 'string' },
+//       },
+//       required: ['code'],
+//     },
+//   },
+// }
+
+// fastify.get('/hello', opts, async (request) => {
+//   return { hello: request.query }
+// })

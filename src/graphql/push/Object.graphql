@@ -1,0 +1,8 @@
+type Push {
+  id: ID!
+  creationTime: DateTime
+  updateTime: DateTime
+  deletionTime: DateTime
+  content: String
+  imageUrls: [URL!]
+}

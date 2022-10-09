@@ -5,7 +5,7 @@ import { pipeline } from 'stream'
 import multipart from '@fastify/multipart'
 
 import { bucket } from '../database/google-storage'
-import { BadRequestError, ServiceUnavailableError } from './errors'
+import { BadRequestError, ServiceUnavailableError, UnauthorizedError } from './errors'
 import { FastifyHttp2 } from './server'
 
 // import sharp from 'sharp'
@@ -27,8 +27,10 @@ export function setUploadingFiles(fastify: FastifyHttp2) {
     },
   })
 
-  fastify.post('/upload/images', async function (req, res) {
-    const files = req.files()
+  fastify.post('/upload/images', async function (request, reply) {
+    if (!request.userId) throw UnauthorizedError('로그인 후 시도해주세요')
+
+    const files = request.files()
     const result: UploadResult[] = []
 
     for await (const file of files) {
@@ -64,6 +66,6 @@ export function setUploadingFiles(fastify: FastifyHttp2) {
       }
     }
 
-    res.send(result)
+    reply.status(201).send(result)
   })
 }

@@ -3,7 +3,7 @@ import { networkInterfaces } from 'os'
 /* eslint-disable no-console */
 import { pool } from './database/postgres'
 import { redisClient } from './database/redis'
-import { startGraphQLServer } from './fastify/server'
+import { startFastifyServer } from './fastify/server'
 import { NODE_ENV, PGURI, PORT, REDIS_CONNECTION_STRING } from './utils/constants'
 
 const nets = networkInterfaces()
@@ -30,7 +30,7 @@ redisClient
     throw new Error('Cannot connect to Redis server... ' + error)
   })
 
-startGraphQLServer()
+startFastifyServer()
   .then((url) => {
     console.log(`🚀 Server ready at: ${url}`)
     if (NODE_ENV !== 'production' && nets.en0)

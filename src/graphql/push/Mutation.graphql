@@ -1,0 +1,15 @@
+type Mutation {
+  createPushSubscription(input: PushSubscription!): Boolean
+  deletePushSubscription: Boolean
+}
+
+input PushSubscription {
+  endpoint: URL!
+  expirationTime: NonNegativeInt
+  keys: Keys!
+}
+
+input Keys {
+  auth: NonEmptyString!
+  p256dh: NonEmptyString!
+}
