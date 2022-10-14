@@ -1,23 +1,29 @@
 import { Http2Server, Http2ServerRequest, Http2ServerResponse } from 'http2'
+import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
 
+// eslint-disable-next-line import/default
+import autoLoad from '@fastify/autoload'
 import cors from '@fastify/cors'
+import swagger from '@fastify/swagger'
 import Fastify, { FastifyInstance } from 'fastify'
 import { NoSchemaIntrospectionCustomRule } from 'graphql'
 import mercurius, { IResolvers, MercuriusContext } from 'mercurius'
 
-import { redisClient } from '../database/redis'
-import { resolvers } from '../graphql'
-import schema from '../graphql/generated/schema.graphql'
 import {
   LOCALHOST_HTTPS_CERT,
   LOCALHOST_HTTPS_KEY,
   NODE_ENV,
   PORT,
   PROJECT_ENV,
-} from '../utils/constants'
-import { verifyJWT } from '../utils/jwt'
-import setServerPush from './chat'
-import { UnauthorizedError } from './errors'
+} from '../common/constants'
+import { verifyJWT } from '../common/jwt'
+import { redisClient } from '../common/redis'
+import { UnauthorizedError } from '../fastify/errors'
+import { resolvers } from '../graphql'
+import schema from '../graphql/generated/schema.graphql'
+import setChatMutation from './chat/mutation'
+import setChatQuery from './chat/query'
 import { setOAuthStrategies } from './oauth'
 import { setUploadingFiles } from './upload'
 
@@ -26,6 +32,9 @@ export type GraphQLContext = MercuriusContext & {
 }
 
 export type FastifyHttp2 = FastifyInstance<Http2Server, Http2ServerRequest, Http2ServerResponse>
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 export async function startFastifyServer() {
   const fastify: FastifyHttp2 = Fastify({
@@ -81,14 +90,14 @@ export async function startFastifyServer() {
     validationRules: NODE_ENV === 'production' ? [NoSchemaIntrospectionCustomRule] : undefined,
   })
 
+  // REST API Authentication
+  fastify.decorateRequest('userId', null)
+
   type QuerystringJWT = {
     Querystring: {
       jwt: string
     }
   }
-
-  // REST API Authentication
-  fastify.decorateRequest('userId', null)
 
   fastify.addHook<QuerystringJWT>('onRequest', async (req) => {
     const jwt = req.headers.authorization ?? req.query.jwt
@@ -104,25 +113,41 @@ export async function startFastifyServer() {
     req.userId = verifiedJwt.userId
   })
 
+  // Swagger
+  // await fastify.register(swagger, {
+  //   openapi: {
+  //     info: {
+  //       title: 'Test swagger',
+  //       description: 'testing the fastify swagger api',
+  //       version: '0.1.0',
+  //     },
+  //     servers: [
+  //       {
+  //         url: 'httpㄴ://localhost:4000',
+  //       },
+  //     ],
+  //     components: {
+  //       securitySchemes: {
+  //         apiKey: {
+  //           type: 'apiKey',
+  //           name: 'apiKey',
+  //           in: 'header',
+  //         },
+  //       },
+  //     },
+  //   },
+  //   hideUntagged: true,
+  //   exposeRoute: true,
+  // })
+
+  fastify.register(autoLoad, {
+    dir: join(__dirname, './'),
+  })
+
   setOAuthStrategies(fastify)
   setUploadingFiles(fastify)
-  setServerPush(fastify)
+  setChatMutation(fastify)
+  setChatQuery(fastify)
 
   return fastify.listen({ host: process.env.K_SERVICE ? '0.0.0.0' : 'localhost', port: +PORT })
 }
-
-// const opts = {
-//   schema: {
-//     querystring: {
-//       type: 'object',
-//       properties: {
-//         code: { type: 'string' },
-//       },
-//       required: ['code'],
-//     },
-//   },
-// }
-
-// fastify.get('/hello', opts, async (request) => {
-//   return { hello: request.query }
-// })

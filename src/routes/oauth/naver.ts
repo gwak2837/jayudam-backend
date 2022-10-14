@@ -1,17 +1,16 @@
 import fetch from 'node-fetch'
 
-import { poolQuery } from '../../database/postgres'
-import { redisClient } from '../../database/redis'
-import { NAVER_CLIENT_ID, NAVER_CLIENT_SECRET } from '../../utils/constants'
-import { signJWT, verifyJWT } from '../../utils/jwt'
-import { FastifyHttp2 } from '../server'
+import { NAVER_CLIENT_ID, NAVER_CLIENT_SECRET } from '../../common/constants'
+import { signJWT, verifyJWT } from '../../common/jwt'
+import { poolQuery } from '../../common/postgres'
+import { redisClient } from '../../common/redis'
 import type { IGetNaverUserResult } from './sql/getNaverUser'
 import getNaverUser from './sql/getNaverUser.sql'
 import type { IGetUserResult } from './sql/getUser'
 import getUser from './sql/getUser.sql'
-import type { IUpdateNaverUserResult } from './sql/updateNaverUser'
 import updateNaverUser from './sql/updateNaverUser.sql'
 import { QuerystringCodeState, encodeSex, getFrontendUrl, querystringCodeState } from '.'
+import { FastifyHttp2 } from '..'
 
 export function setNaverOAuthStrategies(app: FastifyHttp2) {
   // Naver 계정으로 로그인하기

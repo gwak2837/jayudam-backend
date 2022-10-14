@@ -21,6 +21,7 @@ export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string
 export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET as string
 export const GOOGLE_CLOUD_STORAGE_BUCKET = process.env.GOOGLE_CLOUD_STORAGE_BUCKET as string
 export const GOOGLE_CLOUD_PROJECT = process.env.GOOGLE_CLOUD_PROJECT as string
+export const GOOGLE_FIREBASE_API_KEY = process.env.GOOGLE_FIREBASE_API_KEY as string
 
 export const KAKAO_ADMIN_KEY = process.env.KAKAO_ADMIN_KEY as string
 export const KAKAO_REST_API_KEY = process.env.KAKAO_REST_API_KEY as string
@@ -60,6 +61,7 @@ if (!GOOGLE_CLIENT_SECRET) throw new Error('`GOOGLE_CLIENT_SECRET` 환경 변수
 if (!GOOGLE_CLOUD_STORAGE_BUCKET)
   throw new Error('`GOOGLE_CLOUD_STORAGE_BUCKET` 환경 변수를 설정해주세요.')
 if (!GOOGLE_CLOUD_PROJECT) throw new Error('`GOOGLE_CLOUD_PROJECT` 환경 변수를 설정해주세요.')
+if (!GOOGLE_FIREBASE_API_KEY) throw new Error('`GOOGLE_FIREBASE_API_KEY` 환경 변수를 설정해주세요.')
 
 if (!KAKAO_ADMIN_KEY) throw new Error('`KAKAO_ADMIN_KEY` 환경 변수를 설정해주세요.')
 if (!KAKAO_REST_API_KEY) throw new Error('`KAKAO_REST_API_KEY` 환경 변수를 설정해주세요.')

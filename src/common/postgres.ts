@@ -1,8 +1,8 @@
 import pg from 'pg'
 
+import { NODE_ENV, PGURI, POSTGRES_CA, PROJECT_ENV } from '../common/constants'
 import { ServiceUnavailableError } from '../fastify/errors'
 import { formatDate } from '../utils'
-import { NODE_ENV, PGURI, POSTGRES_CA, PROJECT_ENV } from '../utils/constants'
 
 const { Pool } = pg
 

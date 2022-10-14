@@ -5,6 +5,13 @@ schema:
 generates:
   src/graphql/generated/graphql.ts:
     config:
+      scalars:
+        EmailAddress: string
+        JWT: string
+        NonEmptyString: string
+        NonNegativeInt: number
+        PositiveInt: number
+        UUID: string
       useIndexSignature: true
     plugins:
       - 'typescript'

@@ -1,10 +1,11 @@
 import { networkInterfaces } from 'os'
 
+import { NODE_ENV, PGURI, PORT, REDIS_CONNECTION_STRING } from './common/constants'
+import { pool } from './common/postgres'
+import { redisClient } from './common/redis'
+import { startFastifyServer } from './routes'
+
 /* eslint-disable no-console */
-import { pool } from './database/postgres'
-import { redisClient } from './database/redis'
-import { startFastifyServer } from './fastify/server'
-import { NODE_ENV, PGURI, PORT, REDIS_CONNECTION_STRING } from './utils/constants'
 
 const nets = networkInterfaces()
 

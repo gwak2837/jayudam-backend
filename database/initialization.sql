@@ -188,6 +188,29 @@ CREATE TABLE verification_history (
   user_id uuid REFERENCES "user" ON DELETE CASCADE
 );
 
+-- type 0: text, 1: image, 2: video
+CREATE TABLE chat (
+  id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  content varchar(1000) NOT NULL,
+  "type" int NOT NULL,
+  user_id uuid REFERENCES "user" ON DELETE CASCADE
+);
+
+CREATE TABLE chatroom (
+  id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  image_url text,
+  name varchar(100) NOT NULL
+);
+
+CREATE TABLE chatroom_x_user (
+  chatroom_id bigint REFERENCES chatroom ON DELETE CASCADE,
+  user_id uuid REFERENCES "user" ON DELETE CASCADE,
+  last_chat_id bigint REFERENCES chat --
+  PRIMARY KEY (chatroom_id, user_id)
+);
+
 -- post에 있는 해시태그
 CREATE TABLE hashtag_x_post (
   hashtag_id bigint REFERENCES hashtag ON DELETE CASCADE,

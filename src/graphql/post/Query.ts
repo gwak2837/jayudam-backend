@@ -1,6 +1,6 @@
-import { poolQuery } from '../../database/postgres'
+import { poolQuery } from '../../common/postgres'
 import { NotFoundError } from '../../fastify/errors'
-import type { GraphQLContext } from '../../fastify/server'
+import { GraphQLContext } from '../../routes'
 import type { QueryResolvers } from '../generated/graphql'
 import { getComments, getPosts, postORM } from './ORM'
 import type { ICommentsResult } from './sql/comments'

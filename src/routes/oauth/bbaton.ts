@@ -1,9 +1,8 @@
 import fetch from 'node-fetch'
 
-import { poolQuery } from '../../database/postgres'
-import { BBATON_CLIENT_ID, BBATON_CLIENT_SECRET_KEY } from '../../utils/constants'
-import { signJWT } from '../../utils/jwt'
-import { FastifyHttp2 } from '../server'
+import { BBATON_CLIENT_ID, BBATON_CLIENT_SECRET_KEY } from '../../common/constants'
+import { signJWT } from '../../common/jwt'
+import { poolQuery } from '../../common/postgres'
 import awakeBBatonUser from './sql/awakeBBatonUser.sql'
 import type { IGetBBatonUserResult } from './sql/getBBatonUser'
 import getBBatonUser from './sql/getBBatonUser.sql'
@@ -18,6 +17,7 @@ import {
   getFrontendUrl,
   querystringCode,
 } from '.'
+import { FastifyHttp2 } from '..'
 
 export function setBBatonOAuthStrategies(app: FastifyHttp2) {
   // BBaton 계정으로 가입하기

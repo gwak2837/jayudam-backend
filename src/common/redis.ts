@@ -6,7 +6,7 @@ import {
   REDIS_CLIENT_CERT,
   REDIS_CLIENT_KEY,
   REDIS_CONNECTION_STRING,
-} from '../utils/constants'
+} from '../common/constants'
 
 export const redisClient = new Redis(REDIS_CONNECTION_STRING, {
   retryStrategy: (times) => Math.min(times * 1000, 15_000),

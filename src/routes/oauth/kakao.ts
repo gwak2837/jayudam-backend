@@ -1,11 +1,10 @@
 import LunarJS from 'lunar-javascript'
 import fetch from 'node-fetch'
 
-import { poolQuery } from '../../database/postgres'
-import { redisClient } from '../../database/redis'
-import { KAKAO_ADMIN_KEY, KAKAO_CLIENT_SECRET, KAKAO_REST_API_KEY } from '../../utils/constants'
-import { signJWT, verifyJWT } from '../../utils/jwt'
-import { FastifyHttp2 } from '../server'
+import { KAKAO_ADMIN_KEY, KAKAO_CLIENT_SECRET, KAKAO_REST_API_KEY } from '../../common/constants'
+import { signJWT, verifyJWT } from '../../common/jwt'
+import { poolQuery } from '../../common/postgres'
+import { redisClient } from '../../common/redis'
 import type { IGetKakaoUserResult } from './sql/getKakaoUser'
 import getKakaoUser from './sql/getKakaoUser.sql'
 import type { IGetUserResult } from './sql/getUser'
@@ -20,6 +19,7 @@ import {
   querystringCode,
   querystringCodeState,
 } from '.'
+import { FastifyHttp2 } from '..'
 
 const Lunar = LunarJS.Lunar
 

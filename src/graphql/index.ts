@@ -7,7 +7,7 @@ import * as commonResolver from './common/common'
 import * as postMutationResolver from './post/Mutation'
 // import * as postObjectResolver from './post/Object'
 import * as postQueryResolver from './post/Query'
-import * as pushMutationResolver from './push/Mutation'
+// import * as pushMutationResolver from './push/Mutation'
 import * as userMutationResolver from './user/Mutation'
 import * as userObjectResolver from './user/Object'
 import * as userQueryResolver from './user/Query'
@@ -20,7 +20,7 @@ const resolversArray = [
   postMutationResolver,
   // postObjectResolver,
   postQueryResolver,
-  pushMutationResolver,
+  // pushMutationResolver,
   userMutationResolver,
   userObjectResolver,
   userQueryResolver,

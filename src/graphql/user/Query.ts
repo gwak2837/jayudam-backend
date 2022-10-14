@@ -1,6 +1,6 @@
-import { poolQuery } from '../../database/postgres'
+import { poolQuery } from '../../common/postgres'
 import { BadRequestError, NotFoundError, UnauthorizedError } from '../../fastify/errors'
-import type { GraphQLContext } from '../../fastify/server'
+import { GraphQLContext } from '../../routes'
 import type { QueryResolvers } from '../generated/graphql'
 import { decodeGrade, decodeSex } from './Object'
 import type { IAuthResult } from './sql/auth'

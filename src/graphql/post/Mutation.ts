@@ -1,12 +1,12 @@
-import { bucket } from '../../database/google-storage'
-import { poolQuery } from '../../database/postgres'
+import { bucket } from '../../common/google-storage'
+import { poolQuery } from '../../common/postgres'
 import {
   BadRequestError,
   ForbiddenError,
   ServiceUnavailableError,
   UnauthorizedError,
 } from '../../fastify/errors'
-import type { GraphQLContext } from '../../fastify/server'
+import { GraphQLContext } from '../../routes'
 import type { MutationResolvers, Post, PostCreationResult } from '../generated/graphql'
 import type { ICountCommentsResult } from './sql/countComments'
 import countComments from './sql/countComments.sql'
@@ -48,7 +48,7 @@ export const Mutation: MutationResolvers<GraphQLContext> = {
     const result: PostCreationResult = {
       newPost: {
         id: newPost[0],
-        creationTime: new Date(newPost[1]),
+        creationTime: newPost[1],
         content,
         imageUrls,
         isLiked: false,
@@ -57,12 +57,12 @@ export const Mutation: MutationResolvers<GraphQLContext> = {
         ...(sharingPostId && {
           sharedPost: {
             id: sharingPostId,
-          } as Post,
+          },
         }),
         author: {
           id: userId,
         },
-      } as Post,
+      },
     }
 
     if (parentPostId) {

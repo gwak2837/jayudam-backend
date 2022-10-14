@@ -4,9 +4,9 @@ import { pipeline } from 'stream'
 
 import multipart from '@fastify/multipart'
 
-import { bucket } from '../database/google-storage'
-import { BadRequestError, ServiceUnavailableError, UnauthorizedError } from './errors'
-import { FastifyHttp2 } from './server'
+import { bucket } from '../common/google-storage'
+import { BadRequestError, ServiceUnavailableError, UnauthorizedError } from '../fastify/errors'
+import { FastifyHttp2 } from '.'
 
 // import sharp from 'sharp'
 

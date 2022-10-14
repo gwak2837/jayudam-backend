@@ -72,11 +72,6 @@ enum Grade {
 
 scalar JWT
 
-input Keys {
-  auth: NonEmptyString!
-  p256dh: NonEmptyString!
-}
-
 scalar Latitude
 
 scalar Longitude
@@ -84,9 +79,7 @@ scalar Longitude
 type Mutation {
   certJWT(input: CertAgreementInput!): JWT!
   createPost(input: PostCreationInput!): PostCreationResult
-  createPushSubscription(input: PushSubscription!): Boolean
   deletePost(id: ID!): Post
-  deletePushSubscription: Boolean
   deleteSharingPost(sharedPostId: ID!): PostDeletionResult
   disconnectFromGoogleOAuth: Boolean
   disconnectFromKakaoOAuth: Boolean
@@ -170,21 +163,6 @@ input PostUpdateInput {
   content: NonEmptyString!
   id: ID!
   imageUrls: [URL!]
-}
-
-type Push {
-  content: String
-  creationTime: DateTime
-  deletionTime: DateTime
-  id: ID!
-  imageUrls: [URL!]
-  updateTime: DateTime
-}
-
-input PushSubscription {
-  endpoint: URL!
-  expirationTime: NonNegativeInt
-  keys: Keys!
 }
 
 type Query {

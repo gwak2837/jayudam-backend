@@ -1,15 +1,13 @@
 import fetch from 'node-fetch'
 
-import { poolQuery } from '../../database/postgres'
-import { redisClient } from '../../database/redis'
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../../utils/constants'
-import { signJWT, verifyJWT } from '../../utils/jwt'
-import { FastifyHttp2 } from '../server'
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../../common/constants'
+import { signJWT, verifyJWT } from '../../common/jwt'
+import { poolQuery } from '../../common/postgres'
+import { redisClient } from '../../common/redis'
 import type { IGetGoogleUserResult } from './sql/getGoogleUser'
 import getGoogleUser from './sql/getGoogleUser.sql'
 import type { IGetUserResult } from './sql/getUser'
 import getUser from './sql/getUser.sql'
-import type { IUpdateGoogleUserResult } from './sql/updateGoogleUser'
 import updateGoogleUser from './sql/updateGoogleUser.sql'
 import {
   QuerystringCode,
@@ -18,6 +16,7 @@ import {
   querystringCode,
   querystringCodeState,
 } from '.'
+import { FastifyHttp2 } from '..'
 
 export function setGoogleOAuthStrategies(app: FastifyHttp2) {
   // Google 계정으로 로그인하기

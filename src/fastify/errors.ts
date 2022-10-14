@@ -6,8 +6,8 @@ export const BadRequestError = (message: string) =>
   new ErrorWithProps(message, { code: '400_BAD_REQUEST' }, 400)
 export const UnauthorizedError = (message: string) =>
   new ErrorWithProps(message, { code: '401_UNAUTHORIZED' }, 401)
-export const ForbiddenError = (message: string) =>
-  new ErrorWithProps(message, { code: '402_FORBIDDEN' }, 403)
+export const ForbiddenError = (message?: string) =>
+  new ErrorWithProps(message ?? '권한이 없습니다', { code: '402_FORBIDDEN' }, 403)
 export const NotFoundError = (message: string) =>
   new ErrorWithProps(message, { code: '404_NOT_FOUND' }, 404)
 
