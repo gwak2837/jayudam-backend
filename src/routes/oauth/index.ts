@@ -1,16 +1,6 @@
-import { FRONTEND_URL } from '../../common/constants'
-import { setBBatonOAuthStrategies } from './bbaton'
-import { setGoogleOAuthStrategies } from './google'
-import { setKakaoOAuthStrategies } from './kakao'
-import { setNaverOAuthStrategies } from './naver'
-import { FastifyHttp2 } from '..'
+import { FromSchema } from 'json-schema-to-ts'
 
-export function setOAuthStrategies(app: FastifyHttp2) {
-  setBBatonOAuthStrategies(app)
-  setGoogleOAuthStrategies(app)
-  setKakaoOAuthStrategies(app)
-  setNaverOAuthStrategies(app)
-}
+import { FRONTEND_URL } from '../../common/constants'
 
 export type BBatonUserToken = {
   access_token: string
@@ -32,19 +22,6 @@ export type BBatonUser = {
   error?: string
 }
 
-export type QuerystringCode = {
-  Querystring: {
-    code: string
-  }
-}
-
-export type QuerystringCodeState = {
-  Querystring: {
-    code: string
-    state: string
-  }
-}
-
 export const querystringCode = {
   schema: {
     querystring: {
@@ -52,9 +29,14 @@ export const querystringCode = {
       properties: {
         code: { type: 'string' },
       },
+      additionalProperties: false,
       required: ['code'],
     },
   },
+} as const
+
+export type QuerystringCode = {
+  Querystring: FromSchema<typeof querystringCode.schema.querystring>
 }
 
 export const querystringCodeState = {
@@ -65,9 +47,14 @@ export const querystringCodeState = {
         code: { type: 'string' },
         state: { type: 'string' },
       },
+      additionalProperties: false,
       required: ['code', 'state'],
     },
   },
+} as const
+
+export type QuerystringCodeState = {
+  Querystring: FromSchema<typeof querystringCodeState.schema.querystring>
 }
 
 const vercelURLRegEx = /^https:\/\/jayudam-[-a-z0-9]{1,20}-gwak2837\.vercel\.app\//

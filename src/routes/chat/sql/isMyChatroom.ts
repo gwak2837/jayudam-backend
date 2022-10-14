@@ -1,4 +1,4 @@
-/** Types generated for queries found in "src/fastify/chat/sql/isMyChatroom.sql" */
+/** Types generated for queries found in "src/routes/chat/sql/isMyChatroom.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
 /** 'IsMyChatroom' parameters type */

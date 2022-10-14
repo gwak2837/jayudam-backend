@@ -1,13 +1,13 @@
 import { randomUUID } from 'crypto'
 import path from 'path'
-import { pipeline } from 'stream'
 
 import multipart from '@fastify/multipart'
 
+import { BadRequestError, ServiceUnavailableError, UnauthorizedError } from '../common/fastify'
 import { bucket } from '../common/google-storage'
-import { BadRequestError, ServiceUnavailableError, UnauthorizedError } from '../fastify/errors'
 import { FastifyHttp2 } from '.'
 
+// import { pipeline } from 'stream'
 // import sharp from 'sharp'
 
 type UploadResult = {
@@ -15,7 +15,7 @@ type UploadResult = {
   url: string
 }
 
-export function setUploadingFiles(fastify: FastifyHttp2) {
+export default function uploadFiles(fastify: FastifyHttp2) {
   fastify.register(multipart, {
     limits: {
       fieldNameSize: 100, // Max field name size in bytes

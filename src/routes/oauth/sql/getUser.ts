@@ -1,4 +1,4 @@
-/** Types generated for queries found in "src/fastify/oauth/sql/getUser.sql" */
+/** Types generated for queries found in "src/routes/oauth/sql/getUser.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
 export type stringArray = (string)[];

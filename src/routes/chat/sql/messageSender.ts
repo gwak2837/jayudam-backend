@@ -1,4 +1,4 @@
-/** Types generated for queries found in "src/fastify/chat/sql/messageSender.sql" */
+/** Types generated for queries found in "src/routes/chat/sql/messageSender.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
 /** 'MessageSender' parameters type */

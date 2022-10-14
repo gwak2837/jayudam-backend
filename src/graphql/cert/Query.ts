@@ -1,6 +1,6 @@
+import { UnauthorizedError } from '../../common/fastify'
 import { signJWT } from '../../common/jwt'
 import { poolQuery } from '../../common/postgres'
-import { UnauthorizedError } from '../../fastify/errors'
 import { GraphQLContext } from '../../routes'
 import type { QueryResolvers } from '../generated/graphql'
 import type { IVerificationHistoriesResult } from './sql/verificationHistories'

@@ -3,7 +3,7 @@ import { networkInterfaces } from 'os'
 import { NODE_ENV, PGURI, PORT, REDIS_CONNECTION_STRING } from './common/constants'
 import { pool } from './common/postgres'
 import { redisClient } from './common/redis'
-import { startFastifyServer } from './routes'
+import { startFastifyServer as startServer } from './routes'
 
 /* eslint-disable no-console */
 
@@ -31,7 +31,7 @@ redisClient
     throw new Error('Cannot connect to Redis server... ' + error)
   })
 
-startFastifyServer()
+startServer()
   .then((url) => {
     console.log(`🚀 Server ready at: ${url}`)
     if (NODE_ENV !== 'production' && nets.en0)

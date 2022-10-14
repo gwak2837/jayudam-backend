@@ -1,4 +1,4 @@
-/** Types generated for queries found in "src/fastify/oauth/sql/getBBatonUser.sql" */
+/** Types generated for queries found in "src/routes/oauth/sql/getBBatonUser.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
 /** 'GetBBatonUser' parameters type */

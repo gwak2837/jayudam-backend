@@ -1,4 +1,4 @@
-/** Types generated for queries found in "src/fastify/chat/sql/createChat.sql" */
+/** Types generated for queries found in "src/routes/chat/sql/createChat.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
 /** 'CreateChat' parameters type */

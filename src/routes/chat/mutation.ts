@@ -1,14 +1,14 @@
-import { FastifySchema } from 'fastify'
+import { FromSchema } from 'json-schema-to-ts'
 
-import { poolQuery } from '../../common/postgres'
-import { redisClient } from '../../common/redis'
-import webpush from '../../common/web-push'
 import {
   BadRequestError,
   ForbiddenError,
   ServiceUnavailableError,
   UnauthorizedError,
-} from '../../fastify/errors'
+} from '../../common/fastify'
+import { poolQuery } from '../../common/postgres'
+import { redisClient } from '../../common/redis'
+import webpush from '../../common/web-push'
 import { ICreateChatResult } from './sql/createChat'
 import createChat from './sql/createChat.sql'
 import isMyChatroom from './sql/isMyChatroom.sql'
@@ -16,18 +16,8 @@ import { IMessageSenderResult } from './sql/messageSender'
 import messageSender from './sql/messageSender.sql'
 import { FastifyHttp2 } from '..'
 
-export default function setChatMutation(fastify: FastifyHttp2) {
-  type Schema = {
-    Body: {
-      chatroomId: string
-      message: {
-        content: string
-        type: number
-      }
-    }
-  }
-
-  const schema: FastifySchema = {
+export default function chatMutation(fastify: FastifyHttp2) {
+  const schema = {
     body: {
       type: 'object',
       properties: {
@@ -38,11 +28,16 @@ export default function setChatMutation(fastify: FastifyHttp2) {
             content: { type: 'string' },
             type: { type: 'number' },
           },
+          additionalProperties: false,
+          required: ['content', 'type'],
         },
       },
+      additionalProperties: false,
       required: ['chatroomId', 'message'],
     },
-  }
+  } as const
+
+  type Schema = { Body: FromSchema<typeof schema.body> }
 
   fastify.post<Schema>('/chat/send', { schema }, async (request, reply) => {
     const userId = request.userId
@@ -102,20 +97,7 @@ export default function setChatMutation(fastify: FastifyHttp2) {
     reply.status(201).send()
   })
 
-  type Schema2 = {
-    Body: {
-      pushSubscription: {
-        endpoint: string
-        expirationTime: number
-        keys: {
-          auth: string
-          p256dh: string
-        }
-      }
-    }
-  }
-
-  const schema2: FastifySchema = {
+  const schema2 = {
     body: {
       type: 'object',
       properties: {
@@ -130,13 +112,20 @@ export default function setChatMutation(fastify: FastifyHttp2) {
                 auth: { type: 'string' },
                 p256dh: { type: 'string' },
               },
+              additionalProperties: false,
+              required: ['auth', 'p256dh'],
             },
           },
+          additionalProperties: false,
+          required: ['endpoint', 'expirationTime', 'keys'],
         },
       },
+      additionalProperties: false,
       required: ['pushSubscription'],
     },
-  }
+  } as const
+
+  type Schema2 = { Body: FromSchema<typeof schema2.body> }
 
   fastify.post<Schema2>('/chat/push', { schema: schema2 }, async (request, reply) => {
     const userId = request.userId
@@ -161,7 +150,7 @@ export default function setChatMutation(fastify: FastifyHttp2) {
     reply.status(204).send('pushSubscription 삭제 완료')
   })
 
-  const schema3: FastifySchema = {
+  const schema3 = {
     body: {
       type: 'object',
       properties: {
@@ -171,20 +160,16 @@ export default function setChatMutation(fastify: FastifyHttp2) {
             content: { type: 'string' },
             type: { type: 'number' },
           },
+          additionalProperties: false,
+          required: ['content', 'type'],
         },
       },
+      additionalProperties: false,
       required: ['message'],
     },
-  }
+  } as const
 
-  type Schema3 = {
-    Body: {
-      message: {
-        content: string
-        type: number
-      }
-    }
-  }
+  type Schema3 = { Body: FromSchema<typeof schema3.body> }
 
   fastify.post<Schema3>('/chat/test', { schema: schema3 }, async (request, reply) => {
     const userId = request.userId
@@ -201,6 +186,7 @@ export default function setChatMutation(fastify: FastifyHttp2) {
       JSON.parse(pushSubscription),
       JSON.stringify({
         content: message.content,
+        type: message.type,
         sender: {
           nickname: rows[0].nickname,
           imageUrl: rows[0].image_url,

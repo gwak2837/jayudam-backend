@@ -28,7 +28,6 @@
     "postinstall": "husky install"
   },
   "dependencies": {
-    "@fastify/autoload": "^5.4.1",
     "@fastify/cors": "^8.1.0",
     "@fastify/multipart": "^7.2.0",
     "@fastify/rate-limit": "^7.4.0",
@@ -40,6 +39,7 @@
     "graphql": "^16.6.0",
     "graphql-scalars": "^1.18.0",
     "ioredis": "^5.2.3",
+    "json-schema-to-ts": "^2.5.5",
     "jsonwebtoken": "^8.5.1",
     "lunar-javascript": "^1.2.33",
     "mercurius": "^11.0.0",

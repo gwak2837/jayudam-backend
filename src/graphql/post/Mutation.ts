@@ -1,11 +1,11 @@
-import { bucket } from '../../common/google-storage'
-import { poolQuery } from '../../common/postgres'
 import {
   BadRequestError,
   ForbiddenError,
   ServiceUnavailableError,
   UnauthorizedError,
-} from '../../fastify/errors'
+} from '../../common/fastify'
+import { bucket } from '../../common/google-storage'
+import { poolQuery } from '../../common/postgres'
 import { GraphQLContext } from '../../routes'
 import type { MutationResolvers, Post, PostCreationResult } from '../generated/graphql'
 import type { ICountCommentsResult } from './sql/countComments'

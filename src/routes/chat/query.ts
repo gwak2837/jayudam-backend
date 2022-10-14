@@ -1,4 +1,4 @@
-import { FastifySchema } from 'fastify'
+import { FromSchema } from 'json-schema-to-ts'
 import webpush from 'web-push'
 
 import {
@@ -6,31 +6,28 @@ import {
   VAPID_PRIVATE_KEY,
   VAPID_PUBLIC_KEY,
 } from '../../common/constants'
+import { ForbiddenError, ServiceUnavailableError, UnauthorizedError } from '../../common/fastify'
 import { poolQuery } from '../../common/postgres'
 import { redisClient } from '../../common/redis'
-import { ForbiddenError, ServiceUnavailableError, UnauthorizedError } from '../../fastify/errors'
 import areMyChatrooms from './sql/areMyChatrooms.sql'
 import { FastifyHttp2 } from '..'
 
 webpush.setGCMAPIKey(GOOGLE_FIREBASE_API_KEY)
 webpush.setVapidDetails('mailto:jayudam2022@gmail.com', VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
 
-export default function setChatQuery(fastify: FastifyHttp2) {
-  type Schema = {
-    Querystring: {
-      chatroomIds: string
-    }
-  }
-
-  const schema: FastifySchema = {
+export default function chatQuery(fastify: FastifyHttp2) {
+  const schema = {
     querystring: {
       type: 'object',
       properties: {
-        chatroomIds: { type: 'array' },
+        chatroomIds: { type: 'string' },
       },
+      additionalProperties: false,
       required: ['chatroomIds'],
     },
-  }
+  } as const
+
+  type Schema = { Querystring: FromSchema<typeof schema.querystring> }
 
   fastify.get<Schema>('/chat/subscribe', { schema }, async (request, reply) => {
     const userId = request.userId

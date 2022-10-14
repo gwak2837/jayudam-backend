@@ -879,15 +879,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/autoload@npm:^5.4.1":
-  version: 5.4.1
-  resolution: "@fastify/autoload@npm:5.4.1"
-  dependencies:
-    pkg-up: ^3.1.0
-  checksum: bc9a63812b021cac7d1d1107d089e193ea4a3e7e7816e39810fc7354e3d1a9e383fc3cdbd514728be11df50a592a0b7f76bde433a9a396e6f01008c2412890dd
-  languageName: node
-  linkType: hard
-
 "@fastify/busboy@npm:^1.0.0":
   version: 1.1.0
   resolution: "@fastify/busboy@npm:1.1.0"
@@ -969,17 +960,6 @@ __metadata:
     readable-stream: ^4.0.0
     send: ^0.18.0
   checksum: 31ef10916847c51fb4c360860f56acee1cbd7a896b66a05440d4eff70473c5b4cdf908b4719a5a22a876617fdc4a4e0fe3673bd5b40c9d61260a90e08abc1d3d
-  languageName: node
-  linkType: hard
-
-"@fastify/swagger-ui@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "@fastify/swagger-ui@npm:1.0.3"
-  dependencies:
-    "@fastify/static": ^6.0.0
-    fastify-plugin: ^4.0.0
-    openapi-types: ^12.0.2
-  checksum: b1d930a800f2958ca752083a1fd98727e1005bbf7ab078c77d0d0305af13f28ab6dc2403c1fbd24025cfb155664fb7f7a12136a554d32324c06509d02ccf84f1
   languageName: node
   linkType: hard
 
@@ -5064,15 +5044,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"find-up@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "find-up@npm:3.0.0"
-  dependencies:
-    locate-path: ^3.0.0
-  checksum: 38eba3fe7a66e4bc7f0f5a1366dc25508b7cfc349f852640e3678d26ad9a6d7e2c43eff0a472287de4a9753ef58f066a0ea892a256fa3636ad51b3fe1e17fae9
-  languageName: node
-  linkType: hard
-
 "find-up@npm:^4.0.0, find-up@npm:^4.1.0":
   version: 4.1.0
   resolution: "find-up@npm:4.1.0"
@@ -6325,12 +6296,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "jayudam-backend@workspace:."
   dependencies:
-    "@fastify/autoload": ^5.4.1
     "@fastify/cors": ^8.1.0
     "@fastify/multipart": ^7.2.0
     "@fastify/rate-limit": ^7.4.0
     "@fastify/swagger": ^8.0.0
-    "@fastify/swagger-ui": ^1.0.3
     "@google-cloud/storage": ^6.5.2
     "@graphql-codegen/cli": 2.13.1
     "@graphql-codegen/schema-ast": ^2.5.1
@@ -6365,6 +6334,7 @@ __metadata:
     husky: ^8.0.1
     ioredis: ^5.2.3
     jest: ^29.1.2
+    json-schema-to-ts: ^2.5.5
     jsonwebtoken: ^8.5.1
     lunar-javascript: ^1.2.33
     mercurius: ^11.0.0
@@ -6968,6 +6938,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"json-schema-to-ts@npm:^2.5.5":
+  version: 2.5.5
+  resolution: "json-schema-to-ts@npm:2.5.5"
+  dependencies:
+    "@types/json-schema": ^7.0.9
+    ts-algebra: ^1.1.1
+    ts-toolbelt: ^9.6.0
+  checksum: 6e3cfc7599bea804f0060759168a5c19ca6154397eba33e8d19b1cd50f93e421c5b4110dff153d087dfb6986a77433e3d77c36ac54fbfc229c25fc648dc57cc5
+  languageName: node
+  linkType: hard
+
 "json-schema-traverse@npm:^0.4.1":
   version: 0.4.1
   resolution: "json-schema-traverse@npm:0.4.1"
@@ -7205,16 +7186,6 @@ __metadata:
     enquirer:
       optional: true
   checksum: 7af31851abe25969ef0581c6db808117e36af15b131401795182427769d9824f451ba9e8aff6ccd25b6a4f6c8796f816292caf08e5f1f9b1775e8e9c313dc6c5
-  languageName: node
-  linkType: hard
-
-"locate-path@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "locate-path@npm:3.0.0"
-  dependencies:
-    p-locate: ^3.0.0
-    path-exists: ^3.0.0
-  checksum: 53db3996672f21f8b0bf2a2c645ae2c13ffdae1eeecfcd399a583bce8516c0b88dcb4222ca6efbbbeb6949df7e46860895be2c02e8d3219abd373ace3bfb4e11
   languageName: node
   linkType: hard
 
@@ -8068,7 +8039,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi-types@npm:^12.0.0, openapi-types@npm:^12.0.2":
+"openapi-types@npm:^12.0.0":
   version: 12.0.2
   resolution: "openapi-types@npm:12.0.2"
   checksum: 097edc46adb5a8fc2a3419e2e0adbb5516737fd83b4041ec62ee28427e85d9f18c6ead9231b9d1c8f718d86eeccf3c0997437414011d8bb1597387a047493fea
@@ -8122,21 +8093,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-limit@npm:^2.0.0, p-limit@npm:^2.2.0":
+"p-limit@npm:^2.2.0":
   version: 2.3.0
   resolution: "p-limit@npm:2.3.0"
   dependencies:
     p-try: ^2.0.0
   checksum: 84ff17f1a38126c3314e91ecfe56aecbf36430940e2873dadaa773ffe072dc23b7af8e46d4b6485d302a11673fe94c6b67ca2cfbb60c989848b02100d0594ac1
-  languageName: node
-  linkType: hard
-
-"p-locate@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "p-locate@npm:3.0.0"
-  dependencies:
-    p-limit: ^2.0.0
-  checksum: 83991734a9854a05fe9dbb29f707ea8a0599391f52daac32b86f08e21415e857ffa60f0e120bfe7ce0cc4faf9274a50239c7895fc0d0579d08411e513b83a4ae
   languageName: node
   linkType: hard
 
@@ -8247,13 +8209,6 @@ __metadata:
     dot-case: ^3.0.4
     tslib: ^2.0.3
   checksum: 61de0526222629f65038a66f63330dd22d5b54014ded6636283e1d15364da38b3cf29e4433aa3f9d8b0dba407ae2b059c23b0104a34ee789944b1bc1c5c7e06d
-  languageName: node
-  linkType: hard
-
-"path-exists@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "path-exists@npm:3.0.0"
-  checksum: 96e92643aa34b4b28d0de1cd2eba52a1c5313a90c6542d03f62750d82480e20bfa62bc865d5cfc6165f5fcd5aeb0851043c40a39be5989646f223300021bae0a
   languageName: node
   linkType: hard
 
@@ -8485,15 +8440,6 @@ __metadata:
   dependencies:
     find-up: ^4.0.0
   checksum: 9863e3f35132bf99ae1636d31ff1e1e3501251d480336edb1c211133c8d58906bed80f154a1d723652df1fda91e01c7442c2eeaf9dc83157c7ae89087e43c8d6
-  languageName: node
-  linkType: hard
-
-"pkg-up@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "pkg-up@npm:3.1.0"
-  dependencies:
-    find-up: ^3.0.0
-  checksum: 5bac346b7c7c903613c057ae3ab722f320716199d753f4a7d053d38f2b5955460f3e6ab73b4762c62fd3e947f58e04f1343e92089e7bb6091c90877406fcd8c8
   languageName: node
   linkType: hard
 
@@ -9809,6 +9755,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-algebra@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "ts-algebra@npm:1.1.1"
+  dependencies:
+    ts-toolbelt: ^9.6.0
+  checksum: 29fe27215863520377a94a14ccf1e78e921be6a5c514a0a8250dab09e325b006a9571ef1f366875d58e495b59ba880620718a1dd38b6af598cc6ea6de82d4f66
+  languageName: node
+  linkType: hard
+
 "ts-jest@npm:^29.0.3":
   version: 29.0.3
   resolution: "ts-jest@npm:29.0.3"
@@ -9893,6 +9848,13 @@ __metadata:
   dependencies:
     mongodb-uri: ^0.9.7
   checksum: 1bc7cec06ebd2bc243d718b37778ce442f67611d3b8f8744a6051daecb3486307822e993f52525ddc8adf7272d97b8214b9100116b317065a58d4fbaa0b2fac5
+  languageName: node
+  linkType: hard
+
+"ts-toolbelt@npm:^9.6.0":
+  version: 9.6.0
+  resolution: "ts-toolbelt@npm:9.6.0"
+  checksum: 9f35fd95d895a5d32ea9fd2e532a695b0bae6cbff6832b77292efa188a0ed1ed6e54f63f74a8920390f3d909a7a3adb20a144686372a8e78b420246a9bd3d58a
   languageName: node
   linkType: hard
 

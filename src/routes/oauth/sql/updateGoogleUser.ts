@@ -1,4 +1,4 @@
-/** Types generated for queries found in "src/fastify/oauth/sql/updateGoogleUser.sql" */
+/** Types generated for queries found in "src/routes/oauth/sql/updateGoogleUser.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
 /** 'UpdateGoogleUser' parameters type */

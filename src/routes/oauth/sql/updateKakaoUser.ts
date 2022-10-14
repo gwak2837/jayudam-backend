@@ -1,4 +1,4 @@
-/** Types generated for queries found in "src/fastify/oauth/sql/updateKakaoUser.sql" */
+/** Types generated for queries found in "src/routes/oauth/sql/updateKakaoUser.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
 /** 'UpdateKakaoUser' parameters type */

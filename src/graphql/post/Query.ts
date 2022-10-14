@@ -1,5 +1,5 @@
+import { NotFoundError } from '../../common/fastify'
 import { poolQuery } from '../../common/postgres'
-import { NotFoundError } from '../../fastify/errors'
 import { GraphQLContext } from '../../routes'
 import type { QueryResolvers } from '../generated/graphql'
 import { getComments, getPosts, postORM } from './ORM'

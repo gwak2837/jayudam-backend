@@ -1,4 +1,4 @@
-import { NotImplementedError } from '../../fastify/errors'
+import { NotImplementedError } from '../../common/fastify'
 import { GraphQLContext } from '../../routes'
 import { Grade, Sex, UserResolvers } from '../generated/graphql'
 

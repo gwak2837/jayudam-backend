@@ -1,6 +1,6 @@
+import { BadRequestError, ForbiddenError, UnauthorizedError } from '../../common/fastify'
 import { signJWT, verifyJWT } from '../../common/jwt'
 import { poolQuery } from '../../common/postgres'
-import { BadRequestError, ForbiddenError, UnauthorizedError } from '../../fastify/errors'
 import { GraphQLContext } from '../../routes'
 import { defaultDate } from '../../utils'
 import { Cert, CertType, MutationResolvers } from '../generated/graphql'
