@@ -33,8 +33,8 @@ export type GraphQLContext = MercuriusContext & {
 
 export type FastifyHttp2 = FastifyInstance<Http2Server, Http2ServerRequest, Http2ServerResponse>
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+// const __filename = fileURLToPath(import.meta.url)
+// const __dirname = dirname(__filename)
 
 export async function startFastifyServer() {
   const fastify: FastifyHttp2 = Fastify({
