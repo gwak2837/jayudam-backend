@@ -9,12 +9,12 @@ import getNaverUser from './sql/getNaverUser.sql'
 import type { IGetUserResult } from './sql/getUser'
 import getUser from './sql/getUser.sql'
 import updateNaverUser from './sql/updateNaverUser.sql'
-import { QuerystringCodeState, encodeSex, getFrontendUrl, querystringCodeState } from '.'
-import { FastifyHttp2 } from '..'
+import { encodeSex, getFrontendUrl, querystringCodeState } from '.'
+import { TFastify } from '..'
 
-export function setNaverOAuthStrategies(fastify: FastifyHttp2) {
+export function setNaverOAuthStrategies(fastify: TFastify) {
   // Naver 계정으로 로그인하기
-  fastify.get<QuerystringCodeState>('/oauth/naver', querystringCodeState, async (req, res) => {
+  fastify.get('/oauth/naver', querystringCodeState, async (req, res) => {
     const code = req.query.code
     const state = req.query.state
     const backendUrl = req.headers[':authority']
@@ -71,63 +71,59 @@ export function setNaverOAuthStrategies(fastify: FastifyHttp2) {
   })
 
   // Naver 계정 연결하기
-  fastify.get<QuerystringCodeState>(
-    '/oauth/naver/register',
-    querystringCodeState,
-    async (req, res) => {
-      const code = req.query.code
-      const jwt = req.query.state
-      const backendUrl = req.headers[':authority']
-      if (!backendUrl) return res.status(400).send('Bad Request')
+  fastify.get('/oauth/naver/register', querystringCodeState, async (req, res) => {
+    const code = req.query.code
+    const jwt = req.query.state
+    const backendUrl = req.headers[':authority']
+    if (!backendUrl) return res.status(400).send('Bad Request')
 
-      const frontendUrl = getFrontendUrl(req.headers.referer)
+    const frontendUrl = getFrontendUrl(req.headers.referer)
 
-      // JWT 유효성 검사
-      const verifiedJwt = await verifyJWT(jwt)
-      if (!verifiedJwt.iat) return res.status(401).send('Not Unauthorized')
+    // JWT 유효성 검사
+    const verifiedJwt = await verifyJWT(jwt)
+    if (!verifiedJwt.iat) return res.status(401).send('Not Unauthorized')
 
-      const logoutTime = await redisClient.get(`${verifiedJwt.userId}:logoutTime`)
-      if (Number(logoutTime) > Number(verifiedJwt.iat))
-        return res.redirect(`${frontendUrl}/oauth?doesJWTExpired=true`)
+    const logoutTime = await redisClient.get(`${verifiedJwt.userId}:logoutTime`)
+    if (Number(logoutTime) > Number(verifiedJwt.iat))
+      return res.redirect(`${frontendUrl}/oauth?doesJWTExpired=true`)
 
-      // 자유담 사용자 정보, OAuth 사용자 정보 가져오기
-      const [{ rowCount, rows: userResult }, naverUser] = await Promise.all([
-        poolQuery<IGetUserResult>(getUser, [verifiedJwt.userId]),
-        fetchFromNaver(code, backendUrl, jwt),
-      ])
-      if (rowCount === 0 || naverUser.error) return res.status(400).send('Bad Request') // user가 존재하지 않으면 JWT secret key가 유출됐다는 뜻
+    // 자유담 사용자 정보, OAuth 사용자 정보 가져오기
+    const [{ rowCount, rows: userResult }, naverUser] = await Promise.all([
+      poolQuery<IGetUserResult>(getUser, [verifiedJwt.userId]),
+      fetchFromNaver(code, backendUrl, jwt),
+    ])
+    if (rowCount === 0 || naverUser.error) return res.status(400).send('Bad Request') // user가 존재하지 않으면 JWT secret key가 유출됐다는 뜻
 
-      const jayudamUser = userResult[0]
+    const jayudamUser = userResult[0]
 
-      // 이미 OAuth 연결되어 있으면
-      if (jayudamUser.oauth_naver)
-        return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=true&oauth=naver`)
+    // 이미 OAuth 연결되어 있으면
+    if (jayudamUser.oauth_naver)
+      return res.redirect(`${frontendUrl}/oauth?isAlreadyAssociatedWithOAuth=true&oauth=naver`)
 
-      // OAuth 사용자 정보와 자유담 사용자 정보 비교
-      if (
-        jayudamUser.sex !== encodeSex(naverUser.gender) ||
-        (jayudamUser.legal_name && jayudamUser.name !== naverUser.name) ||
-        (jayudamUser.birthyear && jayudamUser.birthyear !== naverUser.birthyear) ||
-        (jayudamUser.birthday && jayudamUser.birthday !== encodeBirthDay(naverUser.birthday)) ||
-        (jayudamUser.phone_number && jayudamUser.phone_number !== naverUser.mobile)
-      )
-        return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=naver`)
+    // OAuth 사용자 정보와 자유담 사용자 정보 비교
+    if (
+      jayudamUser.sex !== encodeSex(naverUser.gender) ||
+      (jayudamUser.legal_name && jayudamUser.name !== naverUser.name) ||
+      (jayudamUser.birthyear && jayudamUser.birthyear !== naverUser.birthyear) ||
+      (jayudamUser.birthday && jayudamUser.birthday !== encodeBirthDay(naverUser.birthday)) ||
+      (jayudamUser.phone_number && jayudamUser.phone_number !== naverUser.mobile)
+    )
+      return res.redirect(`${frontendUrl}/oauth?jayudamUserMatchWithOAuthUser=false&oauth=naver`)
 
-      await poolQuery(updateNaverUser, [
-        jayudamUser.id,
-        naverUser.email,
-        naverUser.profile_image ? [naverUser.profile_image] : null,
-        naverUser.id,
-      ])
+    await poolQuery(updateNaverUser, [
+      jayudamUser.id,
+      naverUser.email,
+      naverUser.profile_image ? [naverUser.profile_image] : null,
+      naverUser.id,
+    ])
 
-      return res.redirect(
-        `${frontendUrl}/oauth?${new URLSearchParams({
-          jwt: await signJWT({ userId: jayudamUser.id }),
-          ...(jayudamUser.name && { username: jayudamUser.name }),
-        })}`
-      )
-    }
-  )
+    return res.redirect(
+      `${frontendUrl}/oauth?${new URLSearchParams({
+        jwt: await signJWT({ userId: jayudamUser.id }),
+        ...(jayudamUser.name && { username: jayudamUser.name }),
+      })}`
+    )
+  })
 }
 
 async function fetchFromNaver(code: string, backendUrl: string, state: string) {

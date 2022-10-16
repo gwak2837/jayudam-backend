@@ -9,20 +9,12 @@ import getBBatonUser from './sql/getBBatonUser.sql'
 import type { IRegisterBBatonUserResult } from './sql/registerBBatonUser'
 import registerBBatonUser from './sql/registerBBatonUser.sql'
 import updateBBatonUser from './sql/updateBBatonUser.sql'
-import {
-  BBatonUser,
-  BBatonUserToken,
-  QuerystringCode,
-  encodeSex,
-  getFrontendUrl,
-  querystringCode,
-} from '.'
-import { FastifyHttp2 } from '..'
+import { BBatonUser, BBatonUserToken, encodeSex, getFrontendUrl, querystringCode } from '.'
+import { TFastify } from '..'
 
-export function setBBatonOAuthStrategies(app: FastifyHttp2) {
+export function setBBatonOAuthStrategies(fastify: TFastify) {
   // BBaton 계정으로 가입하기
-  app.get<QuerystringCode>('/oauth/bbaton', querystringCode, async (req, res) => {
-    // 입력값 검사
+  fastify.get('/oauth/bbaton', querystringCode, async (req, res) => {
     const code = req.query.code
     const backendUrl = req.headers[':authority']
     if (!backendUrl) return res.status(400).send('Bad Request')

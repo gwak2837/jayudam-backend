@@ -10,6 +10,7 @@
     "graphql.vscode-graphql",
     "ms-azuretools.vscode-docker",
     "mtxr.sqltools",
-    "foxundermoon.shell-format"
+    "foxundermoon.shell-format",
+    "ckolkman.vscode-postgres"
   ]
 }

@@ -1,4 +1,4 @@
-import { FromSchema } from 'json-schema-to-ts'
+import { Type } from '@sinclair/typebox'
 
 import {
   BadRequestError,
@@ -14,32 +14,22 @@ import createChat from './sql/createChat.sql'
 import isMyChatroom from './sql/isMyChatroom.sql'
 import { IMessageSenderResult } from './sql/messageSender'
 import messageSender from './sql/messageSender.sql'
-import { FastifyHttp2 } from '..'
+import { TFastify } from '..'
 
-export default function chatMutation(fastify: FastifyHttp2) {
-  const schema = {
-    body: {
-      type: 'object',
-      properties: {
-        chatroomId: { type: 'string' },
-        message: {
-          type: 'object',
-          properties: {
-            content: { type: 'string' },
-            type: { type: 'number' },
-          },
-          additionalProperties: false,
-          required: ['content', 'type'],
-        },
-      },
-      additionalProperties: false,
-      required: ['chatroomId', 'message'],
+export default function chatMutation(fastify: TFastify) {
+  const option = {
+    schema: {
+      body: Type.Object({
+        chatroomId: Type.String(),
+        message: Type.Object({
+          content: Type.String(),
+          type: Type.Number(),
+        }),
+      }),
     },
-  } as const
+  }
 
-  type Schema = { Body: FromSchema<typeof schema.body> }
-
-  fastify.post<Schema>('/chat/send', { schema }, async (request, reply) => {
+  fastify.post('/chat/send', option, async (request, reply) => {
     const userId = request.userId
     if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
@@ -97,50 +87,49 @@ export default function chatMutation(fastify: FastifyHttp2) {
     reply.status(201).send()
   })
 
-  const schema2 = {
-    body: {
-      type: 'object',
-      properties: {
-        pushSubscription: {
-          type: 'object',
-          properties: {
-            endpoint: { type: 'string' },
-            expirationTime: { type: 'number' },
-            keys: {
-              type: 'object',
-              properties: {
-                auth: { type: 'string' },
-                p256dh: { type: 'string' },
-              },
-              additionalProperties: false,
-              required: ['auth', 'p256dh'],
-            },
-          },
-          additionalProperties: false,
-          required: ['endpoint', 'expirationTime', 'keys'],
-        },
+  const option2 = {
+    schema: {
+      body: Type.Object({
+        pushSubscription: Type.Object({
+          endpoint: Type.String(),
+          expirationTime: Type.Number(),
+          keys: Type.Object({
+            auth: Type.String(),
+            p256dh: Type.String(),
+          }),
+        }),
+      }),
+      response: {
+        201: Type.String(),
       },
-      additionalProperties: false,
-      required: ['pushSubscription'],
     },
-  } as const
+  }
 
-  type Schema2 = { Body: FromSchema<typeof schema2.body> }
-
-  fastify.post<Schema2>('/chat/push', { schema: schema2 }, async (request, reply) => {
+  fastify.post('/chat/push', option2, async (request, reply) => {
     const userId = request.userId
     if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
-    const logoutTime = await redisClient.set(
+    const pushSubscription = await redisClient.set(
       `${userId}:pushSubscription`,
-      JSON.stringify(request.body.pushSubscription)
+      JSON.stringify({
+        ...request.body.pushSubscription,
+        expirationTime: Date.now() + 3_600_000,
+      })
     )
-    if (logoutTime !== 'OK') throw ServiceUnavailableError('Redis unavailable error')
+    if (pushSubscription !== 'OK') throw ServiceUnavailableError('Redis unavailable error')
 
     reply.status(201).send('pushSubscription 생성 완료')
   })
 
-  fastify.delete('/chat/push', async (request, reply) => {
+  const option4 = {
+    schema: {
+      response: {
+        204: Type.String(),
+      },
+    },
+  }
+
+  fastify.delete('/chat/push', option4, async (request, reply) => {
     const userId = request.userId
     if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
@@ -150,28 +139,22 @@ export default function chatMutation(fastify: FastifyHttp2) {
     reply.status(204).send('pushSubscription 삭제 완료')
   })
 
-  const schema3 = {
-    body: {
-      type: 'object',
-      properties: {
-        message: {
-          type: 'object',
-          properties: {
-            content: { type: 'string' },
-            type: { type: 'number' },
-          },
-          additionalProperties: false,
-          required: ['content', 'type'],
-        },
+  const option3 = {
+    schema: {
+      body: Type.Object({
+        chatroomId: Type.String(),
+        message: Type.Object({
+          content: Type.String(),
+          type: Type.Number(),
+        }),
+      }),
+      response: {
+        200: Type.String(),
       },
-      additionalProperties: false,
-      required: ['message'],
     },
-  } as const
+  }
 
-  type Schema3 = { Body: FromSchema<typeof schema3.body> }
-
-  fastify.post<Schema3>('/chat/test', { schema: schema3 }, async (request, reply) => {
+  fastify.post('/chat/test', option3, async (request, reply) => {
     const userId = request.userId
     if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
@@ -194,6 +177,6 @@ export default function chatMutation(fastify: FastifyHttp2) {
       })
     )
 
-    reply.status(200).send()
+    reply.status(200).send('웹 푸시 알림 테스트')
   })
 }

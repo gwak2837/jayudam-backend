@@ -1,9 +1,9 @@
-import { Http2Server, Http2ServerRequest, Http2ServerResponse } from 'http2'
-
 import cors from '@fastify/cors'
 import rateLimit from '@fastify/rate-limit'
 import swagger from '@fastify/swagger'
-import Fastify, { FastifyInstance } from 'fastify'
+import swaggerUI from '@fastify/swagger-ui'
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import Fastify from 'fastify'
 import { NoSchemaIntrospectionCustomRule } from 'graphql'
 import mercurius, { IResolvers, MercuriusContext } from 'mercurius'
 
@@ -27,27 +27,25 @@ import { setKakaoOAuthStrategies } from './oauth/kakao'
 import { setNaverOAuthStrategies } from './oauth/naver'
 import uploadFiles from './upload'
 
-// eslint-disable-next-line import/default
-
 export type GraphQLContext = MercuriusContext & {
   userId?: string
 }
 
-export type FastifyHttp2 = FastifyInstance<Http2Server, Http2ServerRequest, Http2ServerResponse>
+const fastify = Fastify({
+  http2: true,
+  // logger: true,
+
+  ...(PROJECT_ENV.startsWith('local') && {
+    https: {
+      key: `-----BEGIN PRIVATE KEY-----\n${LOCALHOST_HTTPS_KEY}\n-----END PRIVATE KEY-----`,
+      cert: `-----BEGIN CERTIFICATE-----\n${LOCALHOST_HTTPS_CERT}\n-----END CERTIFICATE-----`,
+    },
+  }),
+}).withTypeProvider<TypeBoxTypeProvider>()
+
+export type TFastify = typeof fastify
 
 export async function startFastifyServer() {
-  const fastify: FastifyHttp2 = Fastify({
-    http2: true,
-    // logger: true,
-
-    ...(PROJECT_ENV.startsWith('local') && {
-      https: {
-        key: `-----BEGIN PRIVATE KEY-----\n${LOCALHOST_HTTPS_KEY}\n-----END PRIVATE KEY-----`,
-        cert: `-----BEGIN CERTIFICATE-----\n${LOCALHOST_HTTPS_CERT}\n-----END CERTIFICATE-----`,
-      },
-    }),
-  })
-
   // CORS
   fastify.register(cors, {
     origin: [
@@ -115,10 +113,11 @@ export async function startFastifyServer() {
   })
 
   // Swagger
-  fastify.register(swagger, {
+  await fastify.register(swagger, {
+    mode: 'dynamic',
     openapi: {
       info: {
-        title: 'Test swagger',
+        title: 'Swagger',
         description: 'testing the fastify swagger api',
         version: '0.1.0',
       },
@@ -136,11 +135,32 @@ export async function startFastifyServer() {
           },
         },
       },
+      // externalDocs: Object,
+      // security: [Object],
+      // tags: [Object],
     },
-    hideUntagged: true,
-    // exposeRoute: true,
   })
 
+  await fastify.register(swaggerUI, {
+    routePrefix: '/documentation',
+    initOAuth: {},
+    uiConfig: {
+      docExpansion: 'full',
+      deepLinking: false,
+    },
+    // uiHooks: {
+    //   onRequest: function (request, reply, next) {
+    //     next()
+    //   },
+    //   preHandler: function (request, reply, next) {
+    //     next()
+    //   },
+    // },
+    staticCSP: true,
+    // transformStaticCSP: (header) => header,
+  })
+
+  // Routes
   setBBatonOAuthStrategies(fastify)
   setGoogleOAuthStrategies(fastify)
   setKakaoOAuthStrategies(fastify)

@@ -1,4 +1,4 @@
-import { FromSchema } from 'json-schema-to-ts'
+import { Type } from '@sinclair/typebox'
 
 import { FRONTEND_URL } from '../../common/constants'
 
@@ -24,37 +24,19 @@ export type BBatonUser = {
 
 export const querystringCode = {
   schema: {
-    querystring: {
-      type: 'object',
-      properties: {
-        code: { type: 'string' },
-      },
-      additionalProperties: false,
-      required: ['code'],
-    },
+    querystring: Type.Object({
+      code: Type.String(),
+    }),
   },
-} as const
-
-export type QuerystringCode = {
-  Querystring: FromSchema<typeof querystringCode.schema.querystring>
 }
 
 export const querystringCodeState = {
   schema: {
-    querystring: {
-      type: 'object',
-      properties: {
-        code: { type: 'string' },
-        state: { type: 'string' },
-      },
-      additionalProperties: false,
-      required: ['code', 'state'],
-    },
+    querystring: Type.Object({
+      code: Type.String(),
+      state: Type.String(),
+    }),
   },
-} as const
-
-export type QuerystringCodeState = {
-  Querystring: FromSchema<typeof querystringCodeState.schema.querystring>
 }
 
 const vercelURLRegEx = /^https:\/\/jayudam-[-a-z0-9]{1,20}-gwak2837\.vercel\.app\//

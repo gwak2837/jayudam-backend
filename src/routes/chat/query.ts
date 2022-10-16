@@ -1,35 +1,24 @@
-import { FromSchema } from 'json-schema-to-ts'
-import webpush from 'web-push'
+import { Type } from '@sinclair/typebox'
 
-import {
-  GOOGLE_FIREBASE_API_KEY,
-  VAPID_PRIVATE_KEY,
-  VAPID_PUBLIC_KEY,
-} from '../../common/constants'
 import { ForbiddenError, ServiceUnavailableError, UnauthorizedError } from '../../common/fastify'
 import { poolQuery } from '../../common/postgres'
 import { redisClient } from '../../common/redis'
+import { Chatrooms } from './object'
 import areMyChatrooms from './sql/areMyChatrooms.sql'
-import { FastifyHttp2 } from '..'
+import { IChatroomsResult } from './sql/chatrooms'
+import chatrooms from './sql/chatrooms.sql'
+import { TFastify } from '..'
 
-webpush.setGCMAPIKey(GOOGLE_FIREBASE_API_KEY)
-webpush.setVapidDetails('mailto:jayudam2022@gmail.com', VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
-
-export default function chatQuery(fastify: FastifyHttp2) {
-  const schema = {
-    querystring: {
-      type: 'object',
-      properties: {
-        chatroomIds: { type: 'string' },
-      },
-      additionalProperties: false,
-      required: ['chatroomIds'],
+export default function chatQuery(fastify: TFastify) {
+  const option = {
+    schema: {
+      querystring: Type.Object({
+        chatroomIds: Type.String(),
+      }),
     },
-  } as const
+  }
 
-  type Schema = { Querystring: FromSchema<typeof schema.querystring> }
-
-  fastify.get<Schema>('/chat/subscribe', { schema }, async (request, reply) => {
+  fastify.get('/chat/subscribe', option, async (request, reply) => {
     const userId = request.userId
     if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
@@ -59,7 +48,7 @@ export default function chatQuery(fastify: FastifyHttp2) {
       if (err) throw ServiceUnavailableError(err.message)
     })
 
-    redisSubscription.on('message', (channel, message) => {
+    redisSubscription.on('message', (_, message) => {
       raw.write(`data: ${message}\n\n`)
     })
 
@@ -70,5 +59,23 @@ export default function chatQuery(fastify: FastifyHttp2) {
       redisClient.publish(`${userId}:loginStatus`, 'f')
       redisSubscription.quit()
     })
+  })
+
+  const option2 = {
+    schema: {
+      response: {
+        200: Chatrooms,
+      },
+    },
+  }
+
+  fastify.get('/chat/room', option2, async (request, reply) => {
+    const userId = request.userId
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
+
+    const { rows } = await poolQuery<IChatroomsResult>(chatrooms, [userId])
+    console.log('👀 - rows', rows)
+
+    // reply.status(200).send(rows)
   })
 }

@@ -5,7 +5,7 @@ import multipart from '@fastify/multipart'
 
 import { BadRequestError, ServiceUnavailableError, UnauthorizedError } from '../common/fastify'
 import { bucket } from '../common/google-storage'
-import { FastifyHttp2 } from '.'
+import { TFastify } from '.'
 
 // import { pipeline } from 'stream'
 // import sharp from 'sharp'
@@ -15,7 +15,7 @@ type UploadResult = {
   url: string
 }
 
-export default function uploadFiles(fastify: FastifyHttp2) {
+export default function uploadFiles(fastify: TFastify) {
   fastify.register(multipart, {
     limits: {
       fieldNameSize: 100, // Max field name size in bytes

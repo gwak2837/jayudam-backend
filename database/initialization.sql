@@ -185,15 +185,7 @@ CREATE TABLE verification_history (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   content text NOT NULL,
-  user_id uuid REFERENCES "user" ON DELETE CASCADE
-);
-
--- type 0: text, 1: image, 2: video
-CREATE TABLE chat (
-  id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  content varchar(1000) NOT NULL,
-  "type" int NOT NULL,
+  --
   user_id uuid REFERENCES "user" ON DELETE CASCADE
 );
 
@@ -204,10 +196,22 @@ CREATE TABLE chatroom (
   name varchar(100) NOT NULL
 );
 
+-- type 0: text, 1: image, 2: video
+CREATE TABLE chat (
+  id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  content varchar(1000) NOT NULL,
+  "type" int NOT NULL,
+  --
+  chatroom_id bigint REFERENCES chatroom ON DELETE CASCADE,
+  user_id uuid REFERENCES "user" ON DELETE CASCADE
+);
+
 CREATE TABLE chatroom_x_user (
   chatroom_id bigint REFERENCES chatroom ON DELETE CASCADE,
   user_id uuid REFERENCES "user" ON DELETE CASCADE,
-  last_chat_id bigint REFERENCES chat --
+  last_chat_id bigint REFERENCES chat,
+  --
   PRIMARY KEY (chatroom_id, user_id)
 );
 
