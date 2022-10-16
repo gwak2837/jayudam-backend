@@ -3,8 +3,10 @@ import { Type } from '@sinclair/typebox'
 import { ForbiddenError, ServiceUnavailableError, UnauthorizedError } from '../../common/fastify'
 import { poolQuery } from '../../common/postgres'
 import { redisClient } from '../../common/redis'
-import { Chatrooms } from './object'
+import { Chatrooms, hideContent } from './object'
 import areMyChatrooms from './sql/areMyChatrooms.sql'
+import { IChatroomIdsResult } from './sql/chatroomIds'
+import chatroomIds from './sql/chatroomIds.sql'
 import { IChatroomsResult } from './sql/chatrooms'
 import chatrooms from './sql/chatrooms.sql'
 import { TFastify } from '..'
@@ -74,8 +76,37 @@ export default function chatQuery(fastify: TFastify) {
     if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { rows } = await poolQuery<IChatroomsResult>(chatrooms, [userId])
-    console.log('👀 - rows', rows)
 
-    // reply.status(200).send(rows)
+    reply.status(200).send(
+      rows.map((row) => ({
+        id: row.chatroom__id,
+        name: row.chatroom__name,
+        imageUrl: row.chatroom__image_url,
+        unreadCount: row.chatroom__unread_count,
+        lastChat: {
+          id: row.chat__id,
+          creationTime: row.chat__creation_time?.toISOString() ?? null,
+          content: hideContent(row.chat__content, row.chat__type),
+          type: row.chat__type,
+        },
+      }))
+    )
+  })
+
+  const option3 = {
+    schema: {
+      response: {
+        200: Type.Array(Type.String()),
+      },
+    },
+  }
+
+  fastify.get('/chat/room-id', option3, async (request, reply) => {
+    const userId = request.userId
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
+
+    const { rows } = await poolQuery<IChatroomIdsResult>(chatroomIds, [userId])
+
+    reply.status(200).send(rows.map((row) => row.chatroom_id))
   })
 }

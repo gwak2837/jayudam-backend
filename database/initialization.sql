@@ -196,7 +196,6 @@ CREATE TABLE chatroom (
   name varchar(100) NOT NULL
 );
 
--- type 0: text, 1: image, 2: video
 CREATE TABLE chat (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -142,7 +142,6 @@ export default function chatMutation(fastify: TFastify) {
   const option3 = {
     schema: {
       body: Type.Object({
-        chatroomId: Type.String(),
         message: Type.Object({
           content: Type.String(),
           type: Type.Number(),
@@ -165,18 +164,20 @@ export default function chatMutation(fastify: TFastify) {
 
     const { rows } = await poolQuery<IMessageSenderResult>(messageSender, [userId])
 
-    webpush.sendNotification(
-      JSON.parse(pushSubscription),
-      JSON.stringify({
-        content: message.content,
-        type: message.type,
-        sender: {
-          nickname: rows[0].nickname,
-          imageUrl: rows[0].image_url,
-        },
-      })
-    )
+    setTimeout(() => {
+      webpush.sendNotification(
+        JSON.parse(pushSubscription),
+        JSON.stringify({
+          content: message.content,
+          type: message.type,
+          sender: {
+            nickname: rows[0].nickname,
+            imageUrl: rows[0].image_url,
+          },
+        })
+      )
 
-    reply.status(200).send('웹 푸시 알림 테스트')
+      reply.status(200).send('웹 푸시 알림 테스트')
+    }, 10_000)
   })
 }
