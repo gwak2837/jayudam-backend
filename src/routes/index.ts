@@ -25,6 +25,8 @@ import { setBBatonOAuthStrategies } from './oauth/bbaton'
 import { setGoogleOAuthStrategies } from './oauth/google'
 import { setKakaoOAuthStrategies } from './oauth/kakao'
 import { setNaverOAuthStrategies } from './oauth/naver'
+import pushMutation from './push/mutation'
+import pushQuery from './push/query'
 import uploadFiles from './upload'
 
 export type GraphQLContext = MercuriusContext & {
@@ -169,6 +171,8 @@ export async function startFastifyServer() {
   uploadFiles(fastify)
   chatMutation(fastify)
   chatQuery(fastify)
+  pushQuery(fastify)
+  pushMutation(fastify)
 
   return fastify.listen({ host: process.env.K_SERVICE ? '0.0.0.0' : 'localhost', port: +PORT })
 }
