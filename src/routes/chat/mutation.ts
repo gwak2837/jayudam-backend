@@ -1,6 +1,11 @@
 import { Type } from '@sinclair/typebox'
 
-import { ForbiddenError, UnauthorizedError } from '../../common/fastify'
+import {
+  ForbiddenError,
+  NotFoundError,
+  ServiceUnavailableError,
+  UnauthorizedError,
+} from '../../common/fastify'
 import { poolQuery } from '../../common/postgres'
 import { redisClient } from '../../common/redis'
 import webpush from '../../common/web-push'
@@ -9,7 +14,12 @@ import createChat from './sql/createChat.sql'
 import isMyChatroom from './sql/isMyChatroom.sql'
 import { IMessageSenderResult } from './sql/messageSender'
 import messageSender from './sql/messageSender.sql'
+import createChatroom from './sql/createChatroom.sql'
+import deleteChatroom from './sql/deleteChatroom.sql'
 import { TFastify } from '..'
+
+import { ICreateChatroomResult } from './sql/createChatroom'
+import { getFrontendUrl } from '../oauth'
 
 export default function chatMutation(fastify: TFastify) {
   const option = {
@@ -79,6 +89,65 @@ export default function chatMutation(fastify: TFastify) {
       }
     }
 
-    reply.status(201).send()
+    return reply.status(201).send()
+  })
+
+  const option3 = {
+    schema: {
+      querystring: Type.Object({
+        otherUserId: Type.String(),
+      }),
+      response: {
+        200: Type.Object({
+          id: Type.String(),
+        }),
+      },
+    },
+  }
+
+  fastify.post('/chatroom', option3, async (request, reply) => {
+    const userId = request.userId
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
+
+    const { rowCount, rows } = await poolQuery<ICreateChatroomResult>(createChatroom, [
+      userId,
+      request.query.otherUserId,
+    ])
+
+    const newChatroomId = rows[0].new_chatroom_id
+
+    if (rowCount === 0) throw NotFoundError('해당 대화방을 찾을 수 없습니다')
+    if (!newChatroomId) throw ServiceUnavailableError('다시 시도해주세요')
+
+    const frontendUrl = getFrontendUrl(request.headers.referer)
+    return reply.redirect(`${frontendUrl}/chatroom/${newChatroomId}`)
+  })
+
+  const option4 = {
+    schema: {
+      params: Type.Object({
+        id: Type.String(),
+      }),
+      response: {
+        204: Type.Object({
+          id: Type.String(),
+        }),
+      },
+    },
+  }
+
+  fastify.delete('/chatroom/:id', option4, async (request, reply) => {
+    const userId = request.userId
+    if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
+
+    const { rows } = await poolQuery<ICreateChatroomResult>(deleteChatroom, [
+      request.params.id,
+      userId,
+    ])
+
+    const deletedChatroomId = rows[0].new_chatroom_id
+    if (!deletedChatroomId) throw NotFoundError('해당 대화방을 찾을 수 없습니다')
+
+    return reply.status(204).send({ id: deletedChatroomId })
   })
 }

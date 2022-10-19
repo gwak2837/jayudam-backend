@@ -1,13 +1,15 @@
-import { UnauthorizedError } from '../../common/fastify'
+import { NotFoundError, UnauthorizedError } from '../../common/fastify'
 import { poolQuery } from '../../common/postgres'
 import { ChatType, hideContent } from './object'
 import { IChatroomsResult } from './sql/chatrooms'
 import chatrooms from './sql/chatrooms.sql'
+import chatroom from './sql/chatroom.sql'
 import { TFastify } from '..'
 import { Type } from '@sinclair/typebox'
+import { IChatroomResult } from './sql/chatroom'
 
 export default function chatQuery(fastify: TFastify) {
-  const option2 = {
+  const option = {
     schema: {
       response: {
         200: Type.Array(
@@ -29,13 +31,13 @@ export default function chatQuery(fastify: TFastify) {
     },
   }
 
-  fastify.get('/chatroom', option2, async (request, reply) => {
+  fastify.get('/chatroom', option, async (request, reply) => {
     const userId = request.userId
     if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
     const { rows } = await poolQuery<IChatroomsResult>(chatrooms, [userId])
 
-    reply.status(200).send(
+    return reply.status(200).send(
       rows.map((row) => ({
         id: row.chatroom__id,
         name: row.chatroom__name,
@@ -51,25 +53,35 @@ export default function chatQuery(fastify: TFastify) {
     )
   })
 
-  const option3 = {
+  const option2 = {
     schema: {
       params: Type.Object({
         id: Type.String(),
       }),
-      response: {
-        200: Type.Object({
-          id: Type.String(),
-          name: Type.String(),
-          imageUrl: Type.Union([Type.String(), Type.Null()]),
-        }),
-      },
+      querystring: Type.Object({
+        lastChatId: Type.Optional(Type.String()),
+      }),
+      // response: {
+      //   200: Type.Array(Type.Object({})),
+      // },
     },
   }
 
-  fastify.get('/chatroom/:id', option3, async (request, reply) => {
+  fastify.get('/chatroom/:id', option2, async (request, reply) => {
     const userId = request.userId
     if (!userId) throw UnauthorizedError('로그인 후 시도해주세요')
 
-    const id = request.params.id
+    const { rowCount, rows } = await poolQuery<IChatroomResult>(chatroom, [
+      userId,
+      request.params.id,
+      request.query.lastChatId,
+      messageLimit,
+    ])
+
+    if (rowCount === 0) throw NotFoundError('해당 대화방을 찾을 수 없습니다')
+
+    return reply.status(200).send(rows)
   })
 }
+
+const messageLimit = 30

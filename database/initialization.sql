@@ -60,7 +60,7 @@ $$
 LANGUAGE plpgsql;
 
 CREATE TABLE "user" (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
+  id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   creation_time timestamptz DEFAULT CURRENT_TIMESTAMP,
   update_time timestamptz,
   bio varchar(100),
@@ -113,7 +113,7 @@ CREATE TABLE cert_pending (
   sex int NOT NULL,
   verification_code varchar(100) NOT NULL,
   --
-  user_id uuid REFERENCES "user" ON DELETE SET NULL
+  user_id bigint REFERENCES "user" ON DELETE SET NULL
 );
 
 CREATE TABLE cert (
@@ -130,7 +130,7 @@ CREATE TABLE cert (
   "type" int NOT NULL,
   verification_code varchar(100) NOT NULL,
   --
-  user_id uuid REFERENCES "user" ON DELETE SET NULL
+  user_id bigint REFERENCES "user" ON DELETE SET NULL
 );
 
 CREATE TABLE hashtag (
@@ -146,8 +146,8 @@ CREATE TABLE notification (
   link_url text NOT NULL,
   is_read boolean NOT NULL DEFAULT FALSE,
   --
-  receiver_id uuid NOT NULL REFERENCES "user" ON DELETE CASCADE,
-  sender_id uuid REFERENCES "user" ON DELETE SET NULL
+  receiver_id bigint NOT NULL REFERENCES "user" ON DELETE CASCADE,
+  sender_id bigint REFERENCES "user" ON DELETE SET NULL
 );
 
 CREATE TABLE post (
@@ -161,7 +161,7 @@ CREATE TABLE post (
   --
   parent_post_id bigint REFERENCES post ON DELETE SET NULL,
   sharing_post_id bigint REFERENCES post ON DELETE SET NULL,
-  user_id uuid REFERENCES "user" ON DELETE SET NULL
+  user_id bigint REFERENCES "user" ON DELETE SET NULL
 );
 
 CREATE TABLE verification_history (
@@ -169,7 +169,7 @@ CREATE TABLE verification_history (
   creation_time timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   content text NOT NULL,
   --
-  user_id uuid REFERENCES "user" ON DELETE CASCADE
+  user_id bigint REFERENCES "user" ON DELETE CASCADE
 );
 
 CREATE TABLE chatroom (
@@ -184,12 +184,12 @@ CREATE TABLE chat (
   "type" int NOT NULL,
   --
   chatroom_id bigint REFERENCES chatroom ON DELETE CASCADE,
-  user_id uuid REFERENCES "user" ON DELETE CASCADE
+  user_id bigint REFERENCES "user" ON DELETE CASCADE
 );
 
 CREATE TABLE chatroom_x_user (
   chatroom_id bigint REFERENCES chatroom ON DELETE CASCADE,
-  user_id uuid REFERENCES "user" ON DELETE CASCADE,
+  user_id bigint REFERENCES "user" ON DELETE CASCADE,
   last_chat_id bigint REFERENCES chat,
   --
   PRIMARY KEY (chatroom_id, user_id)
@@ -206,7 +206,7 @@ CREATE TABLE hashtag_x_post (
 -- bio에 있는 해시태그
 CREATE TABLE hashtag_x_user (
   hashtag_id bigint REFERENCES hashtag ON DELETE CASCADE,
-  user_id uuid REFERENCES "user" ON DELETE CASCADE,
+  user_id bigint REFERENCES "user" ON DELETE CASCADE,
   --
   PRIMARY KEY (hashtag_id, user_id)
 );
@@ -214,26 +214,26 @@ CREATE TABLE hashtag_x_user (
 -- like
 CREATE TABLE post_x_user (
   post_id bigint REFERENCES post ON DELETE CASCADE,
-  user_id uuid REFERENCES "user" ON DELETE CASCADE,
+  user_id bigint REFERENCES "user" ON DELETE CASCADE,
   --
   PRIMARY KEY (post_id, user_id)
 );
 
 CREATE TABLE post_x_mentioned_user (
   post_id bigint REFERENCES post ON DELETE CASCADE,
-  user_id uuid REFERENCES "user" ON DELETE CASCADE,
+  user_id bigint REFERENCES "user" ON DELETE CASCADE,
   --
   PRIMARY KEY (post_id, user_id)
 );
 
 CREATE TABLE user_x_user (
-  leader_id uuid REFERENCES "user" ON DELETE CASCADE,
-  follower_id uuid REFERENCES "user" ON DELETE CASCADE,
+  leader_id bigint REFERENCES "user" ON DELETE CASCADE,
+  follower_id bigint REFERENCES "user" ON DELETE CASCADE,
   --
   PRIMARY KEY (leader_id, follower_id)
 );
 
-CREATE FUNCTION toggle_liking_post (_user_id uuid, _post_id bigint, out "like" boolean, out like_count int)
+CREATE FUNCTION toggle_liking_post (_user_id bigint, _post_id bigint, out "like" boolean, out like_count int)
 LANGUAGE plpgsql
 AS $$
 BEGIN
@@ -266,7 +266,7 @@ BEGIN
     "like" = TRUE;
   END IF;
 
-  /* 좋아요 개수 갱신 */
+  /* 좋아요 개수 */
   SELECT
     COUNT(user_id) INTO like_count
   FROM
@@ -276,7 +276,7 @@ BEGIN
 END
 $$;
 
-CREATE FUNCTION create_post (_content varchar(300), _image_urls text[], _parent_post_id bigint, _shared_post_id bigint, _user_id uuid, _hashtags varchar(100)[] DEFAULT NULL, out reason int, out new_post record)
+CREATE FUNCTION create_post (_content varchar(300), _image_urls text[], _parent_post_id bigint, _shared_post_id bigint, _user_id bigint, _hashtags varchar(100)[] DEFAULT NULL, out reason int, out new_post record)
 LANGUAGE plpgsql
 AS $$
 BEGIN
@@ -323,6 +323,8 @@ BEGIN
     VALUES (_content, _image_urls, _parent_post_id, _shared_post_id, _user_id)
   RETURNING
     id, creation_time INTO new_post;
+
+  /* 해시태그 추출 */
   WITH hashtag_input (
     name
 ) AS (
@@ -360,7 +362,7 @@ hashtag_ids AS (
 END
 $$;
 
-CREATE FUNCTION delete_post (_post_id bigint, _user_id uuid, out has_authorized boolean, out is_deleted boolean, out deletion_time timestamptz, out image_urls text[])
+CREATE FUNCTION delete_post (_post_id bigint, _user_id bigint, out has_authorized boolean, out is_deleted boolean, out deletion_time timestamptz, out image_urls text[])
 LANGUAGE plpgsql
 AS $$
 BEGIN
@@ -416,7 +418,7 @@ BEGIN
 END
 $$;
 
-CREATE FUNCTION create_chatroom (_user_id uuid, _other_user_id uuid, out new_chatroom_id bigint)
+CREATE FUNCTION create_chatroom (_user_id bigint, _other_user_id bigint, out new_chatroom_id bigint)
 LANGUAGE plpgsql
 AS $$
 DECLARE

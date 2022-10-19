@@ -1,22 +1,29 @@
 /** Types generated for queries found in "src/routes/chat/sql/createChatroom.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-/** Query 'CreateChatroom' is invalid, so its result is assigned type 'never' */
-export type ICreateChatroomResult = never;
+/** 'CreateChatroom' parameters type */
+export type ICreateChatroomParams = void;
 
-/** Query 'CreateChatroom' is invalid, so its parameters are assigned type 'never' */
-export type ICreateChatroomParams = never;
+/** 'CreateChatroom' return type */
+export interface ICreateChatroomResult {
+  new_chatroom_id: string | null;
+}
 
-const createChatroomIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT\n  new_chatroom_id,\n  r\nFROM\n  create_chatroom ('00000000-0000-0000-0000-000000000000', '9617f298-2fe5-4e81-872a-04226ce9d9e9')"};
+/** 'CreateChatroom' query type */
+export interface ICreateChatroomQuery {
+  params: ICreateChatroomParams;
+  result: ICreateChatroomResult;
+}
+
+const createChatroomIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT\n  new_chatroom_id\nFROM\n  create_chatroom ($1, $2)"};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT
- *   new_chatroom_id,
- *   r
+ *   new_chatroom_id
  * FROM
- *   create_chatroom ('00000000-0000-0000-0000-000000000000', '9617f298-2fe5-4e81-872a-04226ce9d9e9')
+ *   create_chatroom ($1, $2)
  * ```
  */
 export const createChatroom = new PreparedQuery<ICreateChatroomParams,ICreateChatroomResult>(createChatroomIR);
