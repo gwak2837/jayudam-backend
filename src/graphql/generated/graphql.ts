@@ -22,7 +22,7 @@ export type Scalars = {
   NonNegativeInt: number
   PositiveInt: number
   URL: any
-  UUID: string
+  UUID: any
 }
 
 export type Cert = {
@@ -317,7 +317,7 @@ export type User = {
   followerCount?: Maybe<Scalars['String']>
   followingCount?: Maybe<Scalars['String']>
   grade?: Maybe<Grade>
-  id: Scalars['UUID']
+  id: Scalars['ID']
   imageUrl?: Maybe<Scalars['String']>
   imageUrls?: Maybe<Array<Scalars['String']>>
   isPrivate?: Maybe<Scalars['Boolean']>
@@ -819,7 +819,7 @@ export type UserResolvers<
   followerCount?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   followingCount?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   grade?: Resolver<Maybe<ResolversTypes['Grade']>, ParentType, ContextType>
-  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>
   imageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   imageUrls?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>
   isPrivate?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>

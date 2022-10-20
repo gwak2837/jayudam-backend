@@ -1,9 +1,9 @@
 /* @name chatroom */
 SELECT
-  chat.id AS chat__id,
-  chat.creation_time AS chat__creation_time,
-  chat.content AS chat__content,
-  chat.type AS chat__type,
+  chat.id,
+  chat.creation_time,
+  chat.content,
+  chat.type,
   "user".id AS user__id,
   "user".name AS user__name,
   "user".nickname AS user__nickname
@@ -15,5 +15,7 @@ FROM
   LEFT JOIN "user" ON "user".id = chat.user_id
 WHERE
   chat.id < $3
+ORDER BY
+  chat.id DESC
 LIMIT $4;
 

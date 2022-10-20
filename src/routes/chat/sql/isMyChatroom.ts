@@ -15,14 +15,17 @@ export interface IIsMyChatroomQuery {
   result: IIsMyChatroomResult;
 }
 
-const isMyChatroomIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT user_id\nFROM chatroom_x_user\nWHERE chatroom_id = $1"};
+const isMyChatroomIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT\n  user_id\nFROM\n  chatroom_x_user\nWHERE\n  chatroom_id = $1"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT user_id
- * FROM chatroom_x_user
- * WHERE chatroom_id = $1
+ * SELECT
+ *   user_id
+ * FROM
+ *   chatroom_x_user
+ * WHERE
+ *   chatroom_id = $1
  * ```
  */
 export const isMyChatroom = new PreparedQuery<IIsMyChatroomParams,IIsMyChatroomResult>(isMyChatroomIR);

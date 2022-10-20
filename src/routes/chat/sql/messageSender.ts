@@ -17,16 +17,19 @@ export interface IMessageSenderQuery {
   result: IMessageSenderResult;
 }
 
-const messageSenderIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT name,\n  nickname,\n  image_urls [0] AS image_url\nFROM \"user\"\nWHERE id = $1"};
+const messageSenderIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT\n  name,\n  nickname,\n  image_urls[1] AS image_url\nFROM\n  \"user\"\nWHERE\n  id = $1"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT name,
+ * SELECT
+ *   name,
  *   nickname,
- *   image_urls [0] AS image_url
- * FROM "user"
- * WHERE id = $1
+ *   image_urls[1] AS image_url
+ * FROM
+ *   "user"
+ * WHERE
+ *   id = $1
  * ```
  */
 export const messageSender = new PreparedQuery<IMessageSenderParams,IMessageSenderResult>(messageSenderIR);

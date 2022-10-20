@@ -14,21 +14,21 @@ import { TFastify } from '..'
 
 export function setBBatonOAuthStrategies(fastify: TFastify) {
   // BBaton 계정으로 가입하기
-  fastify.get('/oauth/bbaton', querystringCode, async (req, res) => {
-    const code = req.query.code
-    const backendUrl = req.headers[':authority']
-    if (!backendUrl) return res.status(400).send('Bad Request')
+  fastify.get('/oauth/bbaton', querystringCode, async (request, reply) => {
+    const code = request.query.code
+    const backendUrl = request.headers[':authority']
+    if (!backendUrl) return reply.status(400).send('Bad Request')
 
     // OAuth 사용자 정보 가져오기
     const bBatonUserToken = await fetchBBatonUserToken(code, `https://${backendUrl}`)
-    if (bBatonUserToken.error) return res.status(400).send('Bad Request2')
+    if (bBatonUserToken.error) return reply.status(400).send('Bad Request2')
 
     const bBatonUser = await fetchBBatonUser(bBatonUserToken.access_token)
-    if (bBatonUser.error) return res.status(400).send('Bad Request3')
+    if (bBatonUser.error) return reply.status(400).send('Bad Request3')
 
-    const frontendUrl = getFrontendUrl(req.headers.referer)
+    const frontendUrl = getFrontendUrl(request.headers.referer)
     const encodedBBatonUserSex = encodeSex(bBatonUser.gender)
-    if (bBatonUser.adult_flag !== 'Y') return res.redirect(`${frontendUrl}/oauth?isAdult=false`)
+    if (bBatonUser.adult_flag !== 'Y') return reply.redirect(`${frontendUrl}/oauth?isAdult=false`)
 
     // 자유담 사용자 정보 가져오기
     const { rowCount, rows: rows2 } = await poolQuery<IGetBBatonUserResult>(getBBatonUser, [
@@ -46,7 +46,7 @@ export function setBBatonOAuthStrategies(fastify: TFastify) {
       const querystring = new URLSearchParams({
         jwt: await signJWT({ userId: rows[0].id }),
       })
-      return res.redirect(`${frontendUrl}/oauth?${querystring}`)
+      return reply.redirect(`${frontendUrl}/oauth?${querystring}`)
     }
 
     // BBaton 사용자 정보가 달라진 경우
@@ -56,7 +56,7 @@ export function setBBatonOAuthStrategies(fastify: TFastify) {
 
     // 정지된 계정인 경우
     if (jayudamUser.blocking_start_time)
-      return res.redirect(
+      return reply.redirect(
         `${frontendUrl}/oauth?isBlocked=true&from=${jayudamUser.blocking_start_time}&to=${jayudamUser.blocking_end_time}`
       )
 
@@ -71,7 +71,7 @@ export function setBBatonOAuthStrategies(fastify: TFastify) {
       jwt: await signJWT({ userId: jayudamUser.id }),
       ...(jayudamUser.name && { username: jayudamUser.name }),
     })
-    return res.redirect(`${frontendUrl}/oauth?${querystring}`)
+    return reply.redirect(`${frontendUrl}/oauth?${querystring}`)
   })
 }
 

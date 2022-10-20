@@ -16,15 +16,15 @@ export interface ICreateChatQuery {
   result: ICreateChatResult;
 }
 
-const createChatIR: any = {"usedParamSet":{},"params":[],"statement":"INSERT INTO chat (content, \"type\", user_id)\nVALUES ($1, $2, $3)\nRETURNING id,\n  creation_time"};
+const createChatIR: any = {"usedParamSet":{},"params":[],"statement":"INSERT INTO chat (content, \"type\", chatroom_id, user_id)\n  VALUES ($1, $2, $3, $4)\nRETURNING\n  id, creation_time"};
 
 /**
  * Query generated from SQL:
  * ```
- * INSERT INTO chat (content, "type", user_id)
- * VALUES ($1, $2, $3)
- * RETURNING id,
- *   creation_time
+ * INSERT INTO chat (content, "type", chatroom_id, user_id)
+ *   VALUES ($1, $2, $3, $4)
+ * RETURNING
+ *   id, creation_time
  * ```
  */
 export const createChat = new PreparedQuery<ICreateChatParams,ICreateChatResult>(createChatIR);

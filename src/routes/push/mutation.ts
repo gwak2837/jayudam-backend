@@ -1,12 +1,13 @@
 import { Type } from '@sinclair/typebox'
 
 import { BadRequestError, ServiceUnavailableError, UnauthorizedError } from '../../common/fastify'
-import { redisClient } from '../../common/redis'
-import { TFastify } from '..'
 import { poolQuery } from '../../common/postgres'
+import { redisClient } from '../../common/redis'
 import webpush from '../../common/web-push'
+import { getFrontendUrl } from '../oauth'
 import { IMessageSenderResult } from './sql/messageSender'
 import messageSender from './sql/messageSender.sql'
+import { TFastify } from '..'
 
 export default function pushMutation(fastify: TFastify) {
   const option2 = {
@@ -93,6 +94,9 @@ export default function pushMutation(fastify: TFastify) {
     const { message } = request.body
 
     const { rows } = await poolQuery<IMessageSenderResult>(messageSender, [userId])
+    const sender = rows[0]
+
+    const frontendUrl = getFrontendUrl(request.headers.referer)
 
     setTimeout(() => {
       webpush.sendNotification(
@@ -100,10 +104,12 @@ export default function pushMutation(fastify: TFastify) {
         JSON.stringify({
           content: message.content,
           type: message.type,
+          chatroomId: '0',
           sender: {
-            nickname: rows[0].nickname,
-            imageUrl: rows[0].image_url,
+            nickname: sender.nickname,
+            imageUrl: sender.image_url,
           },
+          url: `${frontendUrl}/chatroom/0`,
         })
       )
     }, 5_000)

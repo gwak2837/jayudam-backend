@@ -1,6 +1,10 @@
 /* @name messageSender */
-SELECT name,
+SELECT
+  name,
   nickname,
-  image_urls [0] AS image_url
-FROM "user"
-WHERE id = $1;
+  image_urls[1] AS image_url
+FROM
+  "user"
+WHERE
+  id = $1;
+

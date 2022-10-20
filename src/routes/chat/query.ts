@@ -1,12 +1,14 @@
+import { Type } from '@sinclair/typebox'
+
+import { NODE_ENV } from '../../common/constants'
 import { NotFoundError, UnauthorizedError } from '../../common/fastify'
 import { poolQuery } from '../../common/postgres'
 import { ChatType, hideContent } from './object'
+import { IChatroomResult } from './sql/chatroom'
+import chatroom from './sql/chatroom.sql'
 import { IChatroomsResult } from './sql/chatrooms'
 import chatrooms from './sql/chatrooms.sql'
-import chatroom from './sql/chatroom.sql'
 import { TFastify } from '..'
-import { Type } from '@sinclair/typebox'
-import { IChatroomResult } from './sql/chatroom'
 
 export default function chatQuery(fastify: TFastify) {
   const option = {
@@ -15,9 +17,13 @@ export default function chatQuery(fastify: TFastify) {
         200: Type.Array(
           Type.Object({
             id: Type.String(),
-            name: Type.String(),
-            imageUrl: Type.Union([Type.String(), Type.Null()]),
             unreadCount: Type.Union([Type.String(), Type.Null()]),
+
+            otherUser: Type.Object({
+              name: Type.Union([Type.String(), Type.Null()]),
+              nickname: Type.Union([Type.String(), Type.Null()]),
+              imageUrl: Type.Union([Type.String(), Type.Null()]),
+            }),
 
             lastChat: Type.Object({
               id: Type.Union([Type.String(), Type.Null()]),
@@ -40,9 +46,12 @@ export default function chatQuery(fastify: TFastify) {
     return reply.status(200).send(
       rows.map((row) => ({
         id: row.chatroom__id,
-        name: row.chatroom__name,
-        imageUrl: row.chatroom__image_url,
         unreadCount: row.chatroom__unread_count,
+        otherUser: {
+          name: row.user__name,
+          nickname: row.user__nickname,
+          imageUrl: row.user__image_url,
+        },
         lastChat: {
           id: row.chat__id,
           creationTime: row.chat__creation_time?.toISOString() ?? null,
@@ -61,9 +70,25 @@ export default function chatQuery(fastify: TFastify) {
       querystring: Type.Object({
         lastChatId: Type.Optional(Type.String()),
       }),
-      // response: {
-      //   200: Type.Array(Type.Object({})),
-      // },
+      response: {
+        200: Type.Object({
+          data: Type.Array(
+            Type.Object({
+              id: Type.String(),
+              creationTime: Type.String(),
+              content: Type.String(),
+              type: Type.Number(),
+
+              user: Type.Object({
+                id: Type.String(),
+                name: Type.Union([Type.String(), Type.Null()]),
+                nickname: Type.Union([Type.String(), Type.Null()]),
+              }),
+            })
+          ),
+          lastChatId: Type.String(),
+        }),
+      },
     },
   }
 
@@ -74,14 +99,27 @@ export default function chatQuery(fastify: TFastify) {
     const { rowCount, rows } = await poolQuery<IChatroomResult>(chatroom, [
       userId,
       request.params.id,
-      request.query.lastChatId,
+      request.query.lastChatId ?? Number.MAX_SAFE_INTEGER,
       messageLimit,
     ])
 
     if (rowCount === 0) throw NotFoundError('해당 대화방을 찾을 수 없습니다')
 
-    return reply.status(200).send(rows)
+    return reply.status(200).send({
+      data: rows.map((row) => ({
+        id: row.id,
+        creationTime: row.creation_time.toISOString(),
+        content: row.content,
+        type: row.type,
+        user: {
+          id: row.user__id,
+          name: row.user__name,
+          nickname: row.user__nickname,
+        },
+      })),
+      lastChatId: rows[rowCount - 1].id,
+    })
   })
 }
 
-const messageLimit = 30
+const messageLimit = NODE_ENV === 'production' ? 30 : 3

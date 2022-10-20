@@ -9,17 +9,17 @@ import {
 import { poolQuery } from '../../common/postgres'
 import { redisClient } from '../../common/redis'
 import webpush from '../../common/web-push'
+import { getFrontendUrl } from '../oauth'
 import { ICreateChatResult } from './sql/createChat'
 import createChat from './sql/createChat.sql'
+import { ICreateChatroomResult } from './sql/createChatroom'
+import createChatroom from './sql/createChatroom.sql'
+import deleteChatroom from './sql/deleteChatroom.sql'
+import { IIsMyChatroomResult } from './sql/isMyChatroom'
 import isMyChatroom from './sql/isMyChatroom.sql'
 import { IMessageSenderResult } from './sql/messageSender'
 import messageSender from './sql/messageSender.sql'
-import createChatroom from './sql/createChatroom.sql'
-import deleteChatroom from './sql/deleteChatroom.sql'
 import { TFastify } from '..'
-
-import { ICreateChatroomResult } from './sql/createChatroom'
-import { getFrontendUrl } from '../oauth'
 
 export default function chatMutation(fastify: TFastify) {
   const option = {
@@ -31,6 +31,11 @@ export default function chatMutation(fastify: TFastify) {
           type: Type.Number(),
         }),
       }),
+      response: {
+        201: Type.Object({
+          message: Type.String(),
+        }),
+      },
     },
   }
 
@@ -40,7 +45,7 @@ export default function chatMutation(fastify: TFastify) {
 
     const { chatroomId, message } = request.body
 
-    const { rows } = await poolQuery(isMyChatroom, [chatroomId])
+    const { rows } = await poolQuery<IIsMyChatroomResult>(isMyChatroom, [chatroomId])
 
     const userIds = rows.map((row) => row.user_id)
     if (!userIds.includes(userId)) throw ForbiddenError()
@@ -48,25 +53,28 @@ export default function chatMutation(fastify: TFastify) {
     const { rows: rows2 } = await poolQuery<ICreateChatResult>(createChat, [
       message.content,
       message.type,
+      chatroomId,
       userId,
     ])
+    const newChat = rows2[0]
 
     const { rows: rows3 } = await poolQuery<IMessageSenderResult>(messageSender, [userId])
+    const sender = rows3[0]
 
-    // HTTP Server Push 보내기
+    // HTTP/2 Push 보내기
     const receiverCount = await redisClient.publish(
       `chatroom:${chatroomId}`,
       JSON.stringify({
-        id: rows2[0].id,
-        creationTime: rows2[0].creation_time,
+        id: newChat.id,
+        creationTime: newChat.creation_time,
         ...message,
+        chatroomId,
         sender: {
           id: userId,
-          name: rows3[0].name,
-          nickname: rows3[0].nickname,
-          imageUrl: rows3[0].image_url,
+          name: sender.name,
+          nickname: sender.nickname,
+          imageUrl: sender.image_url,
         },
-        chatroomId,
       })
     )
 
@@ -74,22 +82,26 @@ export default function chatMutation(fastify: TFastify) {
     if (receiverCount === 1) {
       const otherUserId = userIds.filter((chatroomUserId) => chatroomUserId !== userId)[0]
       const otherUserPushSubscription = await redisClient.get(`${otherUserId}:pushSubscription`)
+      const frontendUrl = getFrontendUrl(request.headers.referer)
 
       if (otherUserPushSubscription) {
         webpush.sendNotification(
           JSON.parse(otherUserPushSubscription),
           JSON.stringify({
             content: message.content,
+            type: message.type,
+            chatroomId,
             sender: {
-              nickname: rows3[0].nickname,
-              imageUrl: rows3[0].image_url,
+              nickname: sender.nickname,
+              imageUrl: sender.image_url,
             },
+            url: `${frontendUrl}/chatroom/${chatroomId}`,
           })
         )
       }
     }
 
-    return reply.status(201).send()
+    return reply.status(201).send({ message: '메시지 생성 완료' })
   })
 
   const option3 = {
@@ -97,11 +109,11 @@ export default function chatMutation(fastify: TFastify) {
       querystring: Type.Object({
         otherUserId: Type.String(),
       }),
-      response: {
-        200: Type.Object({
-          id: Type.String(),
-        }),
-      },
+      // response: {
+      //   302: Type.Object({
+      //     id: Type.String(),
+      //   }),
+      // },
     },
   }
 

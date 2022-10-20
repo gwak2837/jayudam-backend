@@ -231,7 +231,7 @@ type User {
   followerCount: String
   followingCount: String
   grade: Grade
-  id: UUID!
+  id: ID!
   imageUrl: String
   imageUrls: [String!]
   isPrivate: Boolean

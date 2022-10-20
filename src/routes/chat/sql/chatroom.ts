@@ -6,10 +6,10 @@ export type IChatroomParams = void;
 
 /** 'Chatroom' return type */
 export interface IChatroomResult {
-  chat__content: string;
-  chat__creation_time: Date;
-  chat__id: string;
-  chat__type: number;
+  content: string;
+  creation_time: Date;
+  id: string;
+  type: number;
   user__id: string;
   user__name: string | null;
   user__nickname: string | null;
@@ -21,16 +21,16 @@ export interface IChatroomQuery {
   result: IChatroomResult;
 }
 
-const chatroomIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT\n  chat.id AS chat__id,\n  chat.creation_time AS chat__creation_time,\n  chat.content AS chat__content,\n  chat.type AS chat__type,\n  \"user\".id AS user__id,\n  \"user\".name AS user__name,\n  \"user\".nickname AS user__nickname\nFROM\n  chatroom_x_user\n  LEFT JOIN chat ON chat.chatroom_id = chatroom_x_user.chatroom_id\n    AND chatroom_x_user.user_id = $1\n    AND chatroom_x_user.chatroom_id = $2\n  LEFT JOIN \"user\" ON \"user\".id = chat.user_id\nWHERE\n  chat.id < $3\nLIMIT $4"};
+const chatroomIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT\n  chat.id,\n  chat.creation_time,\n  chat.content,\n  chat.type,\n  \"user\".id AS user__id,\n  \"user\".name AS user__name,\n  \"user\".nickname AS user__nickname\nFROM\n  chatroom_x_user\n  LEFT JOIN chat ON chat.chatroom_id = chatroom_x_user.chatroom_id\n    AND chatroom_x_user.user_id = $1\n    AND chatroom_x_user.chatroom_id = $2\n  LEFT JOIN \"user\" ON \"user\".id = chat.user_id\nWHERE\n  chat.id < $3\nORDER BY\n  chat.id DESC\nLIMIT $4"};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT
- *   chat.id AS chat__id,
- *   chat.creation_time AS chat__creation_time,
- *   chat.content AS chat__content,
- *   chat.type AS chat__type,
+ *   chat.id,
+ *   chat.creation_time,
+ *   chat.content,
+ *   chat.type,
  *   "user".id AS user__id,
  *   "user".name AS user__name,
  *   "user".nickname AS user__nickname
@@ -42,6 +42,8 @@ const chatroomIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT\n  ch
  *   LEFT JOIN "user" ON "user".id = chat.user_id
  * WHERE
  *   chat.id < $3
+ * ORDER BY
+ *   chat.id DESC
  * LIMIT $4
  * ```
  */
