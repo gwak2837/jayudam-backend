@@ -1,4 +1,4 @@
-import { InternalServerError } from '../../fastify/errors'
+import { InternalServerError } from '../../common/fastify'
 import { CertType } from '../generated/graphql'
 
 export function decodeCertType(encodedCertType: number | null) {

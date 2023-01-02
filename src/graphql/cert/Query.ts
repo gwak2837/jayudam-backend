@@ -1,7 +1,7 @@
-import { poolQuery } from '../../database/postgres'
-import { UnauthorizedError } from '../../fastify/errors'
-import type { GraphQLContext } from '../../fastify/server'
-import { signJWT } from '../../utils/jwt'
+import { UnauthorizedError } from '../../common/fastify'
+import { signJWT } from '../../common/jwt'
+import { poolQuery } from '../../common/postgres'
+import { GraphQLContext } from '../../routes'
 import type { QueryResolvers } from '../generated/graphql'
 import type { IVerificationHistoriesResult } from './sql/verificationHistories'
 import verificationHistories from './sql/verificationHistories.sql'
@@ -14,7 +14,7 @@ export const Query: QueryResolvers<GraphQLContext> = {
       {
         qrcode: true,
         forTest: true,
-        userId: '00000000-0000-0000-0000-000000000000',
+        userId: '0',
         showBirthdate: true,
         showLegalName: true,
         showSex: true,

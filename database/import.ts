@@ -29,31 +29,43 @@ const { from } = pgCopy
       'public.notification',
       'public.post',
       'public.verification_history',
-      'public.hashtag_x_user',
+      'public.chatroom',
+      'public.chat',
+      'public.chatroom_x_user',
       'public.hashtag_x_post',
+      'public.hashtag_x_user',
       'public.post_x_user',
+      'public.post_x_mentioned_user',
+      'public.user_x_user',
     ]
 
     // GENERATED ALWAYS AS IDENTITY 컬럼이 있는 테이블
     const sequenceTables = [
+      '"user"',
       'cert_pending',
       'cert',
       'hashtag',
       'notification',
       'post',
       'verification_history',
+      'chatroom',
+      'chat',
     ]
 
     for (const table of tables) {
       console.log('👀 - table', table)
 
-      const csvPath = `database/data/${CSV_PATH}/${table}.csv`
-      const columns = await readFirstLine(csvPath)
-      const fileStream = createReadStream(csvPath)
+      try {
+        const csvPath = `database/data/${CSV_PATH}/${table}.csv`
+        const columns = await readFirstLine(csvPath)
+        const fileStream = createReadStream(csvPath)
 
-      const sql = `COPY ${table}(${columns}) FROM STDIN WITH CSV DELIMITER ',' HEADER ENCODING 'UTF-8'`
-      const stream = client.query(from(sql))
-      fileStream.pipe(stream)
+        const sql = `COPY ${table}(${columns}) FROM STDIN WITH CSV DELIMITER ',' HEADER ENCODING 'UTF-8'`
+        const stream = client.query(from(sql))
+        fileStream.pipe(stream)
+      } catch (error) {
+        console.log('👀 - error', error)
+      }
     }
 
     for (const sequenceTable of sequenceTables) {

@@ -1,5 +1,5 @@
-import { NotImplementedError } from '../../fastify/errors'
-import { GraphQLContext } from '../../fastify/server'
+import { NotImplementedError } from '../../common/fastify'
+import { GraphQLContext } from '../../routes'
 import { Grade, Sex, UserResolvers } from '../generated/graphql'
 
 export const User: UserResolvers<GraphQLContext> = {

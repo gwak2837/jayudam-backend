@@ -9,7 +9,8 @@
     "amatiasq.sort-imports",
     "graphql.vscode-graphql",
     "ms-azuretools.vscode-docker",
-    "mtxr.sqltools",
-    "foxundermoon.shell-format"
+    "bradymholt.pgformatter",
+    "foxundermoon.shell-format",
+    "ckolkman.vscode-postgres"
   ]
 }

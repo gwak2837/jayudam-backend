@@ -16,14 +16,14 @@ export interface ICreatePostQuery {
   result: ICreatePostResult;
 }
 
-const createPostIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT reason,\n  new_post\nFROM create_post($1, $2, $3, $4, $5)"};
+const createPostIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT reason,\n  new_post\nFROM create_post($1, $2, $3, $4, $5, $6)"};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT reason,
  *   new_post
- * FROM create_post($1, $2, $3, $4, $5)
+ * FROM create_post($1, $2, $3, $4, $5, $6)
  * ```
  */
 export const createPost = new PreparedQuery<ICreatePostParams,ICreatePostResult>(createPostIR);

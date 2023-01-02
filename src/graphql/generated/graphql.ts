@@ -14,13 +14,13 @@ export type Scalars = {
   Float: number
   Any: any
   DateTime: any
-  EmailAddress: any
-  JWT: any
+  EmailAddress: string
+  JWT: string
   Latitude: any
   Longitude: any
-  NonEmptyString: any
-  NonNegativeInt: any
-  PositiveInt: any
+  NonEmptyString: string
+  NonNegativeInt: number
+  PositiveInt: number
   URL: any
   UUID: any
 }
@@ -317,7 +317,7 @@ export type User = {
   followerCount?: Maybe<Scalars['String']>
   followingCount?: Maybe<Scalars['String']>
   grade?: Maybe<Grade>
-  id: Scalars['UUID']
+  id: Scalars['ID']
   imageUrl?: Maybe<Scalars['String']>
   imageUrls?: Maybe<Array<Scalars['String']>>
   isPrivate?: Maybe<Scalars['Boolean']>
@@ -819,7 +819,7 @@ export type UserResolvers<
   followerCount?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   followingCount?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   grade?: Resolver<Maybe<ResolversTypes['Grade']>, ParentType, ContextType>
-  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>
   imageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   imageUrls?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>
   isPrivate?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>
